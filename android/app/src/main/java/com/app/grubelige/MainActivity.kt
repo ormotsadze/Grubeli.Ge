@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.app.grubelige
 
 import android.Manifest
@@ -12,14 +14,11 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
 import android.view.WindowManager
 import android.webkit.*
-import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.SystemBarStyle
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,66 +28,81 @@ import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color as ComposeColor
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.fragment.app.FragmentActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.app.grubelige.ui.theme.GrubeliGeTheme
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.messaging.FirebaseMessaging
 import org.json.JSONObject
-import java.net.URLEncoder
 import kotlin.math.roundToInt
 
-class MainActivity : ComponentActivity() {
-    
-    private var isWebViewLoaded = false
+object WeatherUtils {
+    const val PREFS_NAME = "WeatherPrefs"
+    const val BASE_URL = "https://mprof.ge/test/index.php"
 
-    inner class WebAppInterface {
+    fun cleanCityName(name: String): String {
+        return name.trim()
+            .replace("ამინდი ", "")
+            .replace("ში", "")
+    }
+
+    fun updateWidget(context: Context) {
+        val manager = AppWidgetManager.getInstance(context)
+        val componentName = ComponentName(context, WeatherWidget::class.java)
+        val ids = manager.getAppWidgetIds(componentName)
+        if (ids.isNotEmpty()) {
+            val intent = Intent(context, WeatherWidget::class.java).apply {
+                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+            }
+            context.sendBroadcast(intent)
+        }
+    }
+}
+
+class MainActivity : FragmentActivity() {
+    
+    private var isWebViewLoaded by mutableStateOf(false)
+
+    inner class WebAppInterface(private val webView: WebView?) {
         @JavascriptInterface
         fun updateWidgetLocation(cityName: String) {
-            if (cityName.isEmpty() || cityName == "საქართველო") return
-            val prefs = getSharedPreferences("WeatherPrefs", Context.MODE_PRIVATE)
-            val cleanedCity = cityName.trim().replace("ამინდი ", "").replace("ში", "")
-            prefs.edit().putString("last_viewed_city", cleanedCity).commit()
-            // ვიჯეტის მომენტალური განახლება ქალაქის შეცვლისას
-            updateWidget()
+            if (cityName.isBlank() || cityName == "საქართველო") return
+            val prefs = getSharedPreferences(WeatherUtils.PREFS_NAME, Context.MODE_PRIVATE)
+            val cleanedCity = WeatherUtils.cleanCityName(cityName)
+            prefs.edit().putString("last_viewed_city", cleanedCity).apply()
+            WeatherUtils.updateWidget(this@MainActivity)
         }
 
         @JavascriptInterface
         fun saveWeatherData(jsonData: String) {
             try {
                 val data = JSONObject(jsonData)
-                val prefs = getSharedPreferences("WeatherPrefs", Context.MODE_PRIVATE)
-                val editor = prefs.edit()
+                val prefs = getSharedPreferences(WeatherUtils.PREFS_NAME, Context.MODE_PRIVATE)
                 
-                val lat = data.optString("lat")
-                val lon = data.optString("lon")
-                val cityName = data.optString("city_name").trim().replace("ამინდი ", "").replace("ში", "")
-                
-                editor.putString("saved_lat", lat)
-                editor.putString("saved_lon", lon)
-                
-                editor.putString("widget_city_name", cityName)
+                val cityName = WeatherUtils.cleanCityName(data.optString("city_name"))
                 val tempVal = data.opt("temp")?.toString()?.replace(",", ".")?.toDoubleOrNull()
-                if (tempVal != null) {
-                    editor.putInt("widget_temp", tempVal.roundToInt())
-                    editor.putLong("widget_last_update", System.currentTimeMillis())
+
+                prefs.edit().apply {
+                    putString("saved_lat", data.optString("lat"))
+                    putString("saved_lon", data.optString("lon"))
+                    putString("widget_city_name", cityName)
+                    if (tempVal != null) {
+                        putInt("widget_temp", tempVal.roundToInt())
+                        putLong("widget_last_update", System.currentTimeMillis())
+                    }
+                    putString("widget_desc", data.optString("desc"))
+                    putInt("widget_code", data.optInt("code", 0))
+                    putBoolean("widget_is_day", data.optBoolean("is_day", true))
+                    apply()
                 }
-                editor.putString("widget_desc", data.optString("desc"))
-                editor.putInt("widget_code", data.optInt("code", 0))
-                editor.putBoolean("widget_is_day", data.optBoolean("is_day", true))
-                
-                editor.commit()
-                updateWidget()
+                WeatherUtils.updateWidget(this@MainActivity)
             } catch (e: Exception) {
                 Log.e("WeatherBridge", "JSON error", e)
             }
@@ -102,27 +116,40 @@ class MainActivity : ComponentActivity() {
                     if (location != null) {
                         runOnUiThread {
                             val js = "javascript:if(window.setGPSLocation) window.setGPSLocation(${location.latitude}, ${location.longitude});"
-                            findViewById<WebView>(R.id.webView)?.loadUrl(js)
+                            webView?.loadUrl(js)
                         }
                     }
                 }
             }
         }
-    }
 
-    private fun updateWidget() {
-        val manager = AppWidgetManager.getInstance(this)
-        val ids = manager.getAppWidgetIds(ComponentName(this, WeatherWidget::class.java))
-        if (ids.isNotEmpty()) {
-            val intent = Intent(this, WeatherWidget::class.java).apply {
-                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+        @JavascriptInterface
+        fun getFCMToken() {
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val token = task.result
+                    pushTokenToJS(token)
+                }
             }
-            sendBroadcast(intent)
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
+    private fun pushTokenToJS(token: String?) {
+        if (token == null) return
+        runOnUiThread {
+            findViewById<WebView>(android.R.id.primary)?.let { webView ->
+                val js = "javascript:if(window.setFCMToken) window.setFCMToken('$token');"
+                webView.loadUrl(js)
+            }
+        }
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) subscribeToWeatherTopic()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -130,7 +157,15 @@ class MainActivity : ComponentActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
 
         createNotificationChannel()
-        FirebaseMessaging.getInstance().subscribeToTopic("weather_updates")
+        subscribeToWeatherTopic()
+        checkBatteryOptimization()
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+
         splashScreen.setKeepOnScreenCondition { !isWebViewLoaded }
 
         setContent {
@@ -141,8 +176,8 @@ class MainActivity : ComponentActivity() {
                         TopAppBar(
                             title = { Text("GRUBELI.GE", fontSize = 13.sp, fontWeight = FontWeight.Bold) },
                             actions = {
-                                IconButton(onClick = { requestPinWidget() }) { Icon(Icons.Default.Dashboard, "Add") }
-                                IconButton(onClick = { openSettings() }) { Icon(Icons.Default.Settings, "Settings") }
+                                IconButton(onClick = { requestPinWidget() }) { Icon(Icons.Default.Dashboard, contentDescription = "Add Widget") }
+                                IconButton(onClick = { openSettings() }) { Icon(Icons.Default.Settings, contentDescription = "Settings") }
                             }
                         )
                     }
@@ -150,8 +185,32 @@ class MainActivity : ComponentActivity() {
                     MainScreen(
                         modifier = Modifier.padding(innerPadding).fillMaxSize(),
                         onPageLoaded = { isWebViewLoaded = true },
-                        webAppInterface = WebAppInterface()
+                        activity = this
                     )
+                }
+            }
+        }
+    }
+
+    private fun subscribeToWeatherTopic() {
+        FirebaseMessaging.getInstance().subscribeToTopic("weather_updates")
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) Log.d("FCM", "Subscribed successfully")
+            }
+    }
+
+    @SuppressLint("BatteryLife")
+    private fun checkBatteryOptimization() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                try {
+                    val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                        data = Uri.parse("package:$packageName")
+                    }
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    Log.e("FCM", "Battery optimization prompt failed", e)
                 }
             }
         }
@@ -175,7 +234,11 @@ class MainActivity : ComponentActivity() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel("high_priority_channel", "Grubeli Notifications", NotificationManager.IMPORTANCE_HIGH)
+            val channel = NotificationChannel("high_priority_channel", "Grubeli Notifications", NotificationManager.IMPORTANCE_HIGH).apply {
+                description = "Weather updates and alerts"
+                enableLights(true)
+                enableVibration(true)
+            }
             (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
         }
     }
@@ -183,59 +246,59 @@ class MainActivity : ComponentActivity() {
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-fun MainScreen(modifier: Modifier = Modifier, onPageLoaded: () -> Unit, webAppInterface: Any? = null) {
-    val context = LocalContext.current
-    var webViewRef by remember { mutableStateOf<WebView?>(null) }
-
+fun MainScreen(modifier: Modifier = Modifier, onPageLoaded: () -> Unit, activity: MainActivity) {
     AndroidView(
         modifier = modifier,
         factory = { ctx ->
             val swipeRefreshLayout = SwipeRefreshLayout(ctx)
             val webView = WebView(ctx).apply {
-                id = R.id.webView
-                settings.javaScriptEnabled = true
-                settings.domStorageEnabled = true
-                settings.userAgentString = "GrubeliApp/1.0"
+                id = android.R.id.primary
+                
+                settings.apply {
+                    javaScriptEnabled = true
+                    domStorageEnabled = true
+                    @Suppress("DEPRECATION")
+                    databaseEnabled = true
+                    cacheMode = WebSettings.LOAD_DEFAULT
+                    userAgentString = "GrubeliApp/1.0"
+                    allowFileAccess = true
+                    allowContentAccess = false
+                }
                 
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView?, url: String?) {
                         swipeRefreshLayout.isRefreshing = false
                         onPageLoaded()
+                        
+                        // Auto-send token on every load
+                        FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
+                            val js = "javascript:if(window.setFCMToken) window.setFCMToken('$token');"
+                            view?.loadUrl(js)
+                        }
                     }
 
                     override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
                         if (request?.isForMainFrame == true) {
                             view?.loadUrl("file:///android_asset/errors/error_network.html")
-                            onPageLoaded() // Splash Screen-ის გასაქრობად
+                            onPageLoaded()
                         }
                     }
-
-                    @Deprecated("Deprecated in Java")
-                    override fun onReceivedError(view: WebView?, errorCode: Int, description: String?, failingUrl: String?) {
-                        view?.loadUrl("file:///android_asset/errors/error_network.html")
-                        onPageLoaded()
-                    }
                 }
                 
-                if (webAppInterface != null) addJavascriptInterface(webAppInterface, "AndroidBridge")
+                addJavascriptInterface(activity.WebAppInterface(this), "AndroidBridge")
 
-                val prefs = ctx.getSharedPreferences("WeatherPrefs", Context.MODE_PRIVATE)
-                val lat = prefs.getString("saved_lat", "")
-                val lon = prefs.getString("saved_lon", "")
-                val baseUrl = "https://mprof.ge/test/index.php"
-                
-                val finalUrl = if (!lat.isNullOrEmpty() && !lon.isNullOrEmpty()) {
-                    "$baseUrl?lat=$lat&lon=$lon"
-                } else {
-                    baseUrl
-                }
-                
-                loadUrl(finalUrl)
+                val prefs = ctx.getSharedPreferences(WeatherUtils.PREFS_NAME, Context.MODE_PRIVATE)
+                val lastCity = prefs.getString("last_viewed_city", "")
+                val url = if (lastCity.isNullOrBlank()) WeatherUtils.BASE_URL else "${WeatherUtils.BASE_URL}?city=$lastCity"
+                loadUrl(url)
             }
-            webViewRef = webView
-            swipeRefreshLayout.addView(webView)
-            swipeRefreshLayout.setOnRefreshListener { webView.reload() }
-            swipeRefreshLayout
+
+            swipeRefreshLayout.apply {
+                addView(webView)
+                setOnRefreshListener {
+                    webView.reload()
+                }
+            }
         }
     )
 }

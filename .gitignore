@@ -19,6 +19,7 @@ Desktop.ini
 *.sublime-workspace
 *.code-workspace
 project.code-workspace
+.continue/
 
 # PHP
 vendor/

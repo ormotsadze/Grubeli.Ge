@@ -1,3 +1,6 @@
+<?php
+require_once __DIR__ . '/functions.php';
+?>
 <!doctype html>
 <html lang="ka">
   <head>
@@ -16,8 +19,8 @@
     <meta property="og:type" content="website">
   <link rel="preload" as="image" href="/<?php echo ltrim($current_icon, '/'); ?>">
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/app.css" rel="stylesheet">
-    <link href="icons/fontawesome/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'">
+    <link href="css/app.css?ver=1.0.0" rel="stylesheet">
+    <link href="icons/fontawesome/css/all.min.css?v-1.0.0" rel="stylesheet" media="print" onload="this.media='all'">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <link rel="icon" type="image/png" href="images/favicon.png"/>
     <script>

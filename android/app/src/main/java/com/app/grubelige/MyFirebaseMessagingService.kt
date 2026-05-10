@@ -16,12 +16,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-        // თუ აპლიკაცია წინა პლანზეა (Foreground), ჩვენ თვითონ ვაჩვენებთ ნოტიფიკაციას
+        // Handle notification payload
         remoteMessage.notification?.let {
             showNotification(it.title, it.body)
         }
         
-        // თუ მხოლოდ მონაცემები მოვიდა (Data message)
+        // Handle data payload (important for background/killed state)
         if (remoteMessage.data.isNotEmpty()) {
             val title = remoteMessage.data["title"]
             val message = remoteMessage.data["body"]
@@ -32,7 +32,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         Log.d("FCM", "New token generated: $token")
-        // აქ მომავალში შეგიძლიათ დაამატოთ სერვერზე გაგზავნის ლოგიკა
+        
+        // Save token locally so MainActivity can send it to the server via WebAppInterface
+        val prefs = getSharedPreferences(WeatherUtils.PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putString("fcm_token", token).apply()
     }
 
     private fun showNotification(title: String?, message: String?) {
@@ -41,31 +44,36 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         }
         
         val pendingIntent = PendingIntent.getActivity(
-            this, 0, intent,
-            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+            this, 
+            System.currentTimeMillis().toInt(), // Unique request code
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        // მნიშვნელოვანია: ID უნდა იყოს "high_priority_channel"
         val channelId = "high_priority_channel"
         
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(android.R.drawable.ic_dialog_info) // შეცვალეთ თქვენი აიქონით საჭიროებისამებრ
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle(title)
             .setContentText(message)
             .setAutoCancel(true)
-            .setPriority(NotificationCompat.PRIORITY_HIGH) // მაღალი პრიორიტეტი
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setContentIntent(pendingIntent)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // არხის შექმნა (ორმაგი დაზღვევა)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
                 "Grubeli Notifications",
                 NotificationManager.IMPORTANCE_HIGH
-            )
+            ).apply {
+                description = "Important weather updates"
+                enableLights(true)
+                enableVibration(true)
+            }
             notificationManager.createNotificationChannel(channel)
         }
 

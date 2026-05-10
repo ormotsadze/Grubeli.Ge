@@ -1852,6 +1852,7 @@ background: #13141b;
     width: 100%;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    
 }
 
 .search-wrapper:focus-within {
@@ -1859,6 +1860,11 @@ background: #13141b;
     border-color: rgba(13, 202, 240, 0.5);
     box-shadow: 0 0 0 3px rgba(13, 202, 240, 0.08),
                 0 4px 20px rgba(13, 202, 240, 0.12);
+                
+}
+
+.search-input:focus-visible {
+    outline: none !important;
 }
 
 .search-input {
