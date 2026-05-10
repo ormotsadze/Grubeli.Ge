@@ -1547,6 +1547,7 @@ background: #13141b;
 .social-btn.fb:hover { background: #1877F2; }
 .social-btn.ig:hover { background: linear-gradient(45deg, #f09433, #dc2743, #bc1888); }
 .social-btn.tk:hover { background: #000; }
+.social-btn.git:hover { background:#24292e; }
 
 /* აქტიური დაჭერის ეფექტი */
 .social-btn:active {

@@ -113,6 +113,9 @@ if ($current_page == 'index.php' || $current_page == 'historical-weather.php') :
         <a href="https://tiktok.com/@grubeli.ge" target="_blank" class="social-btn tk">
             <i class="fa-brands fa-tiktok"></i>
         </a>
+         <a href="https://github.com/ormotsadze/Grubeli.Ge" target="_blank" class="social-btn git">
+          <i class="fa-brands fa-github"></i>
+        </a>
     </div>
 
 

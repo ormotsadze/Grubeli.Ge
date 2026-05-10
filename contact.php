@@ -86,12 +86,17 @@ include 'header.php';
               <a href="https://facebook.com/grubeli.ge" target="_blank" rel="noopener" class="social-pill">
                 <i class="fab fa-facebook-f me-2"></i> Facebook
               </a>
-           
+             <a href="https://instagram.com/grubeli.ge" target="_blank" rel="noopener" class="social-pill">
+                 <i class="fa-brands fa-facebook-messenger"></i> Messenger
+              </a>
               <a href="https://instagram.com/grubeli.ge" target="_blank" rel="noopener" class="social-pill">
                 <i class="fab fa-instagram me-2"></i> Instagram
               </a>
               <a href="https://tiktok.com/@grubeli.ge" target="_blank" rel="noopener" class="social-pill">
                 <i class="fa-brands fa-tiktok me-2"></i> TikTok
+              </a>
+                <a href="https://github.com/ormotsadze/Grubeli.Ge" target="_blank" rel="noopener" class="social-pill">
+                <i class="fa-brands fa-github me-2"></i> Github
               </a>
             </div>
           </div>

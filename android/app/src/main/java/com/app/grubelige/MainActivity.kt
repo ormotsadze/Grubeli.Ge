@@ -19,6 +19,8 @@ import android.provider.Settings
 import android.util.Log
 import android.view.WindowManager
 import android.webkit.*
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -34,7 +36,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.fragment.app.FragmentActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.app.grubelige.ui.theme.GrubeliGeTheme
 import com.google.android.gms.location.LocationServices
@@ -66,7 +67,7 @@ object WeatherUtils {
     }
 }
 
-class MainActivity : FragmentActivity() {
+class MainActivity : ComponentActivity() {
     
     private var isWebViewLoaded by mutableStateOf(false)
 
@@ -128,6 +129,7 @@ class MainActivity : FragmentActivity() {
             FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val token = task.result
+                    Log.d("FCM", "FCM Token obtained: $token")
                     pushTokenToJS(token)
                 }
             }
@@ -147,7 +149,7 @@ class MainActivity : FragmentActivity() {
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
-        if (isGranted) subscribeToWeatherTopic()
+        if (isGranted) subscribeToUrgentAlerts()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -157,7 +159,7 @@ class MainActivity : FragmentActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
 
         createNotificationChannel()
-        subscribeToWeatherTopic()
+        subscribeToUrgentAlerts()
         checkBatteryOptimization()
         
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -192,10 +194,14 @@ class MainActivity : FragmentActivity() {
         }
     }
 
-    private fun subscribeToWeatherTopic() {
-        FirebaseMessaging.getInstance().subscribeToTopic("weather_updates")
+    private fun subscribeToUrgentAlerts() {
+        FirebaseMessaging.getInstance().subscribeToTopic("urgent_alerts")
             .addOnCompleteListener { task ->
-                if (task.isSuccessful) Log.d("FCM", "Subscribed successfully")
+                if (task.isSuccessful) {
+                    Log.d("FCM", "Successfully subscribed to topic: urgent_alerts")
+                } else {
+                    Log.e("FCM", "Subscription to urgent_alerts failed", task.exception)
+                }
             }
     }
 
@@ -233,26 +239,39 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel("high_priority_channel", "Grubeli Notifications", NotificationManager.IMPORTANCE_HIGH).apply {
-                description = "Weather updates and alerts"
-                enableLights(true)
-                enableVibration(true)
-            }
-            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
+        val channelId = "urgent_alerts_channel"
+        val channel = NotificationChannel(
+            channelId, 
+            "Urgent Alerts", 
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Weather updates and alerts"
+            enableLights(true)
+            enableVibration(true)
         }
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.createNotificationChannel(channel)
     }
 }
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun MainScreen(modifier: Modifier = Modifier, onPageLoaded: () -> Unit, activity: MainActivity) {
+    var webViewInstance by remember { mutableStateOf<WebView?>(null) }
+    var canGoBack by remember { mutableStateOf(false) }
+
+    // მართავს სისტემურ "უკან" ღილაკს
+    BackHandler(enabled = canGoBack) {
+        webViewInstance?.goBack()
+    }
+
     AndroidView(
         modifier = modifier,
         factory = { ctx ->
             val swipeRefreshLayout = SwipeRefreshLayout(ctx)
             val webView = WebView(ctx).apply {
                 id = android.R.id.primary
+                webViewInstance = this
                 
                 settings.apply {
                     javaScriptEnabled = true
@@ -269,6 +288,8 @@ fun MainScreen(modifier: Modifier = Modifier, onPageLoaded: () -> Unit, activity
                     override fun onPageFinished(view: WebView?, url: String?) {
                         swipeRefreshLayout.isRefreshing = false
                         onPageLoaded()
+                        // ანახლებს მდგომარეობას, შეუძლია თუ არა უკან დაბრუნება
+                        canGoBack = view?.canGoBack() ?: false
                         
                         // Auto-send token on every load
                         FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
@@ -277,10 +298,17 @@ fun MainScreen(modifier: Modifier = Modifier, onPageLoaded: () -> Unit, activity
                         }
                     }
 
+                    override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
+                        super.doUpdateVisitedHistory(view, url, isReload)
+                        // ანახლებს მდგომარეობას ისტორიის ყოველი ცვლილებისას
+                        canGoBack = view?.canGoBack() ?: false
+                    }
+
                     override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
                         if (request?.isForMainFrame == true) {
                             view?.loadUrl("file:///android_asset/errors/error_network.html")
                             onPageLoaded()
+                            canGoBack = view?.canGoBack() ?: false
                         }
                     }
                 }
@@ -299,6 +327,7 @@ fun MainScreen(modifier: Modifier = Modifier, onPageLoaded: () -> Unit, activity
                     webView.reload()
                 }
             }
+            swipeRefreshLayout
         }
     )
 }
