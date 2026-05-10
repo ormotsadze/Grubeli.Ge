@@ -44,6 +44,7 @@ android/captures/
 android/.externalNativeBuild/
 android/*.iml
 android/app/*.iml
+android/app/google-services.json
 
 # Node (if any)
 node_modules/

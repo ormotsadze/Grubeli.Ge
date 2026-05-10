@@ -76,8 +76,8 @@
 
 ```bash
 # 1. კლონირება
-git clone https://github.com/yourusername/grubeli.ge.git
-cd grubeli.ge
+git clone https://github.com/ormotsadze/Grubeli.Ge.git
+cd Grubeli.Ge
 
 # 2. API გასაღებების კონფიგურაცია (არასავალდებულო)
 cp .env.example .env
@@ -188,7 +188,7 @@ weather/
 
 ## 📄 ლიცენზია
 
-ეს პროექტი ლიცენზირებულია MIT ლიცენზიით — იხილეთ [LICENSE](LICENSE) ფაილი დეტალებისთვის.
+ეს პროექტი არის თავისუფალი პროგრამული უზრუნველყოფა: შეგიძლიათ მისი გავრცელება და/ან შეცვლა **GNU General Public License v3.0** (GPLv3) პირობების შესაბამისად. იხილეთ [LICENSE](LICENSE) ფაილი დეტალებისთვის.
 
 ---
 

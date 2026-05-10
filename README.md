@@ -76,8 +76,8 @@
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/yourusername/grubeli.ge.git
-cd grubeli.ge
+git clone https://github.com/ormotsadze/Grubeli.Ge.git
+cd Grubeli.Ge
 
 # 2. Set up API keys (optional)
 cp .env.example .env
@@ -187,7 +187,7 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
 
 ## 📄 License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+This project is free software: you can redistribute it and/or modify it under the terms of the **GNU General Public License v3.0** (GPLv3). See the [LICENSE](LICENSE) file for details.
 
 ---
 
