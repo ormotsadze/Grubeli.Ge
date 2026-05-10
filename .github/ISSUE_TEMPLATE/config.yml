@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📧 Security Report
+    url: mailto:ormocidzee@gmail.com
+    about: Please report security vulnerabilities privately via email.
+  - name: 💬 Community Support
+    url: https://grubeli.ge/contact.php
+    about: For general questions and support, visit our contact page.

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1062487359876",
+    "project_id": "facelist-d53a0",
+    "storage_bucket": "facelist-d53a0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1062487359876:android:8f2a969834c7f7d3781dd1",
+        "android_client_info": {
+          "package_name": "com.app.grubelige"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzoosxUgRz1Rv1dGW7waLcakOtt6vMdXY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

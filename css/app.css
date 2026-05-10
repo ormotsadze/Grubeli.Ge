@@ -1,0 +1,1921 @@
+/* 1. ფონტების იმპორტი */
+@font-face {
+    font-family: 'BPG Arial';
+    src: url('../fonts/BPGArial.woff2') format('woff2'),
+         url('../fonts/BPGArial.woff') format('woff'),
+         url('../fonts/BPGArial.ttf') format('truetype');
+    font-weight: normal; font-style: normal; font-display: swap;
+}
+
+@font-face {
+    font-family: 'BPG NinoMtavruli';
+    src: url('../fonts/BPGNinoMtavruli.woff2') format('woff2'),
+        url('../fonts/BPGNinoMtavruli.woff') format('woff'),
+        url('../fonts/BPGNinoMtavruli.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+/* Native App Feel */
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    /* outline: none replaced with focus-visible for accessibility */
+}
+
+/* Accessible focus indicators */
+*:focus-visible {
+    outline: 2px solid #0dcaf0 !important;
+    outline-offset: 2px !important;
+    border-radius: 4px;
+}
+
+/* ელემენტები, სადაც ტექსტის წერა/მონიშვნა ნებადართული უნდა იყოს */
+input, textarea, [contenteditable="true"] {
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+/* თუ გინდა, რომ კონკრეტულ ბლოკში (მაგ. ამბებში) ტექსტი მაინც მონიშნვადი იყოს */
+.selectable-text {
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+html, body {
+    /* წაშალე -webkit ხაზი საერთოდ */
+    overscroll-behavior-y: auto; /* 'contain'-ის ნაცვლად 'auto', რომ ფუშების ფანჯარამ იმუშაოს */
+    overflow-x: hidden;
+}
+/* სქროლბარის სრული გაქრობა Chrome, Safari და WebView-სთვის */
+::-webkit-scrollbar {
+    display: none !important;
+    width: 0px;
+    background: transparent;
+}
+
+/* დაზღვევა სხვა ბრაუზერებისთვის */
+html {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+body {
+background: #18181d;
+font-family: 'BPG Arial', sans-serif;
+color: #9ba8c5;
+padding-bottom: 90px !important;
+padding-top: env(safe-area-inset-top);
+}
+a {
+    color: #9ba8c5;
+    text-decoration: none;
+}
+.card {
+    background: #1b1b1b;
+    border: none;
+    border-radius: 30px;
+    color: #c6d1e7;
+}
+.card-main {
+border-radius: 40px;
+}
+
+
+.bg-dark {
+
+    color: #c6d1e7;
+}
+
+.weather-description {
+    color: #c6d1e7;
+    font-size: 1rem
+}
+
+.weather-description-title {
+    font-family: 'BPG NinoMtavruli';
+    color: #9ba8c5;
+    font-size: 0.9rem
+}
+.location-title {
+    font-family: 'BPG NinoMtavruli';
+    color: #c6d1e7;
+    font-size: 2rem;
+   
+}
+.weather-text {
+font-family: 'Poppins', sans-serif;
+text-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-size: 60px;       
+  font-weight: 800;     
+  color: #c6d1e7;       
+  display: inline-flex;     
+  align-items: baseline; 
+  gap: 2px;             
+}
+
+.unit {
+ 
+  letter-spacing: -2px; 
+}
+
+.main-icon-weather {
+  width: 120px;
+  height: auto;
+}
+.secondary-icon-weather {
+  width: 50px;
+  height: auto;
+}
+
+.btn {
+    border-radius: 20px;
+    font-size: 1rem;
+    padding:.675rem 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.btn-dark {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #0a0d11;
+    --bs-btn-border-color: #0a0d11;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #020911;
+    --bs-btn-hover-border-color: #020911;
+    --bs-btn-focus-shadow-rgb: 66, 70, 73;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #0a0d11;
+    --bs-btn-active-border-color: #0a0d11;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #23262b;
+    --bs-btn-disabled-border-color: #23262b;
+}
+
+
+.daytime {
+   
+    color: #9ba8c5;
+    font-size: 1rem;
+    margin-top: -10px;
+}
+
+/* Forecast grid: mobile 2 cols, desktop 5 cols */
+.forecast-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    align-items: start;
+}
+.forecast-card {
+    background: rgba(255,255,255,0.03);
+    border-radius: 16px;
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    color: #c6d1e7;
+}
+.forecast-card .forecast-date {
+    font-size: 0.9rem;
+    color: #9ba8c5;
+    margin-bottom: 6px;
+}
+.forecast-card .forecast-temp {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-top: 6px;
+}
+.forecast-card .forecast-desc {
+    font-size: 0.85rem;
+    color: #9ba8c5;
+    margin-top: 6px;
+}
+
+@media (min-width: 768px) {
+    .forecast-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 992px) {
+    .forecast-grid { grid-template-columns: repeat(5, 1fr); }
+}
+
+/* Hourly forecast scroll (mobile) */
+.hourly-scroll {
+    display: flex;
+    gap: 0.6rem;
+    overflow-x: auto;
+    padding: 0.5rem 0.25rem;
+    -webkit-overflow-scrolling: touch;
+}
+.hourly-card {
+    flex: 0 0 110px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    padding: 0.5rem;
+    text-align: center;
+    color: #c6d1e7;
+}
+.hourly-hour {
+    font-size: 0.9rem;
+    color: #9ba8c5;
+    margin-bottom: 6px;
+}
+.hourly-icon {
+    width: 48px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+.hourly-temp { font-weight:700; margin-top:6px; }
+.hourly-desc { font-size:0.8rem; color:#9ba8c5; margin-top:6px; }
+
+@media (min-width: 992px) {
+    /* On large desktops switch to grid layout for hourly items.
+       Keep horizontal scrolling enabled on tablets and smaller devices. */
+    .hourly-scroll { display: grid; grid-template-columns: repeat(12, 1fr); gap: 0.75rem; }
+    .hourly-card { flex: unset; }
+}
+.quess-icon {
+    font-size: 15px;
+    color:#7dc990;
+    cursor: pointer;
+  
+}
+
+.footer-text {
+    color: #c6d1e7; 
+    font-size: 13px;
+}
+
+/* --- სუფთა წრიული ლოკაციის ღილაკი ფუთერში - ზუსტი GetApp სტილი --- */
+.fixed-location-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px; 
+    height: 56px;
+   background: linear-gradient(135deg, rgba(66, 133, 244, 0.95), rgba(235, 58, 140, 0.7)) !important;
+    border-radius: 50%;
+    text-decoration: none;
+    position: relative;
+    top: -20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-tap-highlight-color: transparent;
+    z-index: 1060;
+    
+    /* 2. ძალიან ფაქიზი ჩარჩო (როგორც შენს სურათზეა) */
+     border: #9b51e0;
+    
+    /* 3. რბილი და გაშლილი ჩრდილი */
+    box-shadow: 0 8px 25px rgba(66, 133, 244, 0.4) !important;
+}
+
+/* აიქონის სტილი */
+.fixed-location-btn i {
+    color: white !important;
+    font-size: 22px !important; /* ოდნავ დავაპატარავეთ, რომ "ჰაერი" დარჩეს */
+    margin: 0 !important;
+}
+
+/* ინტერაქცია */
+.fixed-location-btn:hover {
+    transform: scale(1.08) translateY(-8px); 
+    box-shadow: 0 12px 30px rgba(66, 133, 244, 0.5) !important;
+}
+
+/* ანიმაციას (ტრიალს) ვაშორებთ, რომ სერიოზული და სუფთა იყოს, როგორც სურათზეა */
+.fixed-location-btn:hover i {
+    transform: none; 
+}
+
+.fixed-location-btn:active {
+    transform: scale(0.94) translateY(-5px);
+}
+
+/* მობილური ვერსია */
+@media (max-width: 576px) {
+    .fixed-location-btn {
+        width: 50px;
+        height: 50px;
+        top: -25px;
+    }
+}
+
+/* Historical page styles (moved from historical-weather.php) */
+.history-controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.history-form { background: rgba(255,255,255,0.02); padding:16px; border-radius:25px; border:1px solid rgba(255,255,255,0.03); display:block; }
+.history-form .text-white { color:#c6d1e7; }
+.chart-card { background: rgba(255,255,255,0.02); padding:16px; border-radius:25px; }
+.chart-card canvas { width: 100% !important; height: 300px !important; display: block; }
+.chart-legend { color:#9ba8c5; font-size:14px; }
+.date-input { background:#0b0d10; color:#c6d1e7; border:1px solid rgba(255,255,255,0.04); padding:6px 8px; border-radius:4px; }
+.history-title { font-size:1.5rem;font-family: 'BPG NinoMtavruli'; margin:0px; color:#c6d1e7; }
+@media (max-width:576px) {
+  .history-title { font-size:1.2rem; }
+  .date-input { padding:4px 6px; }
+  .history-controls { display:block; }
+  .history-controls label { display:block; margin-bottom:8px; }
+  .history-controls .date-input { width:100%; max-width:100%; }
+  .history-controls .btn { width:100%; display:block; }
+}
+
+/* UI polish for historical header and form */
+.history-header { display:flex; flex-direction:column; gap:4px; }
+.history-subtitle { color: #9ba8c5; font-size:0.9rem; }
+.history-separator { border:0; height:1px; background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.06), rgba(255,255,255,0.02)); margin:10px 0; border-radius:2px; }
+.form-block { display:flex; align-items:center; }
+.history-form { align-items:center; gap:10px; }
+.history-form label { display:flex; flex-direction:column; font-size:0.9rem; color: #c6d1e7; margin:0; }
+.history-form label span { font-size:0.85rem; color:#9ba8c5; margin-bottom:6px; }
+.history-form .date-input { min-width:150px; width:100%; box-sizing:border-box; }
+.history-form .btn-primary { background: linear-gradient(90deg,#1e88ff 0%,#1287ff 100%); border:none; box-shadow: 0 6px 18px rgba(18,135,255,0.16); padding:10px 18px; border-radius:999px; width:100%; }
+.form-note { font-size:0.85rem; color:#9ba8c5; margin-top:18px; }
+@media (min-width:576px) {
+    .history-header { flex-direction:column; }
+    .form-block { margin-left:12px; }
+    .form-note { text-align:left; }
+}
+
+/* UV severity classes */
+.uv-low { color: #7bd389; }
+.uv-moderate { color: #f5d35a; }
+.uv-high { color: #f39c12; }
+.uv-very-high { color: #e05252; }
+.uv-extreme { color: #a02b2b; }
+
+/* AQI severity classes */
+.aqi-good { color: #2ecc71; font-weight:700; }
+.aqi-moderate { color: #f1c40f; font-weight:700; }
+.aqi-unhealthy-sensitive { color: #e67e22; font-weight:700; }
+.aqi-unhealthy { color: #e74c3c; font-weight:700; }
+.aqi-very-unhealthy { color: #9b59b6; font-weight:700; }
+.aqi-hazardous { color: #6b1e1e; font-weight:700; }
+.aqi-unknown { color: #9ba8c5; font-weight:700; }
+
+.title-block { background: rgba(255,255,255,0.02); padding:12px; border-radius:12px; margin-bottom:10px; }
+.title-block .history-title { margin-bottom:4px; }
+
+
+
+.date-input {
+    background: #0a0d11;
+    border: 1px solid #0a0d11;
+    border-radius: 15px;
+    padding: 8px 12px;
+    color: #faf4f4;
+    outline: none;
+    transition: 0.3s;
+}
+
+/* კალენდრის აიქონის ფერის შეცვლა */
+.date-input::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    filter: invert(0.8); /* ფერის ინვერსია საჭიროებისამებრ */
+    font-size: 1rem
+}
+
+.date-input:focus {
+    background: #000000;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.popover-body {
+    color: #fff !important;
+    font-size: 12px;
+}
+/* მთავარი კონტეინერი */
+.popover {
+    position: relative; /* აუცილებელია pseudo-element-ისთვის */
+  width: 500px;        /* სასურველი სიგანე დიდ ეკრანზე */
+    max-width: 90vw;     /* მობილურზე არასდროს გაცდეს ეკრანის 90%-ს */
+    margin: 0 auto;      /* ცენტრირება */
+    background-color: #18181d; 
+    border-radius: 20px;   
+    z-index: 1;
+    overflow: hidden; /* რომ გრადიენტმა კუთხეებში არ გამოჟონოს */
+}
+
+/* ანიმირებული ჩარჩოს ფენა */
+.popover::before {
+    content: "";
+    position: absolute;
+    inset: -6px; /* სქელი ჩარჩოსთვის */
+    z-index: -1;
+    background: linear-gradient(
+        45deg, 
+        #4285f4, 
+        #9b51e0, 
+        #e91e63, 
+        #f48024, 
+        #4285f4
+    );
+    background-size: 400% 400%; /* მეტი ფერია, ამიტომ ზომა გავზარდეთ რბილი გადასვლისთვის */
+    animation: borderGradient 3s ease infinite; /* ოდნავ შევანელეთ უფრო ეფექტური მოძრაობისთვის */
+    border-radius: 26px; 
+}
+
+/* შიდა "სუფთა" ფონი, რომელიც ფარავს გრადიენტის შუა ნაწილს */
+.popover::after {
+    content: "";
+    position: absolute;
+    inset: 2px; /* 1 პიქსელით ნაკლები, რომ ჩარჩო გამოჩნდეს */
+    background: #18181d;
+    border-radius: 19px;
+    z-index: -1;
+}
+
+/* ანიმაციის ლოგიკა */
+@keyframes borderGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* სათაურის ნაწილი (თუ იყენებთ) */
+.popover-header {
+    background-color: #212529;
+    font-family: 'BPG NinoMtavruli';
+    border-bottom: 1px solid #3c3c3c;
+    padding: 0.5rem 1rem;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* ძირითადი ტექსტის ნაწილი */
+.popover-body {
+    padding: 1rem;
+    color: #212529;
+    font-size: 14px;
+}
+
+/* პატარა ისარი (Arrow) */
+/* შენიშვნა: ისრის ფერი უნდა ემთხვეოდეს popover-ის ფონს */
+.bs-popover-top > .popover-arrow::after, 
+.bs-popover-auto[data-popper-placement^="top"] > .popover-arrow::after {
+    border-top-color: #18181d;
+}
+
+.bs-popover-bottom > .popover-arrow::after, 
+.bs-popover-auto[data-popper-placement^="bottom"] > .popover-arrow::after {
+    border-bottom-color: #18181d;
+}
+
+.bs-popover-start > .popover-arrow::after, 
+.bs-popover-auto[data-popper-placement^="left"] > .popover-arrow::after {
+    border-left-color: #18181d;
+}
+
+.bs-popover-end > .popover-arrow::after, 
+.bs-popover-auto[data-popper-placement^="right"] > .popover-arrow::after {
+    border-right-color: #18181d;
+}
+
+
+
+
+.ai-button {
+    position: relative;
+    padding: 3px 10px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    color: white;
+    font-weight: 600;
+    font-size: 0.8rem;
+    outline: none;
+    
+    /* Google AI გრადიენტი: ლურჯი, იასამნისფერი, ვარდისფერი */
+    background: linear-gradient(
+        135deg, 
+        #4285f4, 
+        #9b51e0, 
+        #e91e63, 
+        #f48024, 
+        #4285f4
+    );
+    background-size: 200% 200%; /* ვაორმაგებთ ზომას ანიმაციისთვის */
+    
+    /* ჩრდილი მეტი სიღრმისთვის */
+    box-shadow: 0 4px 15px rgba(155, 81, 224, 0.3);
+    
+    /* ანიმაციები: 
+       1. flow: მუდმივი ფონური მოძრაობა
+       2. scale: მცირე "პულსაცია" გვერდის ჩატვირთვისას */
+    animation: 
+        gradient-move 5s ease infinite,
+        button-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* მაუსის მიტანისას (Hover) ეფექტი */
+.ai-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(155, 81, 224, 0.5);
+}
+
+/* დაჭერისას (Active) ეფექტი */
+.ai-button:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* ფონის მოძრაობის ანიმაცია */
+@keyframes gradient-move {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ჩატვირთვისას "ამოხტომის" ანიმაცია */
+@keyframes button-pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* history menu small 'new' badge */
+.menu-item-history { position: relative; }
+
+.menu-item-history .menu-badge {
+    position: absolute;
+    top: 6px;
+    right: 15px;
+    /* AI გრადიენტი */
+    background: linear-gradient(
+        135deg, 
+        #4285f4, 
+        #9b51e0, 
+        #e91e63, 
+        #f48024, 
+        #4285f4
+    );
+    background-size: 300% 300%; /* დიდი ზომა გლუვი გადასვლებისთვის */
+    
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    pointer-events: none;
+    
+    /* ორი ანიმაციის გაერთიანება: ფერების დინება და პულსაცია */
+    animation: 
+        ai-gradient-flow 6s ease infinite,
+        ai-badge-pulse 4s infinite;
+}
+
+/* გრადიენტის მოძრაობის ანიმაცია */
+@keyframes ai-gradient-flow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* პულსაციის ანიმაცია (აურა წერტილის გარშემო) */
+@keyframes ai-badge-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(155, 81, 224, 0.5);
+        transform: scale(0.95);
+    }
+    70% {
+        box-shadow: 0 0 0 8px rgba(155, 81, 224, 0);
+        transform: scale(1.1);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(155, 81, 224, 0);
+        transform: scale(0.95);
+    }
+}
+
+@media (max-width:576px) {
+    .menu-item-history .menu-badge { 
+        top: 8px; 
+        right: 15px; 
+        padding: 0; 
+    }
+}
+
+
+
+.modal-content {
+    border-radius: 20px; /* შეგიძლიათ შეცვალოთ სასურველი ციფრით */
+    overflow: hidden;    /* ეს აუცილებელია, რომ შიგთავსმა დამრგვალებული კუთხეები არ გადაფაროს */
+}
+
+.ai-border-only {
+    position: relative;
+    border: none; /* სტანდარტულ ჩარჩოს ვაუქმებთ */
+}
+.ai-border-only::before {
+    content: "";
+    position: absolute;
+    
+    /* 1. ჩარჩოს გარეთ გატანა და სისქე */
+    /* inset უნდა ემთხვეოდეს padding-ს უარყოფითში */
+    inset: -3px; 
+    padding: 5px; 
+    
+    /* 2. რადიუსის კორექტირება */
+    /* რადგან ჩარჩო გასქელდა, რადიუსიც ოდნავ გავზარდოთ (20px + 5px) */
+    border-radius: 25px; 
+    
+    background: linear-gradient(90deg, #4285f4, #9b72cb, #d96570, #4285f4);
+    background-size: 300% 300%;
+    animation: moveGradient 4s linear infinite; /* ანიმაციაც ოდნავ ავაჩქარეთ */
+    
+    /* 3. ნათების ეფექტი (Shadow) */
+    filter: drop-shadow(0 0 8px rgba(155, 114, 203, 0.5));
+    
+    /* 4. შუა ნაწილის ამოჭრა */
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    
+    pointer-events: none;
+}
+
+@keyframes moveGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+
+
+
+
+/* Full Width Desktop Footer with Centered Items */
+#site-footer {
+    position: fixed;
+    bottom: 0; 
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 75px;
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* გამოიყენე border-image, რომ ჩარჩო გვერდებში გაქრეს */
+border: 1px solid;
+border-image-source: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.2) 50%, 
+    rgba(255, 255, 255, 0) 100%);
+border-image-slice: 1;
+    background: rgba(24, 24, 29, 0.4); 
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+   box-shadow: 
+    rgba(14, 13, 13, 0.2) 0px -14px 28px, 
+    rgba(0, 0, 0, 0.2) 0px -10px 10px,
+    inset 0 1px 2px rgba(255, 255, 255, 0.15); /* ეს ხაზი ქმნის "შუშის" ეფექტს */
+}
+/* Footer Hover Effect - Same as Header */
+#site-footer .footer-item:hover {
+    color: #fff; /* ხდება სუფთა თეთრი */
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* ნაზი ნათება */
+}
+
+#site-footer .footer-item:hover i {
+    transform: translateY(-3px); /* ხატულა ოდნავ ზემოთ იწევა */
+    color: #fff;
+}
+
+/* დავამატოთ გლუვი გადასვლა თავად ელემენტზე, თუ აქამდე არ გქონდა */
+#site-footer .footer-item i {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
+}
+/* Inner Container - Controls the closeness of items */
+#site-footer .footer-inner {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    /* ელემენტები იყრის თავს ცენტრში */
+    justify-content: center; 
+    /* დაშორება ელემენტებს შორის დესკტოპზე (შეგიძლია შეცვალო 40px-დან 80px-მდე) */
+    gap: 25px; 
+    align-items: center;
+    padding: 0 20px;
+}
+
+#site-footer .footer-item {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.25s ease;
+    -webkit-tap-highlight-color: transparent;
+    /* წავშალეთ flex: 1, რომ ელემენტები არ გაიწელოს */
+}
+
+#site-footer .footer-item i { 
+    font-size: 22px; 
+    margin-bottom: 5px; 
+}
+
+#site-footer .footer-item span { 
+    font-size: 13px; 
+    font-family: 'BPG NinoMtavruli', sans-serif; 
+    font-weight: 500;
+}
+
+#site-footer .footer-item:hover {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* --- Mobile Version Adaptation --- */
+@media (max-width: 576px) {
+    #site-footer {
+        bottom: 12px; 
+        left: 12px;
+        right: 12px;
+        width: calc(100% - 24px);
+        height: 70px;
+        border-radius: 22px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        /* გამოიყენე border-image, რომ ჩარჩო გვერდებში გაქრეს */
+border: 1px solid;
+border-image-source: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.2) 50%, 
+    rgba(255, 255, 255, 0) 100%);
+border-image-slice: 1;
+    }
+    
+    #site-footer .footer-inner {
+        /* მობილურზე ისევ გადავანაწილოთ მთელ სიგანეზე */
+        justify-content: space-around;
+        gap: 0; 
+        padding: 0 10px;
+        
+    }
+
+    #site-footer .footer-item i { 
+        font-size: 20px; 
+
+
+
+        
+    }
+    #site-footer .footer-item span { 
+    font-size: 12px; 
+  
+}
+}
+
+.glass-card {
+    background: #1f1f24;
+    border-radius: 25px;
+    padding: 2rem;
+    color: #ffffff;
+    margin: 20px 0;
+}
+
+/* სათაურების სტილი ბარათის შიგნით */
+.glass-card h3 {
+    color: #c6d1e7; /* ცისფერი აქცენტი, უხდება ამინდის თემას */
+    font-weight: 600;
+    margin-top: 1.5rem;
+     font-family: 'BPG NinoMtavruli';
+}
+
+.glass-card p {
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+
+.update-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.08); /* ძალიან ნაზი გამჭვირვალობა */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 100px; /* სრულიად მომრგვალებული - MD3 სტილი */
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(5px);
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.update-badge i {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.update-badge:hover {
+    background: rgba(255, 255, 255, 0.15); /* ოდნავ მეტი სინათლე */
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px); /* მსუბუქი ამოწევა */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.weather-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* მობილურზე 2 სვეტი */
+    gap: 12px;
+    padding: 0 5px;
+}
+
+.detail-item {
+    background: rgba(255, 255, 255, 0.02); /* "შუშის" ეფექტი */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 15px 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 90px;
+}
+
+.detail-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 5px;
+    position: relative;
+}
+
+.detail-label {
+    font-size: 14px;
+    color: #9ba8c5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+    font-family: 'BPG NinoMtavruli', sans-serif;
+}
+
+.detail-value {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+    color: #ffffff;
+}
+
+.detail-info-btn {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 12px;
+    transition: 0.2s;
+}
+
+.detail-info-btn:hover {
+    color: #fff;
+}
+
+/* დესკტოპის ვერსია - ისევ 4 სვეტი */
+@media (min-width: 768px) {
+    .weather-details-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    .detail-value {
+        font-size: 17px;
+    }
+}
+
+
+.item-wind {
+    background: #13141b;
+    min-height: 100px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px; /* დავამატოთ მომრგვალება, რომ შენს დიზაინს მოუხდეს */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+
+.item-prec {
+
+   background: #13141b;
+    min-height: 100px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+
+
+.item-aqi {
+background: #13141b;
+    min-height: 100px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+
+.item-hum {
+    /* მიუთითე სურათის გზა */
+  background: #13141b;
+    min-height: 100px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+
+.weather-details-grid {
+    background: rgba(255, 255, 255, 0.03); /* ძალიან ნაზი თეთრი ნათება */
+    backdrop-filter: blur(10px); /* შუშის ეფექტი */
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 24px; /* უფრო მომრგვალებული, ვიდრე შიდა ბლოკები */
+    padding: 15px;
+    margin-top: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* 1. ფერების მთავარი ანიმაცია */
+@keyframes gradient-move {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 9. "✨ Grubeli AI" ბეიჯი ჰედერში */
+.ai-button {
+    background: linear-gradient(135deg, #4285f4, #9b51e0, #e91e63, #f48024, #4285f4);
+    background-size: 200% 200%;
+    padding: 4px 12px;
+    border-radius: 10px;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    animation: gradient-move 5s ease infinite;
+}
+
+.suggestion-buttons {
+    position: relative;
+    z-index: 20;
+    pointer-events: auto !important;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    justify-content: flex-start;
+}
+
+.suggestion-buttons button {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #c6d1e7;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+     cursor: pointer !important;
+}
+
+.suggestion-buttons button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+#ai-text-content {
+    transition: opacity 0.3s ease;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+
+
+.quote-container {
+    background: rgba(255, 255, 255, 0.03); /* ძალიან ნაზი გამჭვირვალობა */
+    backdrop-filter: blur(10px); /* შუშის ეფექტი */
+    -webkit-backdrop-filter: blur(10px);
+   border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    padding: 20px 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: transform 0.3s ease;
+}
+
+.quote-container:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.quote-text {
+    margin: 0;
+    font-family: 'BPG Arial', sans-serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: #c6d1e7;
+    line-height: 1.5;
+    letter-spacing: 0.3px;
+}
+
+/* მობილურისთვის ოპტიმიზაცია */
+@media (max-width: 576px) {
+    .quote-container {
+        padding: 15px;
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .quote-text {
+        font-size: 0.85rem;
+    }
+}
+
+/* მთავარი კონტეინერი */
+.ai-suggest-container {
+    position: relative;
+    background: #0f111a;
+    border-radius: 25px;
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid transparent;
+    z-index: 10;
+    overflow: hidden;
+}
+
+/* ანიმირებული ჩარჩო */
+.ai-suggest-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 25px;
+    padding: 2px; 
+    background: linear-gradient(90deg, #4285f4, #9b51e0, #e91e63, #f48024, #4285f4);
+    background-size: 200% 100%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+    animation: border-intro 1.2s ease-in-out forwards, border-flow 4s linear infinite 1.2s;
+}
+
+/* პასუხის ტექსტის სტილი */
+.ai-status-text {
+    color: #e0e6ed;
+    font-size: 1rem;
+    line-height: 1.5;
+    text-align: left;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+/* თუ ტექსტი ცარიელია, საერთოდ არ დაიკავოს ადგილი */
+.ai-status-text:empty {
+    display: none;
+}
+
+/* თუ ტექსტი არ არის ცარიელი, დავამატოთ დაშორება ქვემოთ */
+.ai-status-text:not(:empty) {
+    margin-bottom: 20px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    display: block;
+}
+
+/* ღილაკების Grid */
+.suggestion-grid {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+@media (min-width: 768px) {
+    .suggestion-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* ღილაკების სტილი */
+.suggest-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    padding: 12px 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    transition: all 0.2s ease;
+    min-width: 0; /* აუცილებელია შეკუმშვისთვის */
+}
+
+.suggest-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.btn-icon {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.btn-text {
+    font-size: 0.8rem;
+    white-space: normal; /* მეორე ხაზზე გადასასვლელად */
+    text-align: center;
+    line-height: 1.2;
+    word-wrap: break-word;
+}
+
+/* ანიმაციები */
+@keyframes border-intro {
+    0% { opacity: 0; background-position: 200% 0%; }
+    100% { opacity: 1; background-position: 0% 0%; }
+}
+@keyframes border-flow {
+    0% { background-position: 0% 0%; }
+    100% { background-position: -200% 0%; }
+}
+
+
+/* ბეიჯის სტილი */
+.ai-badge {
+    background: linear-gradient(135deg, #ff0080, #7928ca);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    display: inline-block;
+    box-shadow: 0 4px 10px rgba(255, 0, 128, 0.2);
+}
+
+.ai-badge-wrapper {
+    margin-bottom: 10px; /* დაშორება ბეიჯსა და ტექსტს შორის */
+}
+
+/* კონტეინერის მართვა: თავიდან დამალული იყოს */
+.ai-response-hidden {
+    display: none;
+}
+
+/* როცა პასუხი ჩაიწერება, ამ კლასს დავამატებთ JS-ით */
+.ai-response-visible {
+    display: block;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 18px;
+    border-left: 3px solid #ff0080; /* ლამაზი აქცენტი გვერდზე */
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+.close-ai-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #a0aec0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    z-index: 5; /* რომ ყოველთვის ტექსტის ზემოთ იყოს */
+    transition: all 0.2s ease;
+}
+
+.close-ai-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+
+
+
+
+
+
+
+
+
+/* შავი ფონი მენიუს უკან */
+#custom-drawer-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    display: none; 
+    cursor: pointer;
+}
+
+/* თავად მენიუ */
+#custom-drawer {
+    position: fixed;
+    top: 15px;
+    right: -320px; 
+    bottom: 15px;
+    width: 300px;
+    background: rgba(24, 24, 29, 0.4) !important; 
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 24px;
+    z-index: 2001;
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+    display: flex;
+    flex-direction: column;
+    box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* როცა მენიუ აქტიურია */
+#custom-drawer.active {
+    right: 15px;
+}
+
+/* შიდა სტილები (Header) */
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.brand-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-logo {
+    width: 42px;
+    height: 42px;
+    filter: drop-shadow(0 0 10px rgba(155, 81, 224, 0.3));
+    object-fit: contain;
+}
+
+.brand-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-name {
+    display: flex;
+    align-items: center; /* ვერტიკალური გასწორება */
+    gap: 8px;
+    font-family: 'BPG NinoMtavruli', sans-serif;
+    color: #fff;
+    font-size: 1.1rem;
+}
+.version-badge {
+    /* getapp-ის მსგავსი გრადიენტი */
+    background: linear-gradient(135deg, #4285f4, #9b51e0) !important;
+    color: #fff !important;
+    font-size: 8px;
+    font-family: sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-2px); 
+    box-shadow: 0 2px 6px rgba(66, 133, 244, 0.3);
+    white-space: nowrap;
+    height: 14px;
+    border: none;
+}
+.brand-tagline {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-top: -2px;
+}
+
+.close-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: white;
+    font-size: 24px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(90deg);
+}
+
+/* Body & Footer ძირითადი */
+.drawer-body { 
+    flex-grow: 1; 
+    padding: 20px; 
+    overflow-y: auto; 
+}
+
+.drawer-footer { 
+    padding: 20px; 
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.bottom-link { 
+    color: rgba(255, 255, 255, 0.6); 
+    font-size: 0.85rem; 
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.2s;
+}
+
+.bottom-link:hover {
+    color: #fff;
+}
+
+/* სანავიგაციო ლინკები (ბარათები) */
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px 0;
+}
+
+.drawer-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    text-decoration: none !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'BPG NinoMtavruli', sans-serif;
+    font-size: 0.85rem;
+}
+
+.link-icon {
+    width: 28px;
+    height: 28px;
+    background: rgba(155, 81, 224, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: #9b51e0;
+    transition: all 0.3s ease;
+}
+
+.drawer-link:hover, .drawer-link:active {
+    background: rgba(155, 81, 224, 0.1);
+    border-color: rgba(155, 81, 224, 0.3);
+    color: #fff !important;
+    transform: translateX(5px);
+}
+
+.drawer-link:hover .link-icon {
+    background: linear-gradient(135deg, #4285f4, #9b51e0);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(155, 81, 224, 0.4);
+}
+
+.drawer-link span {
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* =========================================
+   სპეციალური კლასი აპის ლინკისთვის (getapp)
+   ========================================= */
+.drawer-link.getapp {
+    margin-top: 15px;
+    background: linear-gradient(135deg, rgba(155, 81, 224, 0.15), rgba(66, 133, 244, 0.15));
+    border: 1px solid rgba(155, 81, 224, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.drawer-link.getapp::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: 0.5s;
+}
+
+.drawer-link.getapp:hover::before {
+    left: 100%;
+}
+
+.drawer-link.getapp:hover {
+    transform: scale(1.02) translateX(5px);
+    border-color: #9b51e0;
+    box-shadow: 0 5px 15px rgba(155, 81, 224, 0.2);
+}
+
+.app-icon {
+    background: linear-gradient(135deg, #4285f4, #9b51e0) !important;
+    width: 36px;
+    height: 36px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    margin-right: 15px;
+}
+
+/* ვაიძულებთ აიქონს გამოჩნდეს */
+.app-icon i.fa-google-play {
+    color: white !important;
+    display: inline-block !important;
+    font-size: 18px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.drawer-link.getapp:hover .app-icon {
+    transform: scale(1.1) rotate(-5deg);
+}
+
+.app-text-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.app-title {
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+.app-subtitle {
+    font-size: 0.8rem;
+    font-family: 'BPG Arial';
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: -2px;
+}
+.social-block {
+    padding: 20px;
+    margin-top: 5px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+}
+
+.social-title {
+    display: block;
+    font-family: 'BPG NinoMtavruli', sans-serif;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 15px;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.social-btn {
+    width: 42px; /* ოდნავ გავადიდოთ */
+    height: 42px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 1.2rem;
+}
+
+.social-btn:hover {
+    transform: translateY(-4px) scale(1.05);
+    color: #fff;
+}
+
+/* Messenger-ის განსხვავებული სტილი */
+.social-btn.msg:hover {background: linear-gradient(135deg, #00B2FF 0%, #006AFF 100%);   }
+.social-btn.fb:hover { background: #1877F2; }
+.social-btn.ig:hover { background: linear-gradient(45deg, #f09433, #dc2743, #bc1888); }
+.social-btn.tk:hover { background: #000; }
+
+/* აქტიური დაჭერის ეფექტი */
+.social-btn:active {
+    transform: scale(0.95);
+}
+
+.drawer-credits {
+    margin-top: auto; /* მენიუს ბოლოში ჩაიტანს */
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.drawer-credits p {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.2);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.drawer-credits a {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.drawer-credits a:hover {
+    color: #4285f4; /* ლურჯი აქცენტი ჰოვერზე */
+}
+
+
+.footer-links-grid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px; /* დაშორება ლინკებს შორის */
+    padding: 8px 0;
+    flex-wrap: wrap;
+}
+
+.f-link {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-family: 'BPG NinoMtavruli', sans-serif;
+    position: relative;
+}
+
+/* პატარა გამყოფი ხაზი ლინკებს შორის (სურვილისამებრ) */
+.f-link:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.f-link:hover {
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+
+/* Premium Glass Base (თუ უკვე არ გაქვს ზუსტად ეს ვერსია) */
+.premium-glass {
+    background: rgba(20, 25, 35, 0.4); /* ოდნავ უფრო გამჭვირვალე */
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 32px; /* უფრო რბილი კუთხეები მთავარი ბარათისთვის */
+    box-shadow: 
+        0 8px 32px 0 rgba(0, 0, 0, 0.3), /* გარე ჩრდილი */
+        inset 0 1px 0 rgba(255, 255, 255, 0.1); /* შიდა ნათება (3D ეფექტი) */
+}
+
+/* მთავარი ბარათის ანიმაცია */
+.main-hero-card {
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+}
+
+.main-hero-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 
+        0 15px 40px 0 rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* ტექსტის გრადიენტი (თუ უკვე გაქვს, არ დააკოპირო) */
+.text-gradient-premium {
+    background: linear-gradient(135deg, #ffffff 10%, #a5b4fc 90%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+/* ამბიენტური ნათება (თუ უკვე გაქვს ისტორიულიდან, არ დააკოპირო) */
+.ambient-glow {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+}
+
+/* აიქონის ტივტივი (თუ უკვე გაქვს, არ დააკოპირო) */
+.float-icon {
+    display: block;
+    margin: 0 auto;
+    animation: floatHero 4s ease-in-out infinite;
+}
+
+@keyframes floatHero {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.reveal-up {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: revealEffect 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes revealEffect {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+.hourly-scroll-container {
+    position: relative;
+}
+
+
+.scroll-btn {
+ position: absolute;
+    transform: translateY(-50%);
+    transition: opacity 0.3s ease;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,0.4);
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 10;
+    backdrop-filter: blur(6px);
+}
+
+.scroll-left {
+    left: -10px;
+}
+
+.scroll-right {
+    right: -10px;
+}
+
+.scroll-btn:hover {
+    background: rgba(0,0,0,0.7);
+}
+
+
+
+
+/* კარუსელის გარსი */
+.city-carousel-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.city-carousel-scroll {
+   display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 10px 0;
+    width: 100%;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.city-carousel-scroll::-webkit-scrollbar { display: none; }
+
+/* ღილაკი-პილი */
+.loc-pill {
+    flex: 0 0 auto;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 9px 18px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.loc-pill:hover {
+    background: rgba(13, 202, 240, 0.2);
+    border-color: #0dcaf0;
+    transform: translateY(-2px);
+}
+
+.loc-pill i { opacity: 0.7; font-size: 0.8rem; }
+
+/* ნავიგაციის ისრები */
+.nav-arrow {
+    position: absolute;
+    width: 38px;
+    height: 38px;
+    background: rgba(0, 0, 0, 1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    color: #fff;
+    opacity: 0.5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: 0.3s;
+}
+
+.nav-arrow:hover { opacity: 1 }
+.nav-arrow.prev { left: -20px; }
+.nav-arrow.next { right: -20px; }
+
+/* მობილურისთვის */
+@media (max-width: 768px) {
+  
+    .nav-arrow { display: none !important; } 
+}
+
+
+@media (max-width: 768px) {
+   
+
+    .city-carousel-scroll {
+        gap: 8px; /* ღილაკებს შორის დაშორების შემცირება */
+    }
+
+    .loc-pill {
+        padding: 6px 12px; /* ღილაკის შიდა დაშორების შემცირება */
+        font-size: 0.75rem; /* ტექსტის დაპატარავება */
+        border-radius: 10px; /* კუთხეების რადიუსის მორგება */
+    }
+
+    .loc-pill i {
+        font-size: 0.7rem; /* აიქონის დაპატარავება */
+        margin-right: 5px !important;
+    }
+}
+
+
+/* მობილურისთვის (დეფოლტად) */
+.mt-tiny {
+    margin-top: 2px !important;
+}
+.mb-tiny {
+    margin-bottom: 2px !important;
+}
+
+/* პლანშეტისთვის და კომპიუტერისთვის (768px-დან ზემოთ) */
+@media (min-width: 768px) {
+    .mt-tiny {
+        margin-top: 4px !important;
+    }
+    .mb-tiny {
+        margin-bottom: 4px !important;
+    }
+}
+
+.search-section {
+    position: relative;
+    margin: 15px 0;
+    
+}
+
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(13, 202, 240, 0.08) 0%, rgba(138, 43, 226, 0.08) 100%);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    padding: 12px 20px;
+    transition: all 0.3s ease;
+    width: 100%;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.search-wrapper:focus-within {
+    background: linear-gradient(135deg, rgba(13, 202, 240, 0.14) 0%, rgba(138, 43, 226, 0.14) 100%);
+    border-color: rgba(13, 202, 240, 0.5);
+    box-shadow: 0 0 0 3px rgba(13, 202, 240, 0.08),
+                0 4px 20px rgba(13, 202, 240, 0.12);
+}
+
+.search-input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    width: 100%;
+    outline: none;
+    font-size: 1rem;
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.search-icon {
+    color: #0dcaf0;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    opacity: 0.8;
+}
+
+/* ძიების შედეგების სია */
+.suggestions-list {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: rgba(20, 25, 35, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(13, 202, 240, 0.05);
+    z-index: 1050;
+    overflow: hidden;
+}
+.suggestions-list:empty {
+    display: none;
+}
+.list-group-item {
+    padding: 12px 20px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.85);
+    transition: all 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.list-group-item:hover {
+    background: linear-gradient(90deg, rgba(13, 202, 240, 0.12), rgba(138, 43, 226, 0.08));
+    color: #fff;
+    padding-left: 26px;
+}

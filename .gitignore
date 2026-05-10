@@ -1,0 +1,62 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS Files
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+*.bak
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+project.code-workspace
+
+# PHP
+vendor/
+composer.lock
+composer.phar
+
+# Cache
+cache/
+*.cache
+
+# Logs
+logs/
+*.log
+error_log
+
+# Android Build
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+android/captures/
+android/.externalNativeBuild/
+android/*.iml
+android/app/*.iml
+
+# Node (if any)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Sensitive Keys
+key
+ai/groq.com.txt
+ai/quotes.txt
+ai/ai-suggest.txt
+
+# Misc
+*.tmp
+*.temp
+.gitarchive*

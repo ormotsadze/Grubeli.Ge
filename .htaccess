@@ -1,0 +1,28 @@
+<Files .env>
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files .htaccess>
+    Order allow,deny
+    Deny from all
+</Files>
+
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # ფოტოები (1 წელი)
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    
+    # CSS და JS (1 თვე)
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    
+    # ფონტები
+    ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
