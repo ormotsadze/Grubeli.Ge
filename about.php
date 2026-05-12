@@ -82,12 +82,19 @@ include 'header.php';
           </div>
           <p class="small text-white-50 m-0">M4.0+ მიწისძვრების გაფრთხილება საქართველოს რეგიონში, განახლება 5 წუთში ერთხელ.</p>
         </div>
-        <div class="service-box p-3 border-emerald-soft">
+   <div class="service-box p-3 border-emerald-soft">
           <div class="d-flex justify-content-between align-items-center mb-1">
             <h6 class="color-emerald m-0"><i class="fas fa-map-pin me-2"></i>OSM Nominatim + Nager.at</h6>
             <span class="badge color-emerald" style="background:rgba(32,201,151,0.2);">გეო + უქმეები</span>
           </div>
           <p class="small text-white-50 m-0">ქალაქის სახელი ქართულად და სახელმწიფო დღესასწაულები.</p>
+        </div>
+        <div class="service-box mt-3 p-3 border-danger-soft">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <h6 class="text-danger m-0"><i class="fas fa-fire-flame-curved me-2"></i>NASA FIRMS</h6>
+            <span class="badge bg-danger bg-opacity-25 text-danger">ხანძარი</span>
+          </div>
+          <p class="small text-white-50 m-0">VIIRS SNPP NRT — რეალურ დროში ხანძრების მონიტორინგი საქართველოს ტერიტორიაზე.</p>
         </div>
       </div>
     </div>
@@ -109,7 +116,12 @@ include 'header.php';
           <li><i class="fas fa-house-chimney-crack color-emerald"></i><span><strong>მიწისძვრის გაფრთხილება</strong> — M4.0+ ბიძგები ქვეყნის რეგიონში.</span></li>
           <li><i class="fas fa-calendar-check color-emerald"></i><span><strong>უქმე დღეები</strong> — დღევანდელი სახელმწიფო დღესასწაული.</span></li>
            <li><i class="fa-regular fa-clock"></i><span><strong>მსოფლიო დრო</strong> — ზუსტი დრო მსოფლიოში ყველაზე პოპულარულ ქალაქში.</span></li>
-           <li><i class="fa-solid fa-chart-gantt"></i><span><strong>სხვა ფუნქციები</strong> — ჩვენ მუდმივად ვმუშაობთ ახალი ფუნქციებსა და გაუმჯობესებებზე.</span></li>
+           <li><i class="fa-solid fa-fire-flame-curved color-emerald"></i><span><strong>ხანძრის გაფრთხილება</strong> — NASA-ს თანამგზავრიდან ღია ხანძრების რეალურ დროში მონიტორინგი.</span></li>
+           <li><i class="fa-solid fa-quote-right color-emerald"></i><span><strong>AI ციტატები</strong> — შემთხვევითი, ამინდის თემატიკის საინტერესო ციტატები ყოველ ჩატვირთვაზე.</span></li>
+           <li><i class="fa-solid fa-location-crosshairs color-emerald"></i><span><strong>GPS ლოკაცია</strong> — ავტომატური გეოლოკაცია + ქალაქის ძებნა ქართული/ლათინური სიმბოლოებით.</span></li>
+           <li><i class="fa-solid fa-bell color-emerald"></i><span><strong>Push შეტყობინებები</strong> — Android-ზე FCM-ით: მიწისძვრა, ხანძარი, შტორმი, ყოველდღიური ამინდი.</span></li>
+           <li><i class="fa-regular fa-floppy-disk color-emerald"></i><span><strong>ლოკაციის შენახვა</strong> — ბრაუზერში არჩეული ქალაქის შენახვა შემდეგი ვიზიტისთვის.</span></li>
+           <li><i class="fa-regular fa-envelope color-emerald"></i><span><strong>კონტაქტი / წესები / ვაკანსია</strong> — გამოხმაურების, კონფიდენციალურობის და დასაქმების გვერდები.</span></li>
           <li><i class="fas fa-mobile-screen color-emerald"></i><span><strong>Android აპლიკაცია</strong> — WebView-ზე დაფუძნებული, push notifications-ით მიწისძვრის, ხანძრების, შტორმის შესახებ,  და სხვა პრემიუმ ფუნქციებით.</span></li>
         </ul>
       </div>
@@ -146,6 +158,7 @@ include 'header.php';
 .border-purple-soft{border-left:3px solid rgba(138,43,226,0.5);}
 .border-amber-soft{border-left:3px solid rgba(245,183,39,0.5);}
 .border-emerald-soft{border-left:3px solid rgba(32,201,151,0.5);}
+.border-danger-soft{border-left:3px solid rgba(255,68,68,0.5);}
 .premium-list{list-style:none;padding:0;margin:0;}
 .premium-list li{display:flex;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05);color:rgba(255,255,255,0.75);}
 .premium-list li i{font-size:0.9rem;margin-right:11px;margin-top:3px;flex-shrink:0;}

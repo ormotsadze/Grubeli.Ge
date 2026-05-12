@@ -41,5 +41,4 @@ require_once __DIR__ . '/functions.php';
     </script>
   </head>
   <body class="d-flex flex-column min-vh-100 premium-bg">
-    <div id="loading-bar" style="position: fixed; top: 0; left: 0; width: 0%; height: 3px; background-color: #ff0000; z-index: 9999; transition: width 0.3s ease;"></div>
-
+  <div id="loading-bar" style="position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: linear-gradient(to right, #0dcaf0, #0d6efd); box-shadow: 0 0 10px rgba(13, 202, 240, 0.7); z-index: 9999; transition: width 0.3s ease;"></div>

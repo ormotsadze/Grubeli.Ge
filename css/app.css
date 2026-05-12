@@ -335,6 +335,42 @@ text-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     .form-note { text-align:left; }
 }
 
+/* Sun block card - combined sunrise/sunset/day-length */
+.sun-block {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    gap: 4px;
+}
+.sun-item {
+    flex: 1;
+    min-width: 0;
+    padding: 0 4px;
+}
+.sun-item .icon-box {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 8px;
+}
+.sun-item .info-value {
+    font-size: 1rem;
+}
+@media (max-width: 420px) {
+    .sun-item .icon-box {
+        width: 32px;
+        height: 32px;
+    }
+    .sun-item .icon-box i {
+        font-size: 14px !important;
+    }
+    .sun-item .info-label {
+        font-size: 0.65rem;
+    }
+    .sun-item .info-value {
+        font-size: 0.85rem;
+    }
+}
+
 /* UV severity classes */
 .uv-low { color: #7bd389; }
 .uv-moderate { color: #f5d35a; }

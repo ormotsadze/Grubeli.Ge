@@ -138,19 +138,22 @@ if ($current_page == 'index.php' || $current_page == 'historical-weather.php') :
       
         <div class="d-flex flex-wrap justify-content-center gap-1">
             
-            <a href="https://open-meteo.com/" target="_blank" rel="nofollow" style="font-size: 0.7em; opacity: 0.8;">
-                <i class="fa-solid fa-cloud-sun"></i> Open-Meteo
+            <a href="https://open-meteo.com/" target="_blank" rel="nofollow" style="font-size: 0.7em; opacity: 0.5;">
+            Open-Meteo |
             </a>
 
             
-            <a href="https://www.nasa.gov/" target="_blank" rel="nofollow" style="font-size: 0.7em; opacity: 0.8;">
-                <i class="fa-solid fa-satellite"></i> NASA
+            <a href="https://www.nasa.gov/" target="_blank" rel="nofollow" style="font-size: 0.7em; opacity: 0.5;">
+             NASA |
+            </a>
+
+            <a href="https://earthquake.usgs.gov/" target="_blank" rel="nofollow" style="font-size: 0.7em; opacity: 0.5;">
+             USGS |
             </a>
        
-            <a href="https://earthquake.usgs.gov/" target="_blank" rel="nofollow" style="font-size: 0.7em; opacity: 0.8;">
-                <i class="fa-solid fa-earth-americas"></i> USGS
+             <a href="https://date.nager.at/" target="_blank" rel="nofollow" style="font-size: 0.7em; opacity: 0.5;">
+           Nager Date
             </a>
-            
         </div>
     </div>
 </div>

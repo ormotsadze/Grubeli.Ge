@@ -138,6 +138,57 @@ if (isset($weather['daily']['sunrise'][0]) && isset($weather['daily']['sunset'][
     $diff = $sr->diff($ss);
     $day_length = $diff->format('%h სთ %i წთ');
 }
+
+// --- მთვარის ფაზის გამოთვლა (API-ს გარეშე) ---
+$moon_known_new = mktime(18, 14, 0, 1, 6, 2000); // 6 იან 2000 18:14 UTC
+$moon_synodic = 29.53058867 * 86400; // სინოდური თვე წამებში
+$moon_age_sec = (time() - $moon_known_new) % $moon_synodic;
+if ($moon_age_sec < 0) $moon_age_sec += $moon_synodic;
+$moon_phase = $moon_age_sec / $moon_synodic; // 0..1
+
+// 0     0.125   0.25    0.375   0.5     0.625   0.75    0.875   1
+// AM    NMC     PM      MZ      SM      DK      BM      MNP     AM
+if ($moon_phase < 0.0625 || $moon_phase >= 0.9375) {
+    $moon_phase_idx = 0;
+    $moon_name = 'ახალი მთვარე';
+    $moon_icon = 'fa-regular fa-circle';
+    $moon_color = '#666';
+} elseif ($moon_phase < 0.1875) {
+    $moon_phase_idx = 1;
+    $moon_name = 'ნახევარმთვარე';
+    $moon_icon = 'fa-solid fa-moon';
+    $moon_color = '#d4a853';
+} elseif ($moon_phase < 0.3125) {
+    $moon_phase_idx = 2;
+    $moon_name = 'პირველი მეოთხედი';
+    $moon_icon = 'fa-solid fa-moon';
+    $moon_color = '#e8c56c';
+} elseif ($moon_phase < 0.4375) {
+    $moon_phase_idx = 3;
+    $moon_name = 'მოზარდი მთვარე';
+    $moon_icon = 'fa-solid fa-moon';
+    $moon_color = '#f4d88a';
+} elseif ($moon_phase < 0.5625) {
+    $moon_phase_idx = 4;
+    $moon_name = 'სავსე მთვარე';
+    $moon_icon = 'fa-solid fa-circle';
+    $moon_color = '#ffe066';
+} elseif ($moon_phase < 0.6875) {
+    $moon_phase_idx = 5;
+    $moon_name = 'დაკლებადი მთვარე';
+    $moon_icon = 'fa-solid fa-moon';
+    $moon_color = '#f4d88a';
+} elseif ($moon_phase < 0.8125) {
+    $moon_phase_idx = 6;
+    $moon_name = 'ბოლო მეოთხედი';
+    $moon_icon = 'fa-solid fa-moon';
+    $moon_color = '#e8c56c';
+} else {
+    $moon_phase_idx = 7;
+    $moon_name = 'მცირე ნახევარმთვარე';
+    $moon_icon = 'fa-solid fa-moon';
+    $moon_color = '#d4a853';
+}
 ?>
 
 <div class="container justify-content-center mt-3">
@@ -282,7 +333,8 @@ if ($hour >= 6 && $hour < 20) {
     </div> 
 
     <div class="weather-details-footer mt-3 pt-2" style="border-top: 1px solid rgba(255,255,255,0.15);">
-      <h3 class="weather-description mb-1" style="font-family: 'BPG NinoMtavruli'; font-size: 1.1rem; font-weight: 500; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+     
+      <h3 class="weather-description mb-1" style="font-family: 'BPG NinoMtavruli'; font-size: 1.1rem; font-weight: 500; margin: 5px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
         <?php echo htmlspecialchars($current_desc, ENT_QUOTES, 'UTF-8'); ?>
       </h3>
       
@@ -318,7 +370,7 @@ if ($hour >= 6 && $hour < 20) {
             <small class="text-white-50 d-block mb-1 text-start" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">
                 დღეს უქმე დღეა
             </small>
-            <h5 class="m-0 text-white fw-bold" style="font-family: 'BPG NinoMtavruli'; font-size: 1.15rem;">
+            <h5 class="m-0 text-white fw-bold text-start" style="font-family: 'BPG NinoMtavruli'; font-size: 1.15rem;">
                 <?php echo htmlspecialchars($todayHoliday, ENT_QUOTES, 'UTF-8'); ?>
             </h5>
         </div>
@@ -535,57 +587,65 @@ document.addEventListener("DOMContentLoaded", function () {
     
 </div>
 <div class="container mt-4 mb-4">
-    <div class="row row-cols-2 row-cols-lg-4 g-3">
+    <div class="row row-cols-1 row-cols-md-3 g-3">
         
+        <!-- გაერთიანებული ქარდი: მზის ამოსვლა, ჩასვლა, ხანგრძლივობა -->
         <div class="col">
             <div class="card premium-card h-100 border-0 shadow">
                 <div class="card-body p-3">
-                    <div class="icon-box">
-                        <i class="fa-solid fa-sun fa-spin" style="--fa-animation-duration: 15s; color:#F5B727"></i>
-                    </div>
-                    <span class="info-label"> მზის ამოსვლა</span>
-                    <div class="info-value">
-                        <?php echo htmlspecialchars($sunrise_label, ENT_QUOTES, 'UTF-8'); ?>
+                    <div class="sun-block d-flex justify-content-around align-items-start text-center">
+                        <div class="sun-item flex-fill px-1">
+                            <div class="icon-box mx-auto">
+                                <i class="fa-regular fa-sun" style="color:#F5B727"></i>
+                            </div>
+                            
+                            <span class="info-label">მზის ამოსვლა</span>
+                            <div class="info-value">
+                                <?php echo htmlspecialchars($sunrise_label, ENT_QUOTES, 'UTF-8'); ?>
+                            </div>
+                        </div>
+                        <div class="sun-item flex-fill px-1">
+                            <div class="icon-box mx-auto">
+                                <i class="fa-solid fa-cloud-sun" style="color:#4fc3f7"></i>
+                            
+                            </div>
+                            <span class="info-label">მზის ჩასვლა</span>
+                            <div class="info-value">
+                                <?php echo htmlspecialchars($sunset_label, ENT_QUOTES, 'UTF-8'); ?>
+                            </div>
+                        </div>
+                        <div class="sun-item flex-fill px-1">
+                            <div class="icon-box mx-auto">
+                                <i class="fa-regular fa-clock fa-shake" style="--fa-animation-duration: 4s; color:#C46A58"></i>
+                            </div>
+                            <span class="info-label">ხანგრძლივობა</span>
+                            <div class="info-value">
+                                <?php echo htmlspecialchars($day_length ?? '--:--', ENT_QUOTES, 'UTF-8'); ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="col">
+  <div class="col">
             <div class="card premium-card h-100 border-0 shadow">
-                <div class="card-body p-3">
-                    <div class="icon-box">
-                        <i class="fa-solid fa-moon fa-fade"    style="--fa-animation-duration: 4s; color:#4fc3f7"></i>
-                     
+                <div class="card-body p-3 text-center">
+                    <div class="icon-box mx-auto">
+                        <i class="<?php echo $moon_icon; ?>" style="--fa-animation-duration: 4s; color:<?php echo $moon_color; ?>"></i>
                     </div>
-                    <span class="info-label">მზის ჩასვლა</span>
-                    <div class="info-value">
-                        <?php echo htmlspecialchars($sunset_label, ENT_QUOTES, 'UTF-8'); ?>
+                    <span class="info-label">მთვარის ფაზა</span>
+                    <div class="info-value" style="font-size: 0.95rem;">
+                        <?php echo htmlspecialchars($moon_name, ENT_QUOTES, 'UTF-8'); ?>
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="col">
             <div class="card premium-card h-100 border-0 shadow">
-                <div class="card-body p-3">
-                    <div class="icon-box">
-                        <i class="fa-regular fa-clock fa-shake" style="--fa-animation-duration: 4s; color:#C46A58"></i>
-                    </div>
-                    <span class="info-label">ხანგრძლივობა</span>
-                    <div class="info-value">
-                        <?php echo htmlspecialchars($day_length ?? '--:--', ENT_QUOTES, 'UTF-8'); ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card premium-card h-100 border-0 shadow">
-                <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-start">
+                <div class="card-body p-3 text-center">
+                    <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
                         <div class="icon-box">
-                            <i class="fa-solid fa-sun-plant-wilt fa-fade" style="--fa-animation-duration: 4s; color:#6BC282"></i>
+                            <i class="fa-solid fa-sun-plant-wilt" style="color:#6BC282"></i>
                         </div>
                         <a data-bs-toggle="modal" data-bs-target="#modaluv" class="text-white-50">
                             <i class="fa-regular fa-circle-question quess-icon" style="cursor: pointer;font-size: 16px"></i>
@@ -634,56 +694,170 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-<div class="ai-suggest-container mb-3 mb-sm-0 shadow-sm">
-    <div id="ai-response-container" style="display: none; margin-bottom: 20px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 18px; position: relative;">
-        
-        <button onclick="closeAIResponse()" class="close-ai-btn" style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: white; cursor: pointer;">
-            ✖
-        </button>
-
-        <div class="ai-badge-wrapper" style="margin-bottom: 10px;">
-            <span class="ai-badge">✨ AI ასისტენტი</span>
+<div class="ai-accordion closed mb-3 shadow-sm">
+    <button class="ai-accordion-header" onclick="toggleAIAccordion()">
+        <div class="ai-accordion-left">
+            <span>✨ AI რჩევები</span>
         </div>
+        <i class="fa-solid fa-chevron-up ai-accordion-icon" id="aiAccordionIcon"></i>
+    </button>
+    <div class="ai-accordion-body" id="aiAccordionBody">
+        <div class="ai-accordion-content p-3">
+            
+            <div id="ai-response-container" style="display: none; margin-bottom: 20px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 18px; position: relative;">
+                <button onclick="closeAIResponse()" class="close-ai-btn" style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: white; cursor: pointer;">✖</button>
+                <div class="ai-badge-wrapper" style="margin-bottom: 10px;">
+                    <span class="ai-badge">✨ AI ასისტენტი</span>
+                </div>
+                <p id="ai-text-content" class="ai-status-text" style="margin: 0; padding-right: 30px; line-height: 1.5; color: #e0e6ed;"></p>
+            </div>
 
-        <p id="ai-text-content" class="ai-status-text" style="margin: 0; padding-right: 30px; line-height: 1.5; color: #e0e6ed;"></p>
-    </div>
-
- 
-    <div class="suggestion-grid">
-        <button class="suggest-btn" onclick="askQuickAI('დამჭირდება დღეს ქოლგა?')">
-            <span class="btn-icon">🌂</span>
-            <span class="btn-text">ქოლგა?</span>
-        </button>
-        <button class="suggest-btn" onclick="askQuickAI('როგორ ჩავიცვა დღეს?')">
-            <span class="btn-icon">🧥</span>
-            <span class="btn-text">რა ჩავიცვა?</span>
-        </button>
-        <button class="suggest-btn" onclick="askQuickAI('მზის სათვალე დამჭირდება?')">
-            <span class="btn-icon">😎</span>
-            <span class="btn-text">მზის სათვალე?</span>
-        </button>
-        <button class="suggest-btn" onclick="askQuickAI('გამოდგება ამინდი სეირნობისთვის?')">
-            <span class="btn-icon">🚶</span>
-            <span class="btn-text">სეირნობა</span>
-        </button>
-        <button class="suggest-btn" onclick="askQuickAI('გამოდგება ამინდი მანქანის გასარეცხად?')">
-            <span class="btn-icon">🚗 </span>
-            <span class="btn-text">გარეცხვა</span>
-        </button>
-        <button class="suggest-btn" onclick="askQuickAI('შეიძლება დღეს გარეთ სირბილი ან ვარჯიში?')">
-            <span class="btn-icon">🏃</span>
-            <span class="btn-text">ვარჯიში</span>
-        </button>
-        <button class="suggest-btn" onclick="askQuickAI('გაშრება სარეცხი გარეთ სწრაფად?')">
-            <span class="btn-icon">🧺</span>
-            <span class="btn-text">სარეცხის გაფენა</span>
-        </button>
-        <button class="suggest-btn" onclick="askQuickAI('ველოსიპედით სასეირნოდ კარგი ამინდია?')">
-            <span class="btn-icon">🚲</span>
-            <span class="btn-text">ველო</span>
-        </button>
+            <div class="suggestion-grid">
+                <button class="suggest-btn" onclick="askQuickAI('დამჭირდება დღეს ქოლგა?')">
+                    <span class="btn-icon">🌂</span>
+                    <span class="btn-text">ქოლგა?</span>
+                </button>
+                <button class="suggest-btn" onclick="askQuickAI('როგორ ჩავიცვა დღეს?')">
+                    <span class="btn-icon">🧥</span>
+                    <span class="btn-text">რა ჩავიცვა?</span>
+                </button>
+                <button class="suggest-btn" onclick="askQuickAI('მზის სათვალე დამჭირდება?')">
+                    <span class="btn-icon">😎</span>
+                    <span class="btn-text">მზის სათვალე?</span>
+                </button>
+                <button class="suggest-btn" onclick="askQuickAI('გამოდგება ამინდი სეირნობისთვის?')">
+                    <span class="btn-icon">🚶</span>
+                    <span class="btn-text">სეირნობა</span>
+                </button>
+                <button class="suggest-btn" onclick="askQuickAI('გამოდგება ამინდი მანქანის გასარეცხად?')">
+                    <span class="btn-icon">🚗 </span>
+                    <span class="btn-text">გარეცხვა</span>
+                </button>
+                <button class="suggest-btn" onclick="askQuickAI('შეიძლება დღეს გარეთ სირბილი ან ვარჯიში?')">
+                    <span class="btn-icon">🏃</span>
+                    <span class="btn-text">ვარჯიში</span>
+                </button>
+                <button class="suggest-btn" onclick="askQuickAI('გაშრება სარეცხი გარეთ სწრაფად?')">
+                    <span class="btn-icon">🧺</span>
+                    <span class="btn-text">სარეცხის გაფენა</span>
+                </button>
+                <button class="suggest-btn" onclick="askQuickAI('ველოსიპედით სასეირნოდ კარგი ამინდია?')">
+                    <span class="btn-icon">🚲</span>
+                    <span class="btn-text">ველო</span>
+                </button>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+function toggleAIAccordion() {
+    const accordion = document.querySelector('.ai-accordion');
+    const body = document.getElementById('aiAccordionBody');
+    const icon = document.getElementById('aiAccordionIcon');
+    const isOpen = body.classList.contains('open');
+    
+    if (isOpen) {
+        // დახურვა: ჯერ ვხურავთ body-ს, შემდეგ ვრთავთ gradient ფონს
+        body.classList.remove('open');
+        icon.classList.remove('rotated');
+        setTimeout(() => {
+            accordion.classList.add('closed');
+        }, 400);
+    } else {
+        // გახსნა: ჯერ gradient ფონს ვხსნით, მერე ვხსნით body-ს
+        accordion.classList.remove('closed');
+        body.classList.add('open');
+        icon.classList.add('rotated');
+    }
+}
+</script>
+
+<style>
+.ai-accordion {
+    position: relative;
+    border-radius: 25px;
+    overflow: hidden;
+    background: #0f111a;
+    background-clip: padding-box;
+    border: 2px solid transparent;
+}
+/* ანიმირებული გრადიენტი border - მუდმივად */
+.ai-accordion::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 25px;
+    padding: 2px;
+    background: linear-gradient(90deg, #4285f4, #9b51e0, #e91e63, #f48024, #4285f4);
+    background-size: 300% 100%;
+    animation: aiAccordionGradient 8s linear infinite;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+/* დახურულზე gradient მთელ ფონად */
+.ai-accordion.closed::before {
+    padding: 0;
+    -webkit-mask: none;
+    mask: none;
+    border-radius: 25px;
+}
+.ai-accordion.closed {
+    border-color: transparent;
+}
+@keyframes aiAccordionGradient {
+    0% { background-position: 0% 0%; }
+    100% { background-position: -300% 0%; }
+}
+.ai-accordion > * {
+    position: relative;
+    z-index: 1;
+}
+.ai-accordion-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: rgba(0, 0, 0, 0.35);
+    border: none;
+    color: #fff;
+    font-size: 1rem;
+    font-family: 'BPG NinoMtavruli', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-align: left;
+}
+.ai-accordion-header:hover {
+    background: rgba(0, 0, 0, 0.45);
+}
+.ai-accordion-left {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.ai-accordion-icon {
+    transition: transform 0.3s ease;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.4);
+}
+.ai-accordion-icon.rotated {
+    transform: rotate(180deg);
+}
+.ai-accordion-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+}
+.ai-accordion-body.open {
+    max-height: 1000px;
+}
+.ai-accordion-content {
+    padding: 0 20px 20px;
+}
+</style>
 
 <script>
 function closeAIResponse() {
