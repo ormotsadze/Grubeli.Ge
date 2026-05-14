@@ -91,6 +91,57 @@ $placeName = get_location_name($lat, $lon);
   transform: translateY(20px);
 }
 @keyframes revealUp { to { opacity:1; transform:translateY(0); } }
+
+.history-hero {
+  padding: 1rem;
+  border-radius: 16px !important;
+}
+.history-hero .date-input {
+  background: rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 8px !important;
+  color: #fff !important;
+  padding: 6px 8px !important;
+  font-size: 0.8rem !important;
+  width: 100%;
+  min-width: 0;
+}
+.history-hero .date-input:focus {
+  border-color: #0dcaf0 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(13,202,240,0.15) !important;
+}
+.history-hero .compact-form {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.history-hero .btn-sm {
+  font-size: 0.7rem !important;
+  line-height: 1.2 !important;
+  border-radius: 6px !important;
+  min-height: 32px !important;
+}
+@media (max-width: 575.98px) {
+  .history-hero {
+    padding: 0.75rem !important;
+    border-radius: 14px !important;
+  }
+  .history-hero .compact-form {
+    padding: 8px !important;
+    border-radius: 10px !important;
+  }
+  .history-hero .date-input {
+    font-size: 0.7rem !important;
+    padding: 4px 6px !important;
+  }
+  .history-hero .btn-sm {
+    font-size: 0.65rem !important;
+    min-height: 28px !important;
+    padding: 2px 6px !important;
+  }
+}
 </style>
 
 <?php
@@ -101,61 +152,42 @@ include 'header.php';
 
     <div class="container mt-3">
 
-      <div class="premium-glass p-5 shadow-lg mb-4 mt-4 position-relative overflow-hidden reveal-up hero-accent">
-        <div class="ambient-glow glow-1"></div>
-        <div class="ambient-glow glow-2"></div>
+      <div class="premium-glass history-hero shadow-lg mb-3 mt-2 position-relative overflow-hidden reveal-up">
+        <p class="mb-2">
+          <strong class="text-white"><i class="fa-solid fa-location-dot me-1"></i><?php echo htmlspecialchars($placeName, ENT_QUOTES, 'UTF-8'); ?></strong>
+          <span class="text-white-50 ms-1" style="font-size:0.75rem;">
+            <i class="fa-regular fa-calendar me-1"></i>
+            <span class="history-subtitle"><?php echo htmlspecialchars($start_date . ' — ' . $end_date, ENT_QUOTES, 'UTF-8'); ?></span>
+          </span>
+        </p>
 
-       <div class="row position-relative z-index-1">
-          <div class="col-lg-6 mb-4 mb-lg-0">
-         
-<div class="align-items-center justify-content-start mb-4 reveal-up">
-    <i class="fa-solid fa-cloud-arrow-down me-3 text-info float-icon" style="font-size: 1rem;"></i>
-    
-   <span class="fw-bolder text-gradient-premium m-0 p-0" style="font-size:1.75rem;">
-      არქივი (80 წ)
-    </span>
-</div>
-            <p class="mb-0" style="color:rgba(255,255,255,0.7);">
-              <i class="fa-solid fa-location-dot me-1 text-info"></i>
-              <strong class="text-white"><?php echo htmlspecialchars($placeName, ENT_QUOTES, 'UTF-8'); ?></strong>
-              &nbsp;·&nbsp;
-              <i class="fa-regular fa-calendar me-1"></i>
-              <span class="history-subtitle"><?php echo htmlspecialchars($start_date . ' — ' . $end_date, ENT_QUOTES, 'UTF-8'); ?></span>
-            </p>
+        <div class="compact-form">
+          <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+            <label style="font-size:13px;color:rgba(255,255,255,0.5);">
+              <i class="fa-regular fa-keyboard me-1"></i> აირჩიეთ თარიღი (80 წ)
+            </label>
           </div>
-
-          <div class="col-lg-6">
-            <form method="get" class="history-form" role="search" aria-label="ისტორიული ფილტრი">
-              <input type="hidden" name="lat" value="<?php echo htmlspecialchars($lat, ENT_QUOTES, 'UTF-8'); ?>" />
-              <input type="hidden" name="lon" value="<?php echo htmlspecialchars($lon, ENT_QUOTES, 'UTF-8'); ?>" />
-              <input type="hidden" id="end_date" name="end_date" value="<?php echo htmlspecialchars($end_date, ENT_QUOTES, 'UTF-8'); ?>" />
-
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:16px;">
-                <label style="display:block;font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:8px;">
-                  <i class="fa-regular fa-keyboard me-1"></i> აირჩიეთ თარიღი
-                  <span style="color:rgba(255,255,255,0.35);">(მაქს. 80 წ)</span>
-                </label>
-                <input
-                  id="start_date"
-                  class="date-input w-100 mb-3"
-                  type="date"
-                  name="start_date"
-                  value="<?php echo htmlspecialchars($start_date, ENT_QUOTES, 'UTF-8'); ?>"
-                  max="<?php echo htmlspecialchars($end_date, ENT_QUOTES, 'UTF-8'); ?>"
-                  min="<?php echo htmlspecialchars($min_start->format('Y-m-d'), ENT_QUOTES, 'UTF-8'); ?>"
-                  title="შეიყვანეთ თარიღი"
-                />
-                <div class="d-flex gap-2">
-                  <button type="submit" class="btn btn-danger flex-fill">
-                    <i class="fa-solid fa-magnifying-glass"></i> ძიება
-                  </button>
-                  <button type="button" id="clearFilter" class="btn btn-dark">
-                    <i class="fa-solid fa-broom"></i>
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
+          <form method="get" class="history-form d-flex align-items-center gap-1" role="search" aria-label="ისტორიული ფილტრი">
+            <input type="hidden" name="lat" value="<?php echo htmlspecialchars($lat, ENT_QUOTES, 'UTF-8'); ?>" />
+            <input type="hidden" name="lon" value="<?php echo htmlspecialchars($lon, ENT_QUOTES, 'UTF-8'); ?>" />
+            <input type="hidden" id="end_date" name="end_date" value="<?php echo htmlspecialchars($end_date, ENT_QUOTES, 'UTF-8'); ?>" />
+            <input
+              id="start_date"
+              class="date-input"
+              type="date"
+              name="start_date"
+              value="<?php echo htmlspecialchars($start_date, ENT_QUOTES, 'UTF-8'); ?>"
+              max="<?php echo htmlspecialchars($end_date, ENT_QUOTES, 'UTF-8'); ?>"
+              min="<?php echo htmlspecialchars($min_start->format('Y-m-d'), ENT_QUOTES, 'UTF-8'); ?>"
+              title="შეიყვანეთ თარიღი"
+            />
+            <button type="submit" class="btn btn-danger btn-sm flex-shrink-0 px-2">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            <button type="button" id="clearFilter" class="btn btn-dark btn-sm flex-shrink-0 px-2">
+              <i class="fa-solid fa-broom"></i>
+            </button>
+          </form>
         </div>
       </div>
 
