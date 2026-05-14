@@ -280,7 +280,7 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
 <div class="search-section">
     <form id="searchForm" action="javascript:void(0);" autocomplete="off">
         <div class="search-wrapper">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
             <input type="search" 
                    id="citySearch" 
                    class="search-input" 
@@ -650,7 +650,7 @@ document.addEventListener("DOMContentLoaded", function () {
       <div class="tile-glow"></div>
       <div class="tile-content">
         <div class="tile-icon-wrap">
-          <i class="fa-regular fa-sun"></i>
+          <i class="fa-regular fa-sun" style="color: #ffc107;"></i>
         </div>
         <div class="tile-body">
           <span class="tile-label">მზის ამოსვლა</span>
@@ -664,7 +664,7 @@ document.addEventListener("DOMContentLoaded", function () {
       <div class="tile-glow"></div>
       <div class="tile-content">
         <div class="tile-icon-wrap">
-          <i class="fa-solid fa-cloud-sun"></i>
+          <i class="fa-solid fa-cloud-sun" style="color: #4F72C2;"></i>
         </div>
         <div class="tile-body">
           <span class="tile-label">მზის ჩასვლა</span>
@@ -695,7 +695,7 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
         <div class="tile-body">
           <span class="tile-label">მთვარის ფაზა</span>
-          <span class="tile-value tile-value-sm"><?php echo htmlspecialchars($moon_name, ENT_QUOTES, 'UTF-8'); ?></span>
+          <span class="feature-tile-text"><?php echo htmlspecialchars($moon_name, ENT_QUOTES, 'UTF-8'); ?></span>
         </div>
       </div>
     </div>
@@ -706,8 +706,8 @@ document.addEventListener("DOMContentLoaded", function () {
       <div class="tile-content">
         <div class="tile-icon-wrap">
           <i class="fa-solid fa-sun-plant-wilt"></i>
-          <a data-bs-toggle="modal" data-bs-target="#modaluv" class="tile-info-btn">
-            <i class="fa-regular fa-circle-question"></i>
+          <a data-bs-toggle="modal" data-bs-target="#modaluv" class="tile-info-btn" style="cursor: pointer;">
+            <i class="fa-regular fa-circle-question" style="color: #4FC289"></i>
           </a>
         </div>
         <div class="tile-body">
@@ -732,8 +732,8 @@ document.addEventListener("DOMContentLoaded", function () {
       <div class="tile-content">
         <div class="tile-icon-wrap">
           <i class="fa-solid fa-aquarius"></i>
-          <a data-bs-toggle="modal" data-bs-target="#modalaqv" class="tile-info-btn">
-            <i class="fa-regular fa-circle-question"></i>
+          <a data-bs-toggle="modal" data-bs-target="#modalaqv" class="tile-info-btn" style="cursor: pointer;">
+            <i class="fa-regular fa-circle-question" style="color: #4FC289"></i>
           </a>
         </div>
         <div class="tile-body">

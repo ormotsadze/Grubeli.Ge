@@ -1870,7 +1870,7 @@ background: #13141b;
 }
 
 .search-icon {
-    color: #0dcaf0;
+    color: #d7eef3;
     margin-right: 10px;
     display: flex;
     align-items: center;
@@ -1913,4 +1913,14 @@ background: #13141b;
     background: linear-gradient(90deg, rgba(13, 202, 240, 0.12), rgba(138, 43, 226, 0.08));
     color: #fff;
     padding-left: 26px;
+}
+
+
+.feature-tile-text {
+    font-size: 0.9rem;
+    color: #fff;
+    font-weight: 500;
+    text-align: left;
+   
+  
 }

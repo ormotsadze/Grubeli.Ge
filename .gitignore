@@ -57,6 +57,7 @@ key
 ai/groq.com.txt
 ai/quotes.txt
 ai/ai-suggest.txt
+notifications/firebase/firebase-credentials.json
 
 # Misc
 *.tmp
