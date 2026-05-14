@@ -24,17 +24,26 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
+import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.app.grubelige.ui.theme.GrubeliGeTheme
@@ -73,24 +82,26 @@ class MainActivity : ComponentActivity() {
 
     inner class WebAppInterface(private val webView: WebView?) {
         @JavascriptInterface
+        @Suppress("unused")
         fun updateWidgetLocation(cityName: String) {
             if (cityName.isBlank() || cityName == "საქართველო") return
-            val prefs = getSharedPreferences(WeatherUtils.PREFS_NAME, Context.MODE_PRIVATE)
+            val prefs = getSharedPreferences(WeatherUtils.PREFS_NAME, MODE_PRIVATE)
             val cleanedCity = WeatherUtils.cleanCityName(cityName)
-            prefs.edit().putString("last_viewed_city", cleanedCity).apply()
+            prefs.edit { putString("last_viewed_city", cleanedCity) }
             WeatherUtils.updateWidget(this@MainActivity)
         }
 
         @JavascriptInterface
+        @Suppress("unused")
         fun saveWeatherData(jsonData: String) {
             try {
                 val data = JSONObject(jsonData)
-                val prefs = getSharedPreferences(WeatherUtils.PREFS_NAME, Context.MODE_PRIVATE)
+                val prefs = getSharedPreferences(WeatherUtils.PREFS_NAME, MODE_PRIVATE)
                 
                 val cityName = WeatherUtils.cleanCityName(data.optString("city_name"))
                 val tempVal = data.opt("temp")?.toString()?.replace(",", ".")?.toDoubleOrNull()
 
-                prefs.edit().apply {
+                prefs.edit {
                     putString("saved_lat", data.optString("lat"))
                     putString("saved_lon", data.optString("lon"))
                     putString("widget_city_name", cityName)
@@ -101,7 +112,6 @@ class MainActivity : ComponentActivity() {
                     putString("widget_desc", data.optString("desc"))
                     putInt("widget_code", data.optInt("code", 0))
                     putBoolean("widget_is_day", data.optBoolean("is_day", true))
-                    apply()
                 }
                 WeatherUtils.updateWidget(this@MainActivity)
             } catch (e: Exception) {
@@ -110,6 +120,7 @@ class MainActivity : ComponentActivity() {
         }
 
         @JavascriptInterface
+        @Suppress("unused")
         fun getNativeLocation() {
             if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this@MainActivity)
@@ -125,6 +136,7 @@ class MainActivity : ComponentActivity() {
         }
 
         @JavascriptInterface
+        @Suppress("unused")
         fun getFCMToken() {
             FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -176,7 +188,13 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
                         TopAppBar(
-                            title = { Text("GRUBELI.GE", fontSize = 13.sp, fontWeight = FontWeight.Bold) },
+                            title = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text("GRUBELI.GE", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    ProBadge()
+                                }
+                            },
                             actions = {
                                 IconButton(onClick = { requestPinWidget() }) { Icon(Icons.Default.Dashboard, contentDescription = "Add Widget") }
                                 IconButton(onClick = { openSettings() }) { Icon(Icons.Default.Settings, contentDescription = "Settings") }
@@ -207,28 +225,24 @@ class MainActivity : ComponentActivity() {
 
     @SuppressLint("BatteryLife")
     private fun checkBatteryOptimization() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
-            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
-                try {
-                    val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-                        data = Uri.parse("package:$packageName")
-                    }
-                    startActivity(intent)
-                } catch (e: Exception) {
-                    Log.e("FCM", "Battery optimization prompt failed", e)
+        val pm = getSystemService(POWER_SERVICE) as PowerManager
+        if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+            try {
+                val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                    data = "package:$packageName".toUri()
                 }
+                startActivity(intent)
+            } catch (e: Exception) {
+                Log.e("FCM", "Battery optimization prompt failed", e)
             }
         }
     }
 
     private fun requestPinWidget() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val mAppWidgetManager = getSystemService(AppWidgetManager::class.java)
-            val myProvider = ComponentName(this, WeatherWidget::class.java)
-            if (mAppWidgetManager?.isRequestPinAppWidgetSupported == true) {
-                mAppWidgetManager.requestPinAppWidget(myProvider, null, null)
-            }
+        val mAppWidgetManager = getSystemService(AppWidgetManager::class.java)
+        val myProvider = ComponentName(this, WeatherWidget::class.java)
+        if (mAppWidgetManager?.isRequestPinAppWidgetSupported == true) {
+            mAppWidgetManager.requestPinAppWidget(myProvider, null, null)
         }
     }
 
@@ -249,8 +263,42 @@ class MainActivity : ComponentActivity() {
             enableLights(true)
             enableVibration(true)
         }
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         manager.createNotificationChannel(channel)
+    }
+}
+
+@Composable
+fun ProBadge() {
+    Box(
+        modifier = Modifier
+            .offset(y = (-1).dp)
+            .shadow(
+                elevation = 3.dp,
+                shape = RoundedCornerShape(5.dp),
+                clip = false
+            )
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        Color(0xFF4285F4),
+                        Color(0xFF9B51E0)
+                    )
+                ),
+                shape = RoundedCornerShape(5.dp)
+            )
+            .padding(horizontal = 6.dp, vertical = 3.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "PRO",
+            color = Color.White,
+            fontSize = 8.sp,
+            fontWeight = FontWeight.ExtraBold,
+            letterSpacing = 1.sp,
+            maxLines = 1,
+            lineHeight = 8.sp
+        )
     }
 }
 
@@ -258,11 +306,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen(modifier: Modifier = Modifier, onPageLoaded: () -> Unit, activity: MainActivity) {
     var webViewInstance by remember { mutableStateOf<WebView?>(null) }
-    var canGoBack by remember { mutableStateOf(false) }
+    val canGoBack = remember { mutableStateOf(false) }
 
     // მართავს სისტემურ "უკან" ღილაკს
-    BackHandler(enabled = canGoBack) {
-        webViewInstance?.goBack()
+    BackHandler(enabled = canGoBack.value) {
+        if (webViewInstance?.canGoBack() == true) {
+            webViewInstance?.goBack()
+        }
     }
 
     AndroidView(
@@ -289,7 +339,7 @@ fun MainScreen(modifier: Modifier = Modifier, onPageLoaded: () -> Unit, activity
                         swipeRefreshLayout.isRefreshing = false
                         onPageLoaded()
                         // ანახლებს მდგომარეობას, შეუძლია თუ არა უკან დაბრუნება
-                        canGoBack = view?.canGoBack() ?: false
+                        canGoBack.value = view?.canGoBack() ?: false
                         
                         // Auto-send token on every load
                         FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
@@ -301,14 +351,14 @@ fun MainScreen(modifier: Modifier = Modifier, onPageLoaded: () -> Unit, activity
                     override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
                         super.doUpdateVisitedHistory(view, url, isReload)
                         // ანახლებს მდგომარეობას ისტორიის ყოველი ცვლილებისას
-                        canGoBack = view?.canGoBack() ?: false
+                        canGoBack.value = view?.canGoBack() ?: false
                     }
 
                     override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
                         if (request?.isForMainFrame == true) {
                             view?.loadUrl("file:///android_asset/errors/error_network.html")
                             onPageLoaded()
-                            canGoBack = view?.canGoBack() ?: false
+                            canGoBack.value = view?.canGoBack() ?: false
                         }
                     }
                 }

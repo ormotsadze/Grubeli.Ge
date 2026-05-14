@@ -9,7 +9,7 @@ $histUrl = 'historical-weather.php?lat=' . rawurlencode($mLat) . '&lon=' . rawur
             <i class="fa-solid fa-house"></i>
             <span>მთავარი</span>
         </a>
-       <a href="<?php echo htmlspecialchars($histUrl, ENT_QUOTES, 'UTF-8'); ?>" class="footer-item hist-link">
+       <a href="<?php echo htmlspecialchars($histUrl, ENT_QUOTES, 'UTF-8'); ?>" class="footer-item">
       
            <i class="fa-solid fa-cloud-arrow-down"></i>
             <span>არქივი</span>
@@ -120,8 +120,10 @@ if ($current_page == 'index.php' || $current_page == 'historical-weather.php') :
 
 
 </div>
+<center>
+<span class="footer-credit"> 2026 <a href="https://grubeli.ge">Grubeli.Ge</a> - ყველა უფლება დაცულია. </span>
 
-
+</center>
 
 
 

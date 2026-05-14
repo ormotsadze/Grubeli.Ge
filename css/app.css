@@ -48,6 +48,7 @@ html, body {
     /* წაშალე -webkit ხაზი საერთოდ */
     overscroll-behavior-y: auto; /* 'contain'-ის ნაცვლად 'auto', რომ ფუშების ფანჯარამ იმუშაოს */
     overflow-x: hidden;
+    
 }
 /* სქროლბარის სრული გაქრობა Chrome, Safari და WebView-სთვის */
 ::-webkit-scrollbar {
@@ -1222,7 +1223,7 @@ background: #13141b;
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 2000;
+    z-index: 999999;
     display: none; 
     cursor: pointer;
 }
@@ -1923,4 +1924,42 @@ background: #13141b;
     text-align: left;
    
   
+}
+
+
+.historical-compare-box {
+    margin-top: 10px;
+    padding: 8px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    display: inline-block;
+}
+
+.hist-text {
+    margin: 0;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'BPG Arial', sans-serif;
+}
+
+.footer-credit {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.2);
+    text-align: center;
+    margin-top: 20px;
+}
+
+
+
+.historical-link-show {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 2px 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    color: #c6d1e7;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }

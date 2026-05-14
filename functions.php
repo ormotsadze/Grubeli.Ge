@@ -732,4 +732,74 @@ function checkFireRisk($map_key) {
     return $result;
 }
 
+
+
+function get_last_year_temp($lat, $lon) {
+    $last_year_date = date('Y-m-d', strtotime('-1 year'));
+    $cache_file = __DIR__ . "/cache/hist_{$lat}_{$lon}_{$last_year_date}.json";
+
+    if (file_exists($cache_file) && (time() - filemtime($cache_file) < 86400)) {
+        return json_decode(file_get_contents($cache_file), true);
+    }
+
+    // Open-Meteo Historical API
+    $url = "https://archive-api.open-meteo.com/v1/archive?latitude={$lat}&longitude={$lon}&start_date={$last_year_date}&end_date={$last_year_date}&hourly=temperature_2m";
+    
+    $response = file_get_contents($url);
+    if ($response) {
+        $data = json_decode($response, true);
+        $hour = (int)date('H');
+        $temp = $data['hourly']['temperature_2m'][$hour] ?? null;
+        
+        file_put_contents($cache_file, json_encode(['temp' => $temp]));
+        return ['temp' => $temp];
+    }
+    return null;
+}
+
+
+/**
+ * ამინდის საშიშროების განსაზღვრა
+ */
+function get_weather_alert($weather) {
+    $current = $weather['current'] ?? null;
+    $hourly = $weather['hourly'] ?? null;
+    
+    if (!$current || !$hourly) return null;
+
+    // 1. ჯერ ვამოწმებთ მიმდინარე საფრთხეს (Real-time)
+    $is_storm_now = in_array($current['weather_code'], [95, 96, 99]);
+    $is_windy_now = $current['wind_speed_10m'] >= 50;
+
+    if ($is_storm_now || $is_windy_now) {
+        return [
+            'type' => 'danger', // წითელი
+            'title' => $is_storm_now ? "ძლიერი შტორმი" : "ძლიერი ქარი",
+            'status' => "მიმდინარე საფრთხე",
+            'icon' => $is_storm_now ? "fa-bolt-lightning" : "fa-wind",
+            'wind' => round($current['wind_speed_10m'])
+        ];
+    }
+
+    // 2. თუ ახლა სიმშვიდეა, ვამოწმებთ მომდევნო 12 საათს (Forecast)
+    for ($i = 1; $i <= 12; $i++) {
+        $h_code = $hourly['weather_code'][$i] ?? 0;
+        $h_wind = $hourly['wind_speed_10m'][$i] ?? 0;
+
+        if (in_array($h_code, [95, 96, 99]) || $h_wind >= 50) {
+            return [
+                'type' => 'warning', // ყვითელი/ნარინჯისფერი
+                'title' => in_array($h_code, [95, 96, 99]) ? "მოსალოდნელია შტორმი" : "მოსალოდნელია ძლიერი ქარი",
+                'status' => "მომდევნო 12 სთ-ში",
+                'icon' => in_array($h_code, [95, 96, 99]) ? "fa-cloud-bolt" : "fa-wind",
+                'wind' => round($h_wind)
+            ];
+        }
+    }
+
+    return null;
+}
+
+
+
 ?>

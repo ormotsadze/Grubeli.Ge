@@ -14,11 +14,23 @@ require_once __DIR__ . '/functions.php';
 
 // 3. მონაცემების წამოღება (პარალელურად weather + air)
 $weatherData = fetch_weather_and_air($lat, $lon);
+// შემოწმება, რომ მონაცემები ცარიელი არ არის
+if (!$weatherData['weather']) {
+    echo "ამინდის მონაცემების ჩატვირთვა ვერ მოხერხდა.";
+    exit;
+}
 $weather = $weatherData['weather'];
 $air_quality = $weatherData['air_quality'];
 $current_hour = (int)date('H'); 
 $vis_meters = $weather['hourly']['visibility'][$current_hour] ?? ($weather['hourly']['visibility'][0] ?? 0);
+$current = $weather['current'] ?? null; // ჯერ ვქმნით $current-ს
 
+// ახლა უკვე შეგვიძლია გამოვიყენოთ, ოღონდ დაზღვევის მიზნით შევამოწმოთ if-ით
+$weather_alert = null;
+if ($weather) {
+    // ფუნქცია თავად იპოვის შიგნით $current-საც და $hourly-საც
+    $weather_alert = get_weather_alert($weather);
+}
 if ($vis_meters > 0) {
     $vis_km = round($vis_meters / 1000, 1) . " კმ";
 } else {
@@ -45,7 +57,18 @@ $current_desc = $current['description_geo'] ?? '';
 $is_day = ($current['is_day'] ?? 1) == 1;
 $current_icon = isset($current['icon']) ? icon_url($current['icon'], $is_day) : 'icons/sun.svg';
 $currentDesc = $pageDesc; // SEO description fallback
+// --- ისტორიული ამინდის ლოგიკა ---
+// --- ისტორიული ამინდის ლოგიკა (მხოლოდ ციფრი) ---
+$hist_data = get_last_year_temp($lat, $lon);
+$one_year_ago = date('Y-m-d', strtotime('-1 year'));
+$hist_temp = $hist_data['temp'] ?? null;
+$hist_display_text = "";
 
+if ($hist_temp !== null) {
+    // ვამრგვალებთ მთელ ციფრამდე უფრო სუფთა ვიზუალისთვის
+    $formatted_hist_temp = round($hist_temp);
+    $hist_display_text = "შარშან ამ დროს იყო " . $formatted_hist_temp . "°C";
+}
 // Auto prompt flag for AI suggestions
 $autoPrompt = true; // Set based on config or default
 
@@ -180,7 +203,7 @@ if ($moon_phase < 0.0625 || $moon_phase >= 0.9375) {
     $moon_phase_idx = 0;
     $moon_name = 'ახალი მთვარე';
     $moon_icon = 'fa-regular fa-circle';
-    $moon_color = '#666';
+    $moon_color = '#d4a853';
 } elseif ($moon_phase < 0.1875) {
     $moon_phase_idx = 1;
     $moon_name = 'ნახევარმთვარე';
@@ -193,7 +216,7 @@ if ($moon_phase < 0.0625 || $moon_phase >= 0.9375) {
     $moon_color = '#e8c56c';
 } elseif ($moon_phase < 0.4375) {
     $moon_phase_idx = 3;
-    $moon_name = 'მოზარდი მთვარე';
+    $moon_name = 'მზარდი მთვარე';
     $moon_icon = 'fa-solid fa-moon';
     $moon_color = '#f4d88a';
 } elseif ($moon_phase < 0.5625) {
@@ -203,7 +226,7 @@ if ($moon_phase < 0.0625 || $moon_phase >= 0.9375) {
     $moon_color = '#ffe066';
 } elseif ($moon_phase < 0.6875) {
     $moon_phase_idx = 5;
-    $moon_name = 'დაკლებადი მთვარე';
+    $moon_name = 'კლებადი მთვარე';
     $moon_icon = 'fa-solid fa-moon';
     $moon_color = '#f4d88a';
 } elseif ($moon_phase < 0.8125) {
@@ -217,6 +240,11 @@ if ($moon_phase < 0.0625 || $moon_phase >= 0.9375) {
     $moon_icon = 'fa-solid fa-moon';
     $moon_color = '#d4a853';
 }
+
+
+
+
+
 ?>
 
 <div class="container justify-content-center mt-3">
@@ -248,6 +276,31 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
             <a href="<?php echo htmlspecialchars($mapUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" class="btn btn-danger py-1 px-2 ms-2" style="font-size: 0.65rem; border-radius: 8px; font-weight: 600; white-space: nowrap;">
                 <i class="fa-solid fa-location-dot"></i> რუკა
             </a>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+<?php if ($weather_alert): 
+    $bg_color = ($weather_alert['type'] === 'danger') ? 'rgba(255, 68, 68, 0.12)' : 'rgba(255, 193, 7, 0.12)';
+    $border_color = ($weather_alert['type'] === 'danger') ? '#ff4444' : '#ffc107';
+    $text_class = ($weather_alert['type'] === 'danger') ? 'text-danger' : 'text-warning';
+    $btn_class = ($weather_alert['type'] === 'danger') ? 'btn-danger' : 'btn-warning';
+?>
+<div class="alert-card shadow-sm mb-4" style="background: <?php echo $bg_color; ?>; border-left: 4px solid <?php echo $border_color; ?>; border-radius: 12px; backdrop-filter: blur(10px);">
+    <div class="card-body p-2 px-3 text-white">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center text-truncate">
+                <i class="fa-solid <?php echo $weather_alert['icon']; ?> <?php echo $text_class; ?> me-2 pulse-animation" style="font-size: 1.3rem;"></i>
+                <div class="text-truncate">
+                    <h6 class="m-0 fw-bold text-truncate" style="font-size: 0.9rem;">
+                        <?php echo $weather_alert['title']; ?>
+                    </h6>
+                    <small class="text-white-50" style="font-size: 0.7rem;">
+                        <?php echo $weather_alert['status']; ?> | ქარი: <span class="text-white"><?php echo $weather_alert['wind']; ?> კმ/სთ</span>
+                    </small>
+                </div>
+            </div>
+           
         </div>
     </div>
 </div>
@@ -361,6 +414,17 @@ if ($hour >= 6 && $hour < 20) {
         <span class="unit ms-1 text-white-50" style="font-size: 1.5rem; font-weight: 300; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">&deg;C</span>
       </div>
     </div> 
+  <?php if ($hist_display_text): ?>
+    <div class="hist-simple-box">
+        <span class="hist-label">
+        
+           <span style="font-size: 0.8rem;"> <?php echo $hist_display_text; ?> </span>
+        </span>
+       <a href="historical-weather.php?lat=<?php echo $lat; ?>&lon=<?php echo $lon; ?>&date=<?php echo $one_year_ago; ?>" class="hist-mini-link">
+          <span class="historical-link-show"> ნახვა <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
+        </a>
+    </div>
+<?php endif; ?>
 
     <div class="weather-details-footer mt-3 pt-2" style="border-top: 1px solid rgba(255,255,255,0.15);">
      
@@ -687,7 +751,7 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
         <div class="tile-body">
           <span class="tile-label">დღის ხანგძლივობა</span>
-          <span class="tile-value"><?php echo $day_length; ?></span>
+          <span class="feature-tile-text"><?php echo $day_length; ?></span>
         </div>
       </div>
     </div>
@@ -744,7 +808,7 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
         <div class="tile-body">
           <span class="tile-label">ჰაერი</span>
-          <span class="tile-value"><?php echo htmlspecialchars($aq_label, ENT_QUOTES, 'UTF-8'); ?></span>
+          <span class="feature-tile-text"><?php echo htmlspecialchars($aq_label, ENT_QUOTES, 'UTF-8'); ?></span>
         </div>
       </div>
     </div>
