@@ -39,7 +39,7 @@ if ($current_page == 'index.php' || $current_page == 'historical-weather.php') :
 <div id="custom-drawer">
    <div class="drawer-header">
     <div class="brand-wrapper">
-        <img src="images/logo/logo.png" alt="Logo" class="header-logo" alt="Grubeli.ge - logo">
+        <img src="images/logo/logo.png" alt="Grubeli.ge - logo" class="header-logo">
         <div class="brand-info">
             <span class="brand-name">
                 GRUBELI.GE 

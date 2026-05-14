@@ -63,3 +63,7 @@ notifications/firebase/firebase-credentials.json
 *.tmp
 *.temp
 .gitarchive*
+
+# Large design files (PSD, AI)
+*.psd
+*.ai

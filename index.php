@@ -36,20 +36,23 @@ $_SESSION['is_day'] = $weather['current_weather']['is_day'] ?? 1;
 $pageTitle = "ამინდი " . $city_name;
 $pageDesc = "ზუსტი ამინდის პროგნოზი " . $city_name . "-ში. ტემპერატურა, ტენიანობა და ჰაერის ხარისხი რეალურ დროში Grubeli.ge-ზე.";
 
-// 6. Header და დანარჩენი ფაილები
-include 'header.php';
-require_once __DIR__ . '/ai/ai_helper.php'; 
-require_once __DIR__ . '/ai/ai-suggest.php';
-
-// 7. მონაცემების დამუშავება UI-სთვის
+// 6. UI-სთვის საჭირო მონაცემები (header.php-ში გამოყენებამდე)
 $tz = $weather['timezone'] ?? 'UTC';
 $now = new DateTime('now', new DateTimeZone($tz));
-
 $current = $weather['current_weather'] ?? null;
 $current_temp = $current['temperature'] ?? '--';
 $current_desc = $current['description_geo'] ?? '';
 $is_day = ($current['is_day'] ?? 1) == 1;
 $current_icon = isset($current['icon']) ? icon_url($current['icon'], $is_day) : 'icons/sun.svg';
+$currentDesc = $pageDesc; // SEO description fallback
+
+// Auto prompt flag for AI suggestions
+$autoPrompt = true; // Set based on config or default
+
+// 7. Header და დანარჩენი ფაილები
+include 'header.php';
+require_once __DIR__ . '/ai/ai_helper.php'; 
+require_once __DIR__ . '/ai/ai-suggest.php';
 
 // Bypass weather cache when ?nocache is present (temporary, for testing)
 if (isset($_GET['nocache'])) {
@@ -87,15 +90,18 @@ if ($hourly && isset($hourly['time'])) {
     // Debug HTML comment — can be removed after verification
     echo "\n<!-- [HOURLY_DEBUG] nowTs={$nowTs} targetTs={$targetTs} collected={$collected} -->\n";
     
-    // UV და AQI-სთვის ინდექსის პოვნა
+    // UV, AQI, feels-like-სთვის ინდექსის პოვნა
     $currentIndex = null;
+    $firstIndex = null;
     $nowTs = $now->getTimestamp();
     $closest = null; $closestDiff = PHP_INT_MAX;
     foreach ($hourly['time'] as $i => $t) {
+        if ($firstIndex === null) $firstIndex = $i;
         $diff = abs(strtotime($t) - $nowTs);
         if ($diff < $closestDiff) { $closestDiff = $diff; $closest = $i; }
     }
     if ($closest !== null && $closestDiff <= 90 * 60) $currentIndex = $closest;
+    if ($firstIndex === null) $firstIndex = 0;
 }
 
 // დღიური პროგნოზი
@@ -228,18 +234,18 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
                 <i class="fa-solid fa-fire-flame-curved text-danger me-2 pulse-animation" style="font-size: 1.3rem;"></i>
                 <div class="text-truncate">
                     <div class="d-flex align-items-center gap-2">
-                        <h6 class="m-0 fw-bold text-truncate" style="font-size: 0.9rem;">
-                            ხანძარი: <?php echo $p['region'] ?? 'საქართველო'; ?>
+        <h6 class="m-0 fw-bold text-truncate" style="font-size: 0.9rem;">
+                            ხანძარი: <?php echo htmlspecialchars($p['region'] ?? 'საქართველო', ENT_QUOTES, 'UTF-8'); ?>
                         </h6>
                     </div>
                     <small class="text-white-50" style="font-size: 0.7rem;">
-                        სტატუსი: <span class="text-white"><?php echo $p['conf'] ?? 'საშუალო'; ?></span> | 
-                        ტემპ: <span class="text-white"><?php echo $p['temp'] ?? round(($p['bright'] ?? 273.15) - 273.15); ?>°C</span>
+                        სტატუსი: <span class="text-white"><?php echo htmlspecialchars($p['conf'] ?? 'საშუალო', ENT_QUOTES, 'UTF-8'); ?></span> | 
+                        ტემპ: <span class="text-white"><?php echo htmlspecialchars($p['temp'] ?? round(($p['bright'] ?? 273.15) - 273.15), ENT_QUOTES, 'UTF-8'); ?>°C</span>
                     </small>
                 </div>
             </div>
 
-            <a href="<?php echo $mapUrl; ?>" target="_blank" class="btn btn-danger py-1 px-2 ms-2" style="font-size: 0.65rem; border-radius: 8px; font-weight: 600; white-space: nowrap;">
+            <a href="<?php echo htmlspecialchars($mapUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" class="btn btn-danger py-1 px-2 ms-2" style="font-size: 0.65rem; border-radius: 8px; font-weight: 600; white-space: nowrap;">
                 <i class="fa-solid fa-location-dot"></i> რუკა
             </a>
         </div>
@@ -1121,11 +1127,6 @@ function toggleAIAccordion() {
     z-index: -1;
 }
 
-/* ანიმაციის წესი */
-@keyframes aiAccordionGradient {
-    0% { background-position: 0% 0%; }
-    100% { background-position: -300% 0%; }
-}
 </style>
 <script>
 function closeAIResponse() {

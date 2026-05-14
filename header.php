@@ -12,12 +12,18 @@ require_once __DIR__ . '/functions.php';
    
    <meta name="description" content="<?php echo isset($pageDesc) ? $pageDesc : 'ამინდის პროგნოზი საქართველოში - Grubeli.ge. გაიგეთ ზუსტი ამინდი თბილისში, ბათუმსა და სხვა ქალაქებში მარტივად.'; ?>">
     
-    <meta property="og:title" content="<?php echo isset($pageTitle) ? $pageTitle : 'Grubeli.ge - ამინდი მარტივად'; ?>">
-    <meta property="og:description" content="<?php echo $currentDesc; ?>">
-    <meta property="og:image" content="images/og-preview.png">
-    <meta property="og:url" content="https://<?php echo $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>">
+    <meta property="og:title" content="<?php echo htmlspecialchars($pageTitle ?? 'Grubeli.ge', ENT_QUOTES, 'UTF-8'); ?>">
+    <meta property="og:description" content="<?php echo htmlspecialchars($currentDesc ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+    <meta property="og:image" content="https://<?php echo htmlspecialchars($_SERVER['HTTP_HOST'] ?? 'grubeli.ge', ENT_QUOTES, 'UTF-8'); ?>/images/og-preview.png">
+    <meta property="og:url" content="https://<?php echo htmlspecialchars(($_SERVER['HTTP_HOST'] ?? 'grubeli.ge') . ($_SERVER['REQUEST_URI'] ?? '/'), ENT_QUOTES, 'UTF-8'); ?>">
     <meta property="og:type" content="website">
-  <link rel="preload" as="image" href="/<?php echo ltrim($current_icon, '/'); ?>">
+    <meta property="og:locale" content="ka_GE">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?php echo htmlspecialchars($pageTitle ?? 'Grubeli.ge', ENT_QUOTES, 'UTF-8'); ?>">
+    <meta name="twitter:description" content="<?php echo htmlspecialchars($pageDesc ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+    <meta name="twitter:image" content="https://<?php echo htmlspecialchars($_SERVER['HTTP_HOST'] ?? 'grubeli.ge', ENT_QUOTES, 'UTF-8'); ?>/images/og-preview.png">
+    <link rel="canonical" href="https://<?php echo htmlspecialchars(($_SERVER['HTTP_HOST'] ?? 'grubeli.ge') . strtok($_SERVER['REQUEST_URI'] ?? '/', '?'), ENT_QUOTES, 'UTF-8'); ?>">
+  <link rel="preload" as="image" href="/<?php echo ltrim(htmlspecialchars($current_icon ?? 'icons/sun.svg', ENT_QUOTES, 'UTF-8'), '/'); ?>">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/app.css?ver=1.0.0" rel="stylesheet">
     <link href="icons/fontawesome/css/all.min.css?v-1.0.0" rel="stylesheet" media="print" onload="this.media='all'">

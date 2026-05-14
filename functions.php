@@ -52,7 +52,7 @@ function is_in_georgia($lat, $lon) {
 // ─── CACHE LAYER ────────────────────────────────────────────────────────
 
 function cache_dir() {
-    $dir = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'cache';
+    $dir = __DIR__ . DIRECTORY_SEPARATOR . 'cache';
     if (!is_dir($dir)) {
         mkdir($dir, 0755, true);
     }
