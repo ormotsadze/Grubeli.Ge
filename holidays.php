@@ -72,15 +72,28 @@ $currentDate = date('m-d');
         <p class="text-light opacity-50">საქართველოს ოფიციალური უქმე დღეების კალენდარი</p>
     </div>
 
+    <?php
+    // Separate future (including today) and past holidays
+    $future_holidays = [];
+    $past_holidays = [];
+    foreach ($holidays as $h) {
+        if ($h['date'] >= $currentDate) {
+            $future_holidays[] = $h;
+        } else {
+            $past_holidays[] = $h;
+        }
+    }
+    ?>
+
+    <!-- მომავალი დღესასწაულები -->
     <div class="row g-3">
-        <?php foreach ($holidays as $index => $h): 
-            $isPast = ($h['date'] < $currentDate);
+        <?php foreach ($future_holidays as $index => $h): 
             $isToday = ($h['date'] == $currentDate);
             $dateParts = explode('-', $h['date']);
             $day = $dateParts[1];
             $month = $dateParts[0];
             
-            $statusClass = $isToday ? 'today' : ($isPast ? 'past' : '');
+            $statusClass = $isToday ? 'today' : '';
         ?>
             <div class="col-12 col-md-6 col-lg-4 reveal-up" style="animation-delay: <?php echo $index * 0.05; ?>s;">
                 <div class="premium-glass holiday-card p-3 h-100 d-flex align-items-center <?php echo $statusClass; ?>">
@@ -107,6 +120,42 @@ $currentDate = date('m-d');
             </div>
         <?php endforeach; ?>
     </div>
+
+    <?php if (!empty($past_holidays)): ?>
+    <div class="mt-4">
+        <h5 class="text-white-50 mb-3" style="opacity: 0.5; font-weight: 300;">
+            <i class="fa-regular fa-calendar-check me-2"></i> გასული დღესასწაულები
+        </h5>
+        <div class="row g-3">
+            <?php foreach ($past_holidays as $index => $h): 
+                $dateParts = explode('-', $h['date']);
+                $day = $dateParts[1];
+                $month = $dateParts[0];
+            ?>
+                <div class="col-12 col-md-6 col-lg-4 reveal-up" style="animation-delay: <?php echo $index * 0.03; ?>s;">
+                    <div class="premium-glass holiday-card p-3 h-100 d-flex align-items-center past">
+                        
+                        <div class="date-badge me-3">
+                            <span style="font-size: 1.2rem;"><?php echo $day; ?></span>
+                            <span style="font-size: 0.7rem; opacity: 0.8;"><?php echo $month; ?></span>
+                        </div>
+
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h6 class="text-light mb-0 fw-bold"><?php echo $h['name']; ?></h6>
+                            </div>
+                            <div class="text-info small opacity-75 mb-1"><?php echo $h['en']; ?></div>
+                            <span class="type-pill text-light opacity-50">
+                                <?php echo $h['type'] == 'religious' ? 'რელიგიური' : 'სახელმწიფო'; ?>
+                            </span>
+                        </div>
+                        
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <div class="mt-5 p-4 premium-glass border-cyan-soft reveal-up">
         <p class="text-light opacity-75 mb-0 small">

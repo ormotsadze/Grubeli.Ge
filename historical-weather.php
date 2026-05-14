@@ -7,15 +7,25 @@ require_once __DIR__ . '/functions.php';
 // Determine lat/lon using unified helper
 [$lat, $lon] = resolve_coordinates($_GET['lat'] ?? null, $_GET['lon'] ?? null);
 
-// Date range handling with 80-year limit
+// Date range handling with 80-year limit + single-date mode
 $today_utc = new DateTime('now', new DateTimeZone('UTC'));
 $max_end = (clone $today_utc)->modify('-1 day');
 $min_start = (clone $today_utc)->modify('-80 years');
 
+$single_date = isset($_GET['date']) ? $_GET['date'] : null;
 $requested_start = isset($_GET['start_date']) ? $_GET['start_date'] : null;
 $requested_end = isset($_GET['end_date']) ? $_GET['end_date'] : null;
 
-// defaults: last 30 days
+// If a single date is provided, use it as both start and end
+if ($single_date && !$requested_start && !$requested_end) {
+    $requested_start = $single_date;
+    $requested_end = $single_date;
+    $single_day_mode = true;
+} else {
+    $single_day_mode = false;
+}
+
+// defaults: last 30 days (or just the single day)
 if (!$requested_end) $requested_end = $max_end->format('Y-m-d');
 if (!$requested_start) $requested_start = (clone $max_end)->modify('-29 days')->format('Y-m-d');
 
@@ -26,6 +36,7 @@ try {
 } catch (Exception $ex) {
   $rs = (clone $max_end)->modify('-29 days');
   $re = clone $max_end;
+  $single_day_mode = false;
 }
 
 if ($rs < $min_start) $rs = clone $min_start;
@@ -148,17 +159,89 @@ include 'header.php';
         </div>
       </div>
 
+      <?php 
+      // ─── Extract daily data early (needed both for card and main display) ───
+      $times = $data['daily']['time'] ?? [];
+      $temps_max = $data['daily']['temperature_2m_max'] ?? [];
+      $temps_min = $data['daily']['temperature_2m_min'] ?? [];
+      $icons = $data['daily']['icon'] ?? [];
+      $descs = $data['daily']['description_geo'] ?? [];
+      $tz = $data['timezone'] ?? 'UTC';
+      ?>
+
+      <?php 
+      // ─── SINGLE-DAY BEAUTIFUL CARD ───
+      if ($single_day_mode && $data && isset($times[0])): 
+          $sd_dt = new DateTime($times[0], new DateTimeZone($tz));
+          $sd_icon = isset($icons[0]) ? icon_url($icons[0], true) : 'icons/sun.svg';
+          $sd_max = isset($temps_max[0]) ? round($temps_max[0]) : '--';
+          $sd_min = isset($temps_min[0]) ? round($temps_min[0]) : '--';
+          $sd_desc = isset($descs[0]) ? $descs[0] : '';
+
+          // Georgian day names
+          $geo_days = ['კვირა','ორშაბათი','სამშაბათი','ოთხშაბათი','ხუთშაბათი','პარასკევი','შაბათი'];
+          $geo_months = ['იანვარი','თებერვალი','მარტი','აპრილი','მაისი','ივნისი','ივლისი','აგვისტო','სექტემბერი','ოქტომბერი','ნოემბერი','დეკემბერი'];
+          $sd_day_geo = $geo_days[intval($sd_dt->format('w'))];
+          $sd_month_geo = $geo_months[intval($sd_dt->format('n')) - 1];
+          $sd_date_geo = intval($sd_dt->format('j')) . ' ' . $sd_month_geo . ' ' . $sd_dt->format('Y');
+      ?>
+      <div class="premium-glass p-4 p-md-5 mb-4 position-relative overflow-hidden reveal-up text-center" style="background: linear-gradient(145deg, rgba(20,25,35,0.7) 0%, rgba(30,40,60,0.5) 100%); border: 1px solid rgba(255,255,255,0.06); border-radius: 28px;">
+          <div class="ambient-glow" style="position:absolute; width:300px; height:300px; top:-80px; right:-80px; background:rgba(13,202,240,0.12); filter:blur(100px); pointer-events:none;"></div>
+          <div class="ambient-glow" style="position:absolute; width:200px; height:200px; bottom:-60px; left:-60px; background:rgba(138,43,226,0.08); filter:blur(80px); pointer-events:none;"></div>
+          
+          <div class="position-relative" style="z-index:1;">
+              <!-- Label -->
+              <div class="d-inline-block px-3 py-1 mb-3 rounded-pill" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08); font-size:0.75rem; color:rgba(255,255,255,0.6); letter-spacing:0.5px;">
+                  <i class="fa-regular fa-clock me-1"></i> შარშან ამ დღეს
+              </div>
+              
+              <!-- Date -->
+              <h2 class="fw-bold text-white mb-0" style="font-family:'BPG NinoMtavruli'; font-size:1.6rem; text-shadow:0 2px 8px rgba(0,0,0,0.3);">
+                  <?php echo htmlspecialchars($sd_date_geo, ENT_QUOTES, 'UTF-8'); ?>
+              </h2>
+              <p class="text-white-50 mb-4" style="font-size:0.85rem;">
+                  <i class="fa-regular fa-calendar-days me-1"></i> <?php echo htmlspecialchars($sd_day_geo, ENT_QUOTES, 'UTF-8'); ?>
+              </p>
+              
+              <!-- Weather Icon + Temperatures -->
+              <div class="d-flex flex-column align-items-center justify-content-center gap-3 mb-3">
+                  <img src="<?php echo htmlspecialchars($sd_icon, ENT_QUOTES, 'UTF-8'); ?>" 
+                       alt="ამინდი" 
+                       style="width:90px; height:90px; object-fit:contain; filter:drop-shadow(0 8px 20px rgba(0,0,0,0.25));" 
+                       class="float-icon" />
+                  <div class="text-center">
+                      <div class="d-flex align-items-baseline justify-content-center gap-4">
+                          <div>
+                              <small class="text-white-50 d-block mb-1" style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.5px;">მაქს</small>
+                              <span class="fw-bold text-white" style="font-size:2.4rem; line-height:1; text-shadow:0 3px 10px rgba(0,0,0,0.2);">
+                                  <?php echo htmlspecialchars($sd_max, ENT_QUOTES, 'UTF-8'); ?>
+                              </span>
+                              <span class="text-white-50" style="font-size:1.2rem;">°C</span>
+                          </div>
+                          <div class="px-3" style="border-left:1px solid rgba(255,255,255,0.12);">
+                              <small class="text-white-50 d-block mb-1" style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.5px;">მინ</small>
+                              <span class="fw-bold text-white" style="font-size:2.4rem; line-height:1; text-shadow:0 3px 10px rgba(0,0,0,0.2);">
+                                  <?php echo htmlspecialchars($sd_min, ENT_QUOTES, 'UTF-8'); ?>
+                              </span>
+                              <span class="text-white-50" style="font-size:1.2rem;">°C</span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              
+              <!-- Description -->
+              <div class="d-inline-block px-4 py-2 rounded-pill" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); font-family:'BPG NinoMtavruli';">
+                  <i class="fa-regular fa-cloud me-1 text-info"></i>
+                  <?php echo htmlspecialchars($sd_desc, ENT_QUOTES, 'UTF-8'); ?>
+              </div>
+          </div>
+      </div>
+      <?php endif; ?>
+
       <?php if (!$data): ?>
         <div class="alert alert-warning">ისტორიული მონაცემების მიღება ვერ მოხერხდა.</div>
-      <?php else: ?>
+      <?php elseif (!$single_day_mode): ?>
         <?php
-        $times = $data['daily']['time'] ?? [];
-        $temps_max = $data['daily']['temperature_2m_max'] ?? [];
-        $temps_min = $data['daily']['temperature_2m_min'] ?? [];
-        $icons = $data['daily']['icon'] ?? [];
-        $descs = $data['daily']['description_geo'] ?? [];
-        $tz = $data['timezone'] ?? 'UTC';
-
         $labels = [];
         $maxs = [];
         $mins = [];
