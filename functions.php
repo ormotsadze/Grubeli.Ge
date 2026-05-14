@@ -98,7 +98,7 @@ function get_location_name($lat, $lon) {
     // Fallback default
     $placeName = 'საქართველო';
 
-    $url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat={$lat}&lon={$lon}&accept-language=ka";
+  $url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat={$lat}&lon={$lon}&accept-language=ka&addressdetails=1";
     $opts = [
         'http' => [
             'method' => 'GET',
@@ -435,6 +435,7 @@ function enrich_weather_data($data, $lat, $lon) {
             $is_day_hour = $hour >= 6 && $hour < 20;
             $data['hourly']['description_geo'][$i] = $codes[$c] ?? 'უცნობი';
             $data['hourly']['icon'][$i] = weather_code_to_icon($c, $is_day_hour);
+            $data['hourly']['current_visibility'][$i] = $data['hourly']['visibility'][$i] ?? 0;
         }
     }
 

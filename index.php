@@ -2,6 +2,9 @@
 header('Cache-Control: no-cache, no-store, must-revalidate');
 header('Pragma: no-cache');
 header('Expires: 0');
+
+
+
 // 1. სესია და აუცილებელი ფუნქციები
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 require_once __DIR__ . '/functions.php';
@@ -13,7 +16,14 @@ require_once __DIR__ . '/functions.php';
 $weatherData = fetch_weather_and_air($lat, $lon);
 $weather = $weatherData['weather'];
 $air_quality = $weatherData['air_quality'];
+$current_hour = (int)date('H'); 
+$vis_meters = $weather['hourly']['visibility'][$current_hour] ?? ($weather['hourly']['visibility'][0] ?? 0);
 
+if ($vis_meters > 0) {
+    $vis_km = round($vis_meters / 1000, 1) . " კმ";
+} else {
+    $vis_km = "10+ კმ"; // თუ API 0-ს აბრუნებს, ეს ხშირად ნიშნავს იდეალურ ხილვადობას
+}
 // 4. IP-სგან დამოუკიდებელი ქალაქის სახელი (cached Nominatim)
 $placeName = get_location_name($lat, $lon);
 
@@ -41,29 +51,41 @@ $current_desc = $current['description_geo'] ?? '';
 $is_day = ($current['is_day'] ?? 1) == 1;
 $current_icon = isset($current['icon']) ? icon_url($current['icon'], $is_day) : 'icons/sun.svg';
 
+// Bypass weather cache when ?nocache is present (temporary, for testing)
+if (isset($_GET['nocache'])) {
+    $cacheDir = __DIR__ . DIRECTORY_SEPARATOR . 'cache';
+    if (is_dir($cacheDir)) {
+        $files = glob($cacheDir . DIRECTORY_SEPARATOR . 'weather_*.json');
+        foreach ($files as $f) { if (is_file($f)) unlink($f); }
+    }
+}
+
 // საათობრივი პროგნოზი
 $hourly = $weather['hourly'] ?? null;
 $hourly_items = [];
 if ($hourly && isset($hourly['time'])) {
-    $target = clone $now; $target->modify('+2 hour');
-    $firstIndex = null;
+    $nowTs = $now->getTimestamp();
+    // Target = start of next full hour: (floor(currentTs / 3600) + 1) * 3600
+    $targetTs = (intdiv($nowTs, 3600) + 1) * 3600;
+
+    $collected = 0;
     foreach ($hourly['time'] as $i => $t) {
-        if (strtotime($t) >= $target->getTimestamp()) { $firstIndex = $i; break; }
+        if ($collected >= 12) break;
+        // Use DateTime with proper timezone for comparison (strtotime interprets as UTC)
+        $h_ts = (new DateTime($t, new DateTimeZone($tz)))->getTimestamp();
+        if ($h_ts < $targetTs) continue;
+        $h_time = new DateTime($t, new DateTimeZone($tz));
+        $is_day_h = (intval($h_time->format('H')) >= 6 && intval($h_time->format('H')) < 20);
+        $hourly_items[] = [
+            'label' => $h_time->format('H:i'),
+            'temp' => $hourly['temperature_2m'][$i] ?? '--',
+            'icon' => isset($hourly['icon'][$i]) ? icon_url($hourly['icon'][$i], $is_day_h) : 'icons/sun.svg',
+            'desc' => $hourly['description_geo'][$i] ?? ''
+        ];
+        $collected++;
     }
-    if ($firstIndex !== null) {
-        for ($k = 0; $k < 12; $k++) {
-            $idx = $firstIndex + $k;
-            if (!isset($hourly['time'][$idx])) break;
-            $h_time = new DateTime($hourly['time'][$idx], new DateTimeZone($tz));
-            $is_day_h = (intval($h_time->format('H')) >= 6 && intval($h_time->format('H')) < 20);
-            $hourly_items[] = [
-                'label' => $h_time->format('H:i'),
-                'temp' => $hourly['temperature_2m'][$idx] ?? '--',
-                'icon' => isset($hourly['icon'][$idx]) ? icon_url($hourly['icon'][$idx], $is_day_h) : 'icons/sun.svg',
-                'desc' => $hourly['description_geo'][$idx] ?? ''
-            ];
-        }
-    }
+    // Debug HTML comment — can be removed after verification
+    echo "\n<!-- [HOURLY_DEBUG] nowTs={$nowTs} targetTs={$targetTs} collected={$collected} -->\n";
     
     // UV და AQI-სთვის ინდექსის პოვნა
     $currentIndex = null;
@@ -255,20 +277,22 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
 }
 </style>
 <?php endif; ?>
-
 <div class="search-section">
-    <div class="search-wrapper">
-        <span class="search-icon">🔍</span>
-        <input type="text" 
-               id="citySearch" 
-               class="search-input" 
-               placeholder="ქალაქი საქართველოში..." 
-               autocomplete="off"
-               role="combobox" 
-               aria-expanded="false" 
-               aria-controls="suggestions" 
-               aria-autocomplete="list">
-    </div>
+    <form id="searchForm" action="javascript:void(0);" autocomplete="off">
+        <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="search" 
+                   id="citySearch" 
+                   class="search-input" 
+                   placeholder="ქალაქი საქართველოში..." 
+                   autocomplete="off"
+                   enterkeyhint="search" 
+                   role="combobox" 
+                   aria-expanded="false" 
+                   aria-controls="suggestions" 
+                   aria-autocomplete="list">
+        </div>
+    </form>
     <div id="suggestions" class="suggestions-list" role="listbox"></div>
 </div>
 
@@ -290,12 +314,12 @@ if ($hour >= 6 && $hour < 20) {
             background-size: cover; 
             background-position: center; 
             background-repeat: no-repeat; 
-            border-radius: 24px; 
+            border-radius: 40px; 
             min-height: 380px;
             background-attachment: scroll;">
   
   <!-- მხოლოდ ერთი დაბნელების ფენა, ამბიენტური გლოუების გარეშე -->
-  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 1; border-radius: 24px;"></div>
+  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 1; border-radius: 40px;"></div>
 
   <div class="card-body position-relative" style="z-index: 3; display: flex; flex-direction: column; justify-content: center; min-height: 320px;">
     
@@ -351,6 +375,12 @@ if ($hour >= 6 && $hour < 20) {
           ?>&deg;C
         </strong>
       </p>
+
+<?php require_once __DIR__ . '/ai/quotes.php'; ?>
+ <p class="quote-text mt-3 mb-0 px-3" style="font-size: 0.9rem; font-style: italic; color: rgba(255,255,255,0.8); text-shadow: 0 1px 3px rgba(0,0,0,0.2);">
+            <?php echo get_random_weather_quote(); ?>
+        </p>
+
     </div>
 
   </div> 
@@ -377,12 +407,6 @@ if ($hour >= 6 && $hour < 20) {
     </div>
 </div>
 <?php endif; ?>
-<?php require_once __DIR__ . '/ai/quotes.php'; ?>
- <div class="quote-container shadow-sm">
-        <p class="quote-text">
-            <?php echo get_random_weather_quote(); ?>
-        </p>
-    </div>
 <style>
 .pulse-animation {
     animation: fire-pulse 1.5s infinite;
@@ -544,130 +568,332 @@ document.addEventListener("DOMContentLoaded", function () {
         background: rgba(255, 255, 255, 0.1);
     }
 </style>
-<div class="weather-details-grid mt-3 mb-3">
-    <div class="detail-item item-aqi shadow-sm">
-        <div class="detail-header">
-            <p class="detail-label"><i class="fa-solid fa-aquarius"></i> ჰაერი</p>
-            <a data-bs-toggle="modal" data-bs-target="#modalaqv" class="detail-info-btn">
-                <i class="fa-regular fa-circle-question quess-icon"></i>
-            </a>
+
+<!-- ─── MODERN FEATURE TILES DASHBOARD ─── -->
+<div class="container mt-4 mb-4">
+  <div class="feature-tiles-grid">
+
+
+<div class="feature-tile tile-sunrise">
+      <div class="tile-glow"></div>
+      <div class="tile-content">
+        <div class="tile-icon-wrap">
+      <i class="fa-solid fa-wind"></i>
         </div>
-        <h5 class="detail-value"><?php echo htmlspecialchars($aq_label, ENT_QUOTES, 'UTF-8'); ?></h5>
-    </div>
-
-    <div class="detail-item item-prec shadow-sm">
-        <p class="detail-label"><i class="fa-solid fa-cloud-showers-heavy"></i> ალბათობა</p>
-        <h5 class="detail-value">
-            <?php 
-            $prec = ($hourly && isset($currentIndex) && isset($hourly['precipitation_probability'][$currentIndex])) ? $hourly['precipitation_probability'][$currentIndex] . '%' : (($hourly && isset($firstIndex) && isset($hourly['precipitation_probability'][$firstIndex])) ? $hourly['precipitation_probability'][$firstIndex] . '%' : '--');
-            echo htmlspecialchars($prec, ENT_QUOTES, 'UTF-8'); 
-            ?>
-        </h5>
-    </div>
-
-    <div class="detail-item item-wind shadow-sm">
-        <p class="detail-label"><i class="fa-solid fa-wind"></i> ქარი</p>
-        <h5 class="detail-value">
-            <?php
+        <div class="tile-body">
+          <span class="tile-label">ქარი</span>
+          <span class="tile-value">
+ <?php
             $wind = $current['windspeed'] ?? (($hourly && isset($currentIndex) && isset($hourly['windspeed_10m'][$currentIndex])) ? $hourly['windspeed_10m'][$currentIndex] : (($hourly && isset($firstIndex) && isset($hourly['windspeed_10m'][$firstIndex])) ? $hourly['windspeed_10m'][$firstIndex] : '--'));
             echo htmlspecialchars($wind, ENT_QUOTES, 'UTF-8'); 
             ?> <small style="font-size: 10px;">კმ/სთ</small>
-        </h5>
-    </div>
 
-    <div class="detail-item item-hum shadow-sm">
-        <p class="detail-label"><i class="fa-solid fa-droplet"></i> ტენიანობა</p>
-        <h5 class="detail-value">
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="feature-tile tile-sunrise">
+      <div class="tile-glow"></div>
+      <div class="tile-content">
+        <div class="tile-icon-wrap">
+       <i class="fa-solid fa-droplet"></i> 
+        </div>
+        <div class="tile-body">
+          <span class="tile-label">ტენიანობა</span>
+          <span class="tile-value">
             <?php
             $hum = ($hourly && isset($currentIndex) && isset($hourly['relativehumidity_2m'][$currentIndex])) ? $hourly['relativehumidity_2m'][$currentIndex] . '%' : (($hourly && isset($firstIndex) && isset($hourly['relativehumidity_2m'][$firstIndex])) ? $hourly['relativehumidity_2m'][$firstIndex] : '--');
             echo htmlspecialchars($hum, ENT_QUOTES, 'UTF-8'); 
             ?>
-        </h5>
+          </span>
+        </div>
+      </div>
     </div>
-    
-</div>
-<div class="container mt-4 mb-4">
-    <div class="row row-cols-1 row-cols-md-3 g-3">
-        
-        <!-- გაერთიანებული ქარდი: მზის ამოსვლა, ჩასვლა, ხანგრძლივობა -->
-        <div class="col">
-            <div class="card premium-card h-100 border-0 shadow">
-                <div class="card-body p-3">
-                    <div class="sun-block d-flex justify-content-around align-items-start text-center">
-                        <div class="sun-item flex-fill px-1">
-                            <div class="icon-box mx-auto">
-                                <i class="fa-regular fa-sun" style="color:#F5B727"></i>
-                            </div>
-                            
-                            <span class="info-label">მზის ამოსვლა</span>
-                            <div class="info-value">
-                                <?php echo htmlspecialchars($sunrise_label, ENT_QUOTES, 'UTF-8'); ?>
-                            </div>
-                        </div>
-                        <div class="sun-item flex-fill px-1">
-                            <div class="icon-box mx-auto">
-                                <i class="fa-solid fa-cloud-sun" style="color:#4fc3f7"></i>
-                            
-                            </div>
-                            <span class="info-label">მზის ჩასვლა</span>
-                            <div class="info-value">
-                                <?php echo htmlspecialchars($sunset_label, ENT_QUOTES, 'UTF-8'); ?>
-                            </div>
-                        </div>
-                        <div class="sun-item flex-fill px-1">
-                            <div class="icon-box mx-auto">
-                                <i class="fa-regular fa-clock fa-shake" style="--fa-animation-duration: 4s; color:#C46A58"></i>
-                            </div>
-                            <span class="info-label">ხანგრძლივობა</span>
-                            <div class="info-value">
-                                <?php echo htmlspecialchars($day_length ?? '--:--', ENT_QUOTES, 'UTF-8'); ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-  <div class="col">
-            <div class="card premium-card h-100 border-0 shadow">
-                <div class="card-body p-3 text-center">
-                    <div class="icon-box mx-auto">
-                        <i class="<?php echo $moon_icon; ?>" style="--fa-animation-duration: 4s; color:<?php echo $moon_color; ?>"></i>
-                    </div>
-                    <span class="info-label">მთვარის ფაზა</span>
-                    <div class="info-value" style="font-size: 0.95rem;">
-                        <?php echo htmlspecialchars($moon_name, ENT_QUOTES, 'UTF-8'); ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card premium-card h-100 border-0 shadow">
-                <div class="card-body p-3 text-center">
-                    <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
-                        <div class="icon-box">
-                            <i class="fa-solid fa-sun-plant-wilt" style="color:#6BC282"></i>
-                        </div>
-                        <a data-bs-toggle="modal" data-bs-target="#modaluv" class="text-white-50">
-                            <i class="fa-regular fa-circle-question quess-icon" style="cursor: pointer;font-size: 16px"></i>
-                        </a>
-                    </div>
-                    <span class="info-label">UV ინდექსი</span>
-                    <div class="info-value">
-                        <?php if ($uv_value === null): ?>
-                            --:--
-                        <?php else: ?>
-                            <?php echo htmlspecialchars($uv_label, ENT_QUOTES,'UTF-8'); ?> 
-                            <small class="fw-normal text-white-50 ms-1" style="font-size: 0.8rem;">
-                                <?php echo htmlspecialchars($uv_text, ENT_QUOTES,'UTF-8'); ?>
-                            </small>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
 
+
+ <div class="feature-tile tile-length">
+      <div class="tile-glow"></div>
+      <div class="tile-content">
+        <div class="tile-icon-wrap">
+       <i class="fa-solid fa-eye-low-vision"></i>
+        </div>
+        <div class="tile-body">
+          <span class="tile-label">ხილვადობა</span>
+          <span class="tile-value">
+
+       <?php echo $vis_km; ?>
+          </span>
+        </div>
+      </div>
     </div>
+  <!-- TILE 3: Day Length -->
+    <div class="feature-tile tile-length">
+      <div class="tile-glow"></div>
+      <div class="tile-content">
+        <div class="tile-icon-wrap">
+         <i class="fa-solid fa-cloud-showers-heavy"></i> 
+        </div>
+        <div class="tile-body">
+          <span class="tile-label">ნალექის ალბათობა</span>
+          <span class="tile-value">
+
+           <?php 
+            $prec = ($hourly && isset($currentIndex) && isset($hourly['precipitation_probability'][$currentIndex])) ? $hourly['precipitation_probability'][$currentIndex] . '%' : (($hourly && isset($firstIndex) && isset($hourly['precipitation_probability'][$firstIndex])) ? $hourly['precipitation_probability'][$firstIndex] . '%' : '--');
+            echo htmlspecialchars($prec, ENT_QUOTES, 'UTF-8'); 
+            ?>
+          </span>
+        </div>
+      </div>
+    </div>
+    <!-- TILE 1: Sunrise -->
+    <div class="feature-tile tile-sunrise">
+      <div class="tile-glow"></div>
+      <div class="tile-content">
+        <div class="tile-icon-wrap">
+          <i class="fa-regular fa-sun"></i>
+        </div>
+        <div class="tile-body">
+          <span class="tile-label">მზის ამოსვლა</span>
+          <span class="tile-value"><?php echo htmlspecialchars($sunrise_label, ENT_QUOTES, 'UTF-8'); ?></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TILE 2: Sunset -->
+    <div class="feature-tile tile-sunset">
+      <div class="tile-glow"></div>
+      <div class="tile-content">
+        <div class="tile-icon-wrap">
+          <i class="fa-solid fa-cloud-sun"></i>
+        </div>
+        <div class="tile-body">
+          <span class="tile-label">მზის ჩასვლა</span>
+          <span class="tile-value"><?php echo htmlspecialchars($sunset_label, ENT_QUOTES, 'UTF-8'); ?></span>
+        </div>
+      </div>
+    </div>
+
+  <div class="feature-tile tile-sunset">
+      <div class="tile-glow"></div>
+      <div class="tile-content">
+        <div class="tile-icon-wrap">
+       <i class="fa-solid fa-clock-rotate-left"></i>
+        </div>
+        <div class="tile-body">
+          <span class="tile-label">დღის ხანგძლივობა</span>
+          <span class="tile-value"><?php echo $day_length; ?></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TILE 4: Moon Phase -->
+    <div class="feature-tile tile-moon">
+      <div class="tile-glow"></div>
+      <div class="tile-content">
+        <div class="tile-icon-wrap">
+          <i class="<?php echo $moon_icon; ?>" style="color:<?php echo $moon_color; ?>"></i>
+        </div>
+        <div class="tile-body">
+          <span class="tile-label">მთვარის ფაზა</span>
+          <span class="tile-value tile-value-sm"><?php echo htmlspecialchars($moon_name, ENT_QUOTES, 'UTF-8'); ?></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TILE 5: UV Index -->
+    <div class="feature-tile tile-uv">
+      <div class="tile-glow"></div>
+      <div class="tile-content">
+        <div class="tile-icon-wrap">
+          <i class="fa-solid fa-sun-plant-wilt"></i>
+          <a data-bs-toggle="modal" data-bs-target="#modaluv" class="tile-info-btn">
+            <i class="fa-regular fa-circle-question"></i>
+          </a>
+        </div>
+        <div class="tile-body">
+          <span class="tile-label">UV ინდექსი</span>
+          <span class="tile-value">
+            <?php if ($uv_value === null): ?>
+              --:--
+            <?php else: ?>
+              <?php echo htmlspecialchars($uv_label, ENT_QUOTES,'UTF-8'); ?>
+              <small class="tile-uv-badge uv-<?php echo $uv_class; ?>">
+                <?php echo htmlspecialchars($uv_text, ENT_QUOTES,'UTF-8'); ?>
+              </small>
+            <?php endif; ?>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TILE 6: Air Quality (AQI) — extracted from weather-details-grid above -->
+    <div class="feature-tile tile-aqi">
+      <div class="tile-glow"></div>
+      <div class="tile-content">
+        <div class="tile-icon-wrap">
+          <i class="fa-solid fa-aquarius"></i>
+          <a data-bs-toggle="modal" data-bs-target="#modalaqv" class="tile-info-btn">
+            <i class="fa-regular fa-circle-question"></i>
+          </a>
+        </div>
+        <div class="tile-body">
+          <span class="tile-label">ჰაერი</span>
+          <span class="tile-value"><?php echo htmlspecialchars($aq_label, ENT_QUOTES, 'UTF-8'); ?></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
+
+<style>
+/* 1. ბაზისური სტილი - მობილურებისთვის (0px - 767px) */
+.feature-tiles-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+}
+
+/* 2. პლანშეტებისთვის (iPad Mini/Air პორტრეტში: 768px - 1023px) */
+@media screen and (min-width: 768px) {
+    .feature-tiles-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 12px;
+    }
+}
+
+/* 3. iPad Air/Pro ლანდშაფტში და პატარა ლეპტოპებისთვის (1024px - 1239px) */
+@media screen and (min-width: 1024px) {
+    .feature-tiles-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+}
+
+/* 4. დიდი მონიტორებისთვის (1240px +) */
+@media screen and (min-width: 1240px) {
+    .feature-tiles-grid {
+        grid-template-columns: repeat(5, 1fr) !important;
+    }
+}
+
+/* დანარჩენი სტილები უცვლელია */
+.feature-tile {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: default;
+}
+
+.feature-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* Glow accent */
+.tile-glow {
+    position: absolute;
+    top: -30%;
+    right: -20%;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    filter: blur(35px);
+    opacity: 0.35;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.feature-tile:hover .tile-glow {
+    opacity: 0.6;
+}
+
+/* Per-tile accent colors */
+.tile-sunrise  { border-left: 3px solid #F5B727; }
+.tile-sunrise .tile-glow { background: #F5B727; }
+.tile-sunset   { border-left: 3px solid #4fc3f7; }
+.tile-sunset .tile-glow { background: #4fc3f7; }
+.tile-length   { border-left: 3px solid #C46A58; }
+.tile-length .tile-glow { background: #C46A58; }
+.tile-moon     { border-left: 3px solid #d4a853; }
+.tile-moon .tile-glow { background: #d4a853; }
+.tile-uv       { border-left: 3px solid #6BC282; }
+.tile-uv .tile-glow { background: #6BC282; }
+.tile-aqi      { border-left: 3px solid #64b5f6; }
+.tile-aqi .tile-glow { background: #64b5f6; }
+
+/* Content layout */
+.tile-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    position: relative;
+    z-index: 1;
+}
+
+.tile-icon-wrap {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 1.25rem;
+    position: relative;
+}
+
+.tile-icon-wrap i {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.tile-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.tile-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: rgba(255, 255, 255, 0.45);
+    margin-bottom: 1px;
+    line-height: 1.2;
+}
+
+.tile-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* მობილურის ზომები */
+@media (max-width: 767px) {
+    .tile-content {
+        padding: 12px 14px;
+        gap: 10px;
+    }
+    .tile-icon-wrap {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+    .tile-value {
+        font-size: 1rem;
+    }
+}
+</style>
  <!-- Modal uv-->
 <div class="modal fade" id="modaluv" tabindex="-1" aria-labelledby="modaluvlLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -704,7 +930,7 @@ document.addEventListener("DOMContentLoaded", function () {
     <div class="ai-accordion-body" id="aiAccordionBody">
         <div class="ai-accordion-content p-3">
             
-            <div id="ai-response-container" style="display: none; margin-bottom: 20px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 18px; position: relative;">
+            <div id="ai-response-container" style="display: none; margin-bottom: 20px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 25px; position: relative;">
                 <button onclick="closeAIResponse()" class="close-ai-btn" style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: white; cursor: pointer;">✖</button>
                 <div class="ai-badge-wrapper" style="margin-bottom: 10px;">
                     <span class="ai-badge">✨ AI ასისტენტი</span>
@@ -761,6 +987,13 @@ function toggleAIAccordion() {
         // დახურვა: ჯერ ვხურავთ body-ს, შემდეგ ვრთავთ gradient ფონს
         body.classList.remove('open');
         icon.classList.remove('rotated');
+
+        // როცა იხურება, ეკრანი დავაბრუნოთ აკორდეონის დასაწყისში
+        accordion.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' // 'center' უკეთესია დახურვისას, რომ მომხმარებელმა დაინახოს სად "გაქრა" კონტენტი
+        });
+
         setTimeout(() => {
             accordion.classList.add('closed');
         }, 400);
@@ -769,6 +1002,14 @@ function toggleAIAccordion() {
         accordion.classList.remove('closed');
         body.classList.add('open');
         icon.classList.add('rotated');
+
+        // გახსნისას ეკრანის ჩამოტანა
+        setTimeout(() => {
+            accordion.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }, 300);
     }
 }
 </script>
@@ -777,88 +1018,115 @@ function toggleAIAccordion() {
 .ai-accordion {
     position: relative;
     border-radius: 25px;
-    overflow: hidden;
+    padding: 2px; /* სივრცე border-ის ეფექტისთვის */
     background: #0f111a;
-    background-clip: padding-box;
-    border: 2px solid transparent;
+    overflow: hidden;
+    transition: all 0.3s ease;
 }
-/* ანიმირებული გრადიენტი border - მუდმივად */
+
+/* ანიმირებული Border-ის ფენა - თავიდან დამალულია (opacity: 0) */
 .ai-accordion::before {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: 25px;
-    padding: 2px;
     background: linear-gradient(90deg, #4285f4, #9b51e0, #e91e63, #f48024, #4285f4);
     background-size: 300% 100%;
     animation: aiAccordionGradient 8s linear infinite;
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
+    opacity: 0; /* დახურულზე არ ჩანს */
+    transition: opacity 0.4s ease;
+    z-index: 0;
 }
-/* დახურულზე gradient მთელ ფონად */
-.ai-accordion.closed::before {
-    padding: 0;
-    -webkit-mask: none;
-    mask: none;
+
+/* როცა აკორდეონი ღიაა, border-ის ანიმაცია ჩნდება */
+.ai-accordion.is-open::before {
+    opacity: 1;
+}
+
+
+.ai-accordion-header {
+    width: 100%;
+    display: flex;
     border-radius: 25px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: linear-gradient(90deg, #4285f4, #9b51e0, #e91e63, #f48024, #4285f4);
+    background-size: 300% 100%;
+    animation: aiAccordionGradient 8s linear infinite;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    position: relative;
 }
-.ai-accordion.closed {
-    border-color: transparent;
+
+/* ჰედერის შავად დაფერვა, რომ გრადიენტი რბილი იყოს */
+.ai-accordion-header::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+    z-index: -1;
 }
+
 @keyframes aiAccordionGradient {
     0% { background-position: 0% 0%; }
     100% { background-position: -300% 0%; }
 }
-.ai-accordion > * {
-    position: relative;
-    z-index: 1;
-}
-.ai-accordion-header {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    background: rgba(0, 0, 0, 0.35);
-    border: none;
-    color: #fff;
-    font-size: 1rem;
-    font-family: 'BPG NinoMtavruli', sans-serif;
-    cursor: pointer;
-    transition: background 0.2s;
-    text-align: left;
-}
-.ai-accordion-header:hover {
-    background: rgba(0, 0, 0, 0.45);
-}
-.ai-accordion-left {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-.ai-accordion-icon {
-    transition: transform 0.3s ease;
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.4);
-}
-.ai-accordion-icon.rotated {
-    transform: rotate(180deg);
-}
+
 .ai-accordion-body {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.4s ease;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #0f111a;
 }
+
 .ai-accordion-body.open {
     max-height: 1000px;
+    
 }
+
 .ai-accordion-content {
-    padding: 0 20px 20px;
+    padding: 20px;
+    color: rgba(255, 255, 255, 0.9);
+    position: relative;
+    z-index: 1;
+    margin: 12px; /* დაშორება გარე კონტეინერისგან */
+    background: #0f111a; /* შიდა ფონი */
+    border-radius: 20px;
+    
+    /* ჩარჩოს შექმნა mask-ის გამოყენებით */
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.ai-accordion-content::before {
+    content: "";
+    position: absolute;
+    inset: -2px; /* 2px-ით გადის გარეთ, რაც ქმნის ბორდერს */
+    border-radius: 22px; 
+    padding: 2px; /* ბორდერის სისქე */
+    
+    /* გრადიენტი და ანიმაცია */
+    background: linear-gradient(90deg, #4285f4, #9b51e0, #e91e63, #f48024, #4285f4);
+    background-size: 300% 100%;
+    animation: aiAccordionGradient 8s linear infinite;
+    
+    /* ეს ნაწილი ჭრის შუა გულს და ტოვებს მხოლოდ ჩარჩოს */
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* ანიმაციის წესი */
+@keyframes aiAccordionGradient {
+    0% { background-position: 0% 0%; }
+    100% { background-position: -300% 0%; }
 }
 </style>
-
 <script>
 function closeAIResponse() {
     const responseContainer = document.getElementById('ai-response-container');
@@ -960,75 +1228,55 @@ function askQuickAI(question) {
     const searchInput = document.getElementById('citySearch');
     const suggestionBox = document.getElementById('suggestions');
 
+    // 1. დავამატოთ ფორმის კონტროლი (მობილურისთვის კრიტიკულია)
+    // თუ HTML-ში არ გაქვს <form>, JavaScript-ით შევქმნათ გარსი
+    const searchWrapper = searchInput.closest('.search-wrapper') || searchInput.parentElement;
+    if (searchWrapper.tagName !== 'FORM') {
+        const form = document.createElement('form');
+        form.id = 'searchForm';
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            const firstMatch = suggestionBox.querySelector('.list-group-item');
+            if (firstMatch && !firstMatch.innerText.includes('ვერ მოიძებნა')) {
+                firstMatch.click(); // ავტომატურად აირჩიოს პირველივე შედეგი
+            }
+        };
+        searchWrapper.parentNode.insertBefore(form, searchWrapper);
+        form.appendChild(searchWrapper);
+    }
+
     function latinToGeorgian(text) {
         let str = text.toLowerCase();
-        const digraphs = {
-            'sh': 'შ',
-            'ch': 'ჩ',
-            'ts': 'ც',
-            'dz': 'ძ',
-            'gh': 'ღ',
-            'kh': 'ხ',
-            'th': 'თ',
-            'ph': 'ფ',
-            'zh': 'ჟ'
-        };
-        const single = {
-            'a': 'ა', 'b': 'ბ', 'c': 'ც', 'd': 'დ', 'e': 'ე',
-            'f': 'ფ', 'g': 'გ', 'h': 'ჰ', 'i': 'ი', 'j': 'ჯ',
-            'k': 'კ', 'l': 'ლ', 'm': 'მ', 'n': 'ნ', 'o': 'ო',
-            'p': 'პ', 'q': 'ქ', 'r': 'რ', 's': 'ს', 't': 'თ',
-            'u': 'უ', 'v': 'ვ', 'w': 'ჭ', 'x': 'ხ', 'y': 'ყ', 'z': 'ზ'
-        };
-        let result = '';
-        let i = 0;
+        const digraphs = { 'sh': 'შ', 'ch': 'ჩ', 'ts': 'ც', 'dz': 'ძ', 'gh': 'ღ', 'kh': 'ხ', 'th': 'თ', 'ph': 'ფ', 'zh': 'ჟ' };
+        const single = { 'a': 'ა', 'b': 'ბ', 'c': 'ც', 'd': 'დ', 'e': 'ე', 'f': 'ფ', 'g': 'გ', 'h': 'ჰ', 'i': 'ი', 'j': 'ჯ', 'k': 'კ', 'l': 'ლ', 'm': 'მ', 'n': 'ნ', 'o': 'ო', 'p': 'პ', 'q': 'ქ', 'r': 'რ', 's': 'ს', 't': 'თ', 'u': 'უ', 'v': 'ვ', 'w': 'ჭ', 'x': 'ხ', 'y': 'ყ', 'z': 'ზ' };
+        let result = ''; let i = 0;
         while (i < str.length) {
             let matched = false;
             for (let dlen = 2; dlen >= 2; dlen--) {
                 if (i + dlen <= str.length) {
                     const sub = str.substr(i, dlen);
-                    if (digraphs[sub]) {
-                        result += digraphs[sub];
-                        i += dlen;
-                        matched = true;
-                        break;
-                    }
+                    if (digraphs[sub]) { result += digraphs[sub]; i += dlen; matched = true; break; }
                 }
             }
-            if (!matched) {
-                const ch = str[i];
-                result += single[ch] || ch;
-                i++;
-            }
+            if (!matched) { const ch = str[i]; result += single[ch] || ch; i++; }
         }
         return result;
     }
 
     fetch('cities.json')
-        .then(response => {
-            if (!response.ok) throw new Error("ფაილი ვერ ჩაიტვირთა");
-            return response.json();
-        })
-        .then(data => {
-            cities = data;
-        })
-        .catch(error => {
-            console.error('შეცდომა cities.json-ის ჩატვირთვისას:', error);
-        });
+        .then(response => response.json())
+        .then(data => { cities = data; })
+        .catch(error => console.error('Error loading cities:', error));
 
-    // Debounced search
     let searchTimer = null;
     searchInput.addEventListener('input', function() {
         clearTimeout(searchTimer);
         searchTimer = setTimeout(() => {
             const val = this.value.trim().toLowerCase();
             suggestionBox.innerHTML = '';
-            
-            if (cities.length === 0) return;
-            if (val.length < 2) return;
+            if (cities.length === 0 || val.length < 2) return;
 
             let valGeo = latinToGeorgian(val);
-            
             const matches = cities.filter(city => {
                 const cityNameLower = city.name.toLowerCase();
                 return cityNameLower.includes(val) || cityNameLower.includes(valGeo);
@@ -1039,39 +1287,36 @@ function askQuickAI(question) {
                     const div = document.createElement('div');
                     div.className = 'list-group-item';
                     div.innerHTML = `<strong>${city.name}</strong> <small style="color: #aaa;">| ${city.region}</small>`;
-                    div.onclick = () => {
-                        if (typeof window.startLoading === 'function') {
-                            window.startLoading();
-                        }
+                    
+                    // ფუნქცია ლოკაციის შესანახად და გადასასვლელად
+                    const selectCity = () => {
+                        if (typeof window.startLoading === 'function') window.startLoading();
                         localStorage.setItem('lat', city.lat);
                         localStorage.setItem('lon', city.lon);
+                        
                         fetch('save_location.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ lat: city.lat, lon: city.lon })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            window.location.href = `index.php?lat=${city.lat}&lon=${city.lon}`;
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
+                        }).finally(() => {
                             window.location.href = `index.php?lat=${city.lat}&lon=${city.lon}`;
                         });
                     };
+
+                    div.onclick = selectCity;
+                    div.ontouchstart = selectCity; // მობილურისთვის
                     suggestionBox.appendChild(div);
                 });
             } else {
                 const div = document.createElement('div');
-                div.className = 'list-group-item';
-                div.style.color = '#777';
-                div.style.cursor = 'default';
-                div.innerText = 'ქალაქი ვერ მოიძებნა. მალე დავამატებთ ✌️';
+                div.className = 'list-group-item no-result';
+                div.innerText = 'ქალაქი ვერ მოიძებნა ✌️';
                 suggestionBox.appendChild(div);
             }
-        }, 200);
+        }, 250);
     });
 
+    // ძებნის ველის გასუფთავება გვერდზე დაწკაპუნებისას
     document.addEventListener('click', (e) => {
         if (!suggestionBox.contains(e.target) && e.target !== searchInput) {
             suggestionBox.innerHTML = '';

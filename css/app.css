@@ -1043,74 +1043,26 @@ background: #13141b;
 
 
 
-.quote-container {
-    background: rgba(255, 255, 255, 0.03); /* ძალიან ნაზი გამჭვირვალობა */
-    backdrop-filter: blur(10px); /* შუშის ეფექტი */
-    -webkit-backdrop-filter: blur(10px);
-   border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 25px;
-    padding: 20px 25px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    transition: transform 0.3s ease;
-}
-
-.quote-container:hover {
-    transform: translateY(-3px);
-    background: rgba(255, 255, 255, 0.05);
-}
 
 .quote-text {
-    margin: 0;
+    margin: 10px 0;
     font-family: 'BPG Arial', sans-serif;
     font-style: italic;
     font-size: 0.95rem;
-    color: #c6d1e7;
+    padding: 14px 20px;
+    color: #ffffff;
     line-height: 1.5;
     letter-spacing: 0.3px;
-}
-
-/* მობილურისთვის ოპტიმიზაცია */
-@media (max-width: 576px) {
-    .quote-container {
-        padding: 15px;
-        flex-direction: column;
-        text-align: center;
-        gap: 10px;
-    }
-    
-    .quote-text {
-        font-size: 0.85rem;
-    }
-}
-
-/* მთავარი კონტეინერი */
-.ai-suggest-container {
     position: relative;
-    background: #0f111a;
-    border-radius: 25px;
-    padding: 20px;
-    margin-top: 20px;
-    border: 1px solid transparent;
-    z-index: 10;
-    overflow: hidden;
+    z-index: 1;
+    
+    background: transparent;
+    border-radius: 16px;
+   
+    background-clip: padding-box;
 }
 
-/* ანიმირებული ჩარჩო */
-.ai-suggest-container::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 25px;
-    padding: 2px; 
-    background: linear-gradient(90deg, #4285f4, #9b51e0, #e91e63, #f48024, #4285f4);
-    background-size: 200% 100%;
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    -webkit-mask-composite: xor;
-    animation: border-intro 1.2s ease-in-out forwards, border-flow 4s linear infinite 1.2s;
-}
+
 
 /* პასუხის ტექსტის სტილი */
 .ai-status-text {
