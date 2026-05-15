@@ -67,7 +67,7 @@ $hist_display_text = "";
 if ($hist_temp !== null) {
     // ვამრგვალებთ მთელ ციფრამდე უფრო სუფთა ვიზუალისთვის
     $formatted_hist_temp = round($hist_temp);
-    $hist_display_text = "შარშან ამ დროს იყო " . $formatted_hist_temp . "°C";
+    $hist_display_text = "შარშან ამ დღეს: " . $formatted_hist_temp . "°C";
 }
 // Auto prompt flag for AI suggestions
 $autoPrompt = true; // Set based on config or default
@@ -773,12 +773,12 @@ document.addEventListener("DOMContentLoaded", function () {
     <!-- TILE 5: UV Index -->
     <div class="feature-tile tile-uv">
       <div class="tile-glow"></div>
+      <a data-bs-toggle="modal" data-bs-target="#modaluv" class="tile-info-btn" style="cursor: pointer;">
+        <i class="fa-regular fa-circle-question" style="color: #4FC289"></i>
+      </a>
       <div class="tile-content">
         <div class="tile-icon-wrap">
           <i class="fa-solid fa-sun-plant-wilt"></i>
-          <a data-bs-toggle="modal" data-bs-target="#modaluv" class="tile-info-btn" style="cursor: pointer;">
-            <i class="fa-regular fa-circle-question" style="color: #4FC289"></i>
-          </a>
         </div>
         <div class="tile-body">
           <span class="tile-label">UV ინდექსი</span>
@@ -799,12 +799,12 @@ document.addEventListener("DOMContentLoaded", function () {
     <!-- TILE 6: Air Quality (AQI) — extracted from weather-details-grid above -->
     <div class="feature-tile tile-aqi">
       <div class="tile-glow"></div>
+      <a data-bs-toggle="modal" data-bs-target="#modalaqv" class="tile-info-btn" style="cursor: pointer;">
+        <i class="fa-regular fa-circle-question" style="color: #4FC289"></i>
+      </a>
       <div class="tile-content">
         <div class="tile-icon-wrap">
           <i class="fa-solid fa-aquarius"></i>
-          <a data-bs-toggle="modal" data-bs-target="#modalaqv" class="tile-info-btn" style="cursor: pointer;">
-            <i class="fa-regular fa-circle-question" style="color: #4FC289"></i>
-          </a>
         </div>
         <div class="tile-body">
           <span class="tile-label">ჰაერი</span>
@@ -946,6 +946,28 @@ document.addEventListener("DOMContentLoaded", function () {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* Info button positioned at top-right of tile */
+.tile-info-btn {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    z-index: 5;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    transition: background 0.2s;
+}
+.tile-info-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+.tile-info-btn i {
+    font-size: 0.8rem !important;
 }
 
 /* მობილურის ზომები */
