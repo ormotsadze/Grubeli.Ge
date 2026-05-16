@@ -738,21 +738,54 @@ function get_last_year_temp($lat, $lon) {
     $last_year_date = date('Y-m-d', strtotime('-1 year'));
     $cache_file = __DIR__ . "/cache/hist_{$lat}_{$lon}_{$last_year_date}.json";
 
+    // Check cache but only if temp is NOT null
     if (file_exists($cache_file) && (time() - filemtime($cache_file) < 86400)) {
-        return json_decode(file_get_contents($cache_file), true);
+        $cached = json_decode(file_get_contents($cache_file), true);
+        if ($cached && isset($cached['temp']) && $cached['temp'] !== null) {
+            return $cached;
+        }
+        // If cached temp is null, delete stale cache and retry
+        if (isset($cached['temp']) && $cached['temp'] === null && filemtime($cache_file) < time() - 3600) {
+            unlink($cache_file);
+        }
     }
 
     // Open-Meteo Historical API
     $url = "https://archive-api.open-meteo.com/v1/archive?latitude={$lat}&longitude={$lon}&start_date={$last_year_date}&end_date={$last_year_date}&hourly=temperature_2m";
     
-    $response = file_get_contents($url);
+    $context = stream_context_create(['http' => ['timeout' => 10, 'header' => "User-Agent: " . USER_AGENT . "\r\n"]]);
+    $response = @file_get_contents($url, false, $context);
     if ($response) {
         $data = json_decode($response, true);
         $hour = (int)date('H');
-        $temp = $data['hourly']['temperature_2m'][$hour] ?? null;
         
-        file_put_contents($cache_file, json_encode(['temp' => $temp]));
-        return ['temp' => $temp];
+        // Try current hour first, then fall back to nearest available hour
+        $temp = $data['hourly']['temperature_2m'][$hour] ?? null;
+        if ($temp === null && isset($data['hourly']['temperature_2m'])) {
+            // Find the closest non-null temperature
+            $temps = $data['hourly']['temperature_2m'];
+            if (!empty($temps)) {
+                $closest = null;
+                $closestDiff = PHP_INT_MAX;
+                foreach ($temps as $h => $t) {
+                    if ($t !== null) {
+                        $diff = abs($h - $hour);
+                        if ($diff < $closestDiff) {
+                            $closestDiff = $diff;
+                            $closest = $t;
+                        }
+                    }
+                }
+                if ($closest !== null) $temp = $closest;
+            }
+        }
+        
+        // Only cache if we got a valid temperature
+        if ($temp !== null) {
+            file_put_contents($cache_file, json_encode(['temp' => $temp, 'fetched_at' => time()]));
+            return ['temp' => $temp];
+        }
+        // Don't cache null values — allow retry on next page load
     }
     return null;
 }

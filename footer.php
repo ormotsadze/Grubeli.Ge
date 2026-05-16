@@ -121,7 +121,7 @@ if ($current_page == 'index.php' || $current_page == 'historical-weather.php') :
 
 </div>
 <center>
-<span class="footer-credit"> 2026 <a href="https://grubeli.ge">Grubeli.Ge</a> - ყველა უფლება დაცულია. </span>
+<span class="footer-credit"> &copy; 2026 Grubeli.Ge</span>
 
 </center>
 
@@ -280,4 +280,36 @@ document.getElementById('btn-location').addEventListener('click', function() {
     });
 
     window.startLoading();
+</script>
+
+
+<script>
+
+(function() {
+  const banner = document.getElementById('app-banner');
+  if (!banner) return;
+
+  // ✅ WebView-ში საერთოდ არ ჩანს
+  if (window.AndroidBridge) return;
+
+  // ✅ თუ მომხმარებელმა უკვე დახურა — არ ვაჩვენებთ
+  if (sessionStorage.getItem('appBannerClosed')) return;
+
+  // ✅ ბანერის ჩვენება
+  banner.style.display = 'block';
+
+  // ✅ ბანერის სიმაღლით body-ს padding-top
+  document.body.style.paddingTop = banner.offsetHeight + 'px';
+
+  // დახურვის ღილაკი
+  const closeBtn = document.getElementById('app-banner-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function() {
+      banner.style.display = 'none';
+      document.body.style.paddingTop = '0';
+      sessionStorage.setItem('appBannerClosed', '1');
+    });
+  }
+})();
+
 </script>

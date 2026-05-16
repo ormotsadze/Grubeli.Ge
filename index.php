@@ -44,6 +44,8 @@ $city_name = $placeName;
 $_SESSION['city_name'] = $city_name;
 $_SESSION['weather_cache'] = $weather;
 $_SESSION['is_day'] = $weather['current_weather']['is_day'] ?? 1;
+$_SESSION['lat'] = $lat;
+$_SESSION['lon'] = $lon;
 
 $pageTitle = "ამინდი " . $city_name;
 $pageDesc = "ზუსტი ამინდის პროგნოზი " . $city_name . "-ში. ტემპერატურა, ტენიანობა და ჰაერის ხარისხი რეალურ დროში Grubeli.ge-ზე.";
@@ -246,8 +248,24 @@ if ($moon_phase < 0.0625 || $moon_phase >= 0.9375) {
 
 
 ?>
-
-<div class="container justify-content-center mt-3">
+<div id="app-banner" class="app-banner">
+  <div class="app-banner-inner">
+    <div class="app-banner-left">
+      <img src="images/logo/logo.png" alt="Grubeli" class="app-banner-logo">
+      <div>
+        <div class="app-banner-title">Grubeli.ge  <span class="version-badge">PRO</span></div>
+        <div class="app-banner-sub">ჩამოტვირთე Android აპი</div>
+      </div>
+    </div>
+    <div class="app-banner-right">
+      <a href="app-release.apk" class="app-banner-btn" id="app-banner-download">
+        <i class="fa-brands fa-google-play me-1"></i> ჩამოტვირთვა
+      </a>
+      <button class="app-banner-close" id="app-banner-close" aria-label="დახურვა">&times;</button>
+    </div>
+  </div>
+</div>
+<div class="container justify-content-center mt-2">
     <?php 
 $fireData = checkFireRisk(defined('NASA_MAP_KEY') ? NASA_MAP_KEY : '');
 
@@ -447,7 +465,7 @@ if ($hour >= 6 && $hour < 20) {
       </p>
 
 <?php require_once __DIR__ . '/ai/quotes.php'; ?>
- <p class="quote-text mt-3 mb-0 px-3" style="font-size: 0.9rem; font-style: italic; color: rgba(255,255,255,0.8); text-shadow: 0 1px 3px rgba(0,0,0,0.2);">
+ <p class="quote-text mt-3 mb-0 px-3" style="font-size: 0.9rem; color: rgba(255,255,255,0.8); text-shadow: 0 1px 3px rgba(0,0,0,0.2);">
             <?php echo get_random_weather_quote(); ?>
         </p>
 
@@ -1244,6 +1262,15 @@ function askQuickAI(question) {
 
     const params = new URLSearchParams();
     params.append('message', question);
+    
+    // Pass current coordinates from URL or localStorage so AI responds for the right location
+    const urlParams = new URLSearchParams(window.location.search);
+    const lat = urlParams.get('lat') || localStorage.getItem('lat');
+    const lon = urlParams.get('lon') || localStorage.getItem('lon');
+    if (lat && lon) {
+        params.append('lat', lat);
+        params.append('lon', lon);
+    }
 
     fetch('ai/send_message.php', { 
         method: 'POST',

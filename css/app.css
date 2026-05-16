@@ -1211,13 +1211,6 @@ background: #13141b;
 
 
 
-
-
-
-
-
-
-
 /* შავი ფონი მენიუს უკან */
 #custom-drawer-overlay {
     position: fixed;
@@ -1962,4 +1955,100 @@ background: #13141b;
     font-size: 0.7rem;
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+
+
+
+.app-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: rgba(20, 25, 35, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 10px 16px;
+  display: none;
+}
+
+.app-banner-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1300px;
+  margin: 0 auto;
+  gap: 12px;
+}
+
+.app-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-banner-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.app-banner-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.app-banner-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+}
+
+.app-banner-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.app-banner-btn {
+ background: linear-gradient(135deg, #4285f4, #9b51e0) !important;
+  color: #fff;
+  text-decoration: none;
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+
+.app-banner-btn:hover {
+  opacity: 0.85;
+  color: #fff;
+}
+
+.app-banner-close {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.6);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  transition: background 0.2s;
+  padding: 0;
+}
+
+.app-banner-close:hover {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
 }

@@ -15,12 +15,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userMsg = mb_substr(trim($_POST['message'] ?? ''), 0, 300);
 
     if (!empty($userMsg)) {
-        $cityName = $_SESSION['city_name'] ?? 'თბილისი'; 
+        // ✅ FIX: Use coordinates from POST if provided (mobile/WebView), fall back to session
+        $ai_lat = isset($_POST['lat']) && is_numeric($_POST['lat']) ? floatval($_POST['lat']) : null;
+        $ai_lon = isset($_POST['lon']) && is_numeric($_POST['lon']) ? floatval($_POST['lon']) : null;
+        
+        // Resolve coordinates with priority: POST > Session > Default
+        if ($ai_lat !== null && $ai_lon !== null) {
+            list($ai_lat, $ai_lon) = resolve_coordinates($ai_lat, $ai_lon);
+            $cityName = get_location_name($ai_lat, $ai_lon);
+        } else {
+            $cityName = $_SESSION['city_name'] ?? 'თბილისი';
+            $ai_lat = $_SESSION['lat'] ?? 41.7151;
+            $ai_lon = $_SESSION['lon'] ?? 44.8271;
+        }
+        
         $isDay = $_SESSION['is_day'] ?? 1;
         $dayStatus = ($isDay == 1) ? "დღეა" : "ღამეა";
         
         // ✅ FIX 2: weather_cache არის array (index.php-ში json_encode გარეშე შენახული)
         $weatherData = $_SESSION['weather_cache'] ?? null;
+
+        // If we have real coordinates and session cache might be stale, fetch fresh weather
+        if ($ai_lat !== null && $ai_lon !== null && 
+            (!isset($_SESSION['weather_lat']) || $_SESSION['weather_lat'] != $ai_lat || !isset($_SESSION['weather_lon']) || $_SESSION['weather_lon'] != $ai_lon)) {
+            $freshWeather = fetch_weather_and_air($ai_lat, $ai_lon);
+            if ($freshWeather['weather']) {
+                $weatherData = $freshWeather['weather'];
+            }
+        }
 
         $temp = 'უცნობია';
         $desc = 'უცნობი პირობები';

@@ -132,6 +132,13 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+            } else {
+                runOnUiThread {
+                    requestPermissionsLauncher.launch(arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ))
+                }
             }
         }
 
@@ -158,10 +165,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) subscribeToUrgentAlerts()
+    private val requestPermissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        if (permissions[Manifest.permission.POST_NOTIFICATIONS] == true) {
+            subscribeToUrgentAlerts()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -174,11 +183,14 @@ class MainActivity : ComponentActivity() {
         subscribeToUrgentAlerts()
         checkBatteryOptimization()
         
+        val permissionsToRequest = mutableListOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
+            permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
         }
+        requestPermissionsLauncher.launch(permissionsToRequest.toTypedArray())
 
         splashScreen.setKeepOnScreenCondition { !isWebViewLoaded }
 
