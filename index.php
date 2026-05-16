@@ -258,7 +258,7 @@ if ($moon_phase < 0.0625 || $moon_phase >= 0.9375) {
       </div>
     </div>
     <div class="app-banner-right">
-      <a href="app-release.apk" class="app-banner-btn" id="app-banner-download">
+      <a href="getapp.php" class="app-banner-btn" id="app-banner-download">
         <i class="fa-brands fa-google-play me-1"></i> ჩამოტვირთვა
       </a>
       <button class="app-banner-close" id="app-banner-close" aria-label="დახურვა">&times;</button>

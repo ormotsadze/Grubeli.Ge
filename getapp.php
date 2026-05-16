@@ -132,16 +132,16 @@ include 'header.php';
         </h3>
 
         <ul class="premium-list">
-          <li><i class="fa-regular fa-bell color-emerald"></i><span><strong>FCM Push შეტყობინებები</strong> — მიწისძვრა, ხანძარი, ქარიშხალი, ყოველდღიური ამინდი, Solar Flare.</span></li>
-          <li><i class="fa-regular fa-clock color-emerald"></i><span><strong>ვიჯეტი მთავარ ეკრანზე</strong> — Android-ის ვიჯეტი, განახლდება ავტომატურად.</span></li>
-          <li><i class="fa-regular fa-bolt color-emerald"></i><span><strong>ჩქარი ჩატვირთვა</strong> — WebView-ის ოპტიმიზებული ქეში, მინიმალური ტრაფიკი.</span></li>
-          <li><i class="fa-regular fa-location-dot color-emerald"></i><span><strong>ავტომატური ლოკაცია</strong> — Android-ის GPS-ის ზუსტი განსაზღვრა, Background Location.</span></li>
-          <li><i class="fa-regular fa-cloud-arrow-down color-emerald"></i><span><strong>Offline ქეში</strong> — ბოლო მონაცემები ხელმისაწვდომია ინტერნეტის გარეშეც.</span></li>
-          <li><i class="fa-regular fa-microchip color-emerald"></i><span><strong>Native ბრიჯი</strong> — Android ↔ JavaScript ბრძანებები, FCM-ის რეგისტრაცია.</span></li>
-          <li><i class="fa-regular fa-gear color-emerald"></i><span><strong>შეტყობინებების მართვა</strong> — ჩართე/გამორთე კატეგორიები: Earthquake, Fire, Storm, Daily, Solar.</span></li>
-          <li><i class="fa-regular fa-clock-rotate-left color-emerald"></i><span><strong>10-წუთიანი ინტერვალი</strong> — ფონური განახლება, გაფრთხილებების მყისიერი მიღება.</span></li>
-          <li><i class="fa-regular fa-message color-emerald"></i><span><strong>Manifest V3</strong> — თანამედროვე WebView, Material You დიზაინი.</span></li>
-          <li><i class="fa-regular fa-shield-halved color-emerald"></i><span><strong>უსაფრთხო</strong> — მინიმალური ნებართვები, გამჭვირვალე წყაროს კოდი.</span></li>
+          <li><i class="fa-regular fa-bell color-emerald"></i> <span><strong>FCM Push შეტყობინებები</strong> — მიწისძვრა, ხანძარი, ქარიშხალი, ყოველდღიური ამინდი, Solar Flare.</span></li>
+          <li><i class="fa-solid fa-grip"></i> <span><strong>ვიჯეტი მთავარ ეკრანზე</strong> — Android-ის ვიჯეტი, განახლდება ავტომატურად.</span></li>
+          <li><i class="fa-solid fa-truck-fast"></i> <span><strong>ჩქარი ჩატვირთვა</strong> — WebView-ის ოპტიმიზებული ქეში, მინიმალური ტრაფიკი.</span></li>
+          <li><i class="fa-solid fa-street-view"></i> <span><strong>ავტომატური ლოკაცია</strong> — Android-ის GPS-ის ზუსტი განსაზღვრა, Background Location.</span></li>
+          <li><i class="fa-solid fa-plane-slash"></i> <span><strong>Offline ქეში</strong> — ბოლო მონაცემები ხელმისაწვდომია ინტერნეტის გარეშეც.</span></li>
+          <li><i class="fa-solid fa-code-commit"></i> <span><strong>Native ბრიჯი</strong> — Android ↔ JavaScript ბრძანებები, FCM-ის რეგისტრაცია.</span></li>
+          <li><i class="fa-regular fa-bell-slash"></i> <span><strong>შეტყობინებების მართვა</strong> — ჩართე/გამორთე კატეგორიები: Earthquake, Fire, Storm, Daily, Solar.</span></li>
+          <li><i class="fa-solid fa-wand-sparkles"></i> <span><strong>10-წუთიანი ინტერვალი</strong> — ფონური განახლება, გაფრთხილებების მყისიერი მიღება.</span></li>
+          <li><i class="fa-regular fa-clone"></i> <span><strong>Manifest V3</strong> — თანამედროვე WebView, Material You დიზაინი.</span></li>
+          <li><i class="fa-solid fa-shield-halved"></i> <span><strong>უსაფრთხო</strong> — მინიმალური ნებართვები, გამჭვირვალე წყაროს კოდი.</span></li>
         </ul>
       </div>
     </div>
