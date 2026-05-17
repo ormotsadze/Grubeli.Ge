@@ -1,6 +1,12 @@
 <?php
-$pageTitle = "ვაკანსია";
-$pageDesc = "გაეცანით Grubeli.ge-ს ვაკანსიებს. შემოუერთდით ჩვენს გუნდს და დაეხმარეთ მომხმარებლებს საუკეთესო სერვისის მიწოდებაში.";
+require_once 'functions.php';
+
+// ვიღებთ თარგმანებს 'index_' პრეფიქსით
+$pageTitle   = __('jobs_title');
+$pageDesc    = __('jobs_desc');
+$pageOgTitle = __('jobs_og_title');
+$pageTwTitle = __('jobs_tw_title');
+$pageTwDesc  = __('jobs_tw_desc');
 include 'header.php';
 ?>
 

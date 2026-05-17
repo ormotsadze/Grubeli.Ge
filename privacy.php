@@ -1,6 +1,12 @@
 <?php
-$pageTitle = "წესები და პირობები";
-$pageDesc = "გაეცანით Grubeli.ge-ს კონფიდენციალურობის პოლიტიკას. გაიგეთ, როგორ ვიცავთ თქვენს მონაცემებს და როგორ ვიყენებთ ლოკაციას ამინდის ზუსტი პროგნოზისთვის.";
+require_once 'functions.php';
+
+// ვიღებთ თარგმანებს 'index_' პრეფიქსით
+$pageTitle   = __('privacy_title');
+$pageDesc    = __('privacy_desc');
+$pageOgTitle = __('privacy_og_title');
+$pageTwTitle = __('privacy_tw_title');
+$pageTwDesc  = __('privacy_tw_desc');
 include 'header.php';
 ?>
 

@@ -47,9 +47,11 @@ $_SESSION['is_day'] = $weather['current_weather']['is_day'] ?? 1;
 $_SESSION['lat'] = $lat;
 $_SESSION['lon'] = $lon;
 
-$pageTitle = "ამინდი " . $city_name;
-$pageDesc = "ზუსტი ამინდის პროგნოზი " . $city_name . "-ში. ტემპერატურა, ტენიანობა და ჰაერის ხარისხი რეალურ დროში Grubeli.ge-ზე.";
-
+$pageTitle   = __('index_title');
+$pageDesc    = __('index_desc');
+$pageOgTitle = __('index_og_title');
+$pageTwTitle = __('index_tw_title');
+$pageTwDesc  = __('index_tw_desc');
 // 6. UI-სთვის საჭირო მონაცემები (header.php-ში გამოყენებამდე)
 $tz = $weather['timezone'] ?? 'UTC';
 $now = new DateTime('now', new DateTimeZone($tz));

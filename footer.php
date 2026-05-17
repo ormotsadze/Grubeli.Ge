@@ -1,5 +1,5 @@
 <?php
-[$mLat, $mLon] = resolve_coordinates($lat ?? null, $lon ?? null);
+[$mLat, $mLon] = resolve_coordinates();
 $histUrl = 'historical-weather.php?lat=' . rawurlencode($mLat) . '&lon=' . rawurlencode($mLon);
 ?>
 
@@ -42,16 +42,18 @@ if ($current_page == 'index.php' || $current_page == 'historical-weather.php') :
         <img src="images/logo/logo.png" alt="Grubeli.ge - logo" class="header-logo">
         <div class="brand-info">
             <span class="brand-name">
-                GRUBELI.GE 
+            <?php echo __('app_title'); ?>
                 <span class="version-badge">BETA</span>
             </span>
-            <span class="brand-tagline">ამინდი მარტივად</span>
+            <span class="brand-tagline"><?php echo __('app_title_sub'); ?></span>
         </div>
     </div>
     <button class="close-btn" onclick="toggleMyMenu()" aria-label="მენიუს დახურვა">&times;</button>
 </div>
     
     <div class="drawer-body">
+
+    
         <div class="nav-links">
             <a href="index.php" class="drawer-link">
                 <div class="link-icon">
@@ -120,16 +122,23 @@ if ($current_page == 'index.php' || $current_page == 'historical-weather.php') :
 
 
 </div>
-<center>
-<span class="footer-credit"> &copy; 2026 Grubeli.Ge</span>
 
-</center>
 
 
 
     </div>
 
   <div class="drawer-footer">
+
+ <?php global $current_lang; ?>
+<div class="lang-switcher-container d-flex justify-content-center align-items-center">
+    <div class="lang-pill-box p-1 d-flex align-items-center" style="background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; backdrop-filter: blur(10px);">
+        
+        <a href="?lang=ka" class="lang-link <?php echo $current_lang === 'ka' ? 'active-lang' : ''; ?>">KA</a>
+        <a href="?lang=en" class="lang-link <?php echo $current_lang === 'en' ? 'active-lang' : ''; ?>">EN</a>
+        
+    </div>
+</div>
     <div class="footer-links-grid">
         <a href="privacy.php" class="f-link">წესები</a>
         <a href="about.php" class="f-link">ჩვენ შესახებ</a>

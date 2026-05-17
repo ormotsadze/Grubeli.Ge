@@ -1,6 +1,12 @@
 <?php
-$pageTitle = "კონტაქტი";
-$pageDesc = "დაუკავშირდით Grubeli.ge-ს გუნდს ელ-ფოსტით, WhatsApp-ით, Messenger-ით ან სოციალური ქსელებით.";
+require_once 'functions.php';
+
+// ვიღებთ თარგმანებს 'index_' პრეფიქსით
+$pageTitle   = __('contact_title');
+$pageDesc    = __('contact_desc');
+$pageOgTitle = __('contact_og_title');
+$pageTwTitle = __('contact_tw_title');
+$pageTwDesc  = __('contact_tw_desc');
 include 'header.php';
 ?>
 

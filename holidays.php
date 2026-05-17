@@ -1,6 +1,12 @@
 <?php
-$pageTitle = "უქმე დღეები საქართველოში 2026";
-$pageDesc = "იხილეთ საქართველოს ოფიციალური უქმე და სადღესასწაულო დღეების სრული კალენდარი 2026 წლისთვის. ინფორმაცია ტურისტებისა და ადგილობრივებისთვის.";
+require_once 'functions.php';
+
+// ვიღებთ თარგმანებს 'index_' პრეფიქსით
+$pageTitle   = __('holidays_title');
+$pageDesc    = __('holidays_desc');
+$pageOgTitle = __('holidays_og_title');
+$pageTwTitle = __('holidays_tw_title');
+$pageTwDesc  = __('holidays_tw_desc');
 include 'header.php';
 
 // დღესასწაულების მასივი (2026 წლის მონაცემებით)

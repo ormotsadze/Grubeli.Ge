@@ -1,8 +1,39 @@
+
 <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// 1. ვამოწმებთ, ხომ არ არის URL-ში მითითებული ენა (?lang=en)
+if (isset($_GET['lang'])) {
+    $requested_lang = $_GET['lang'];
+    if (in_array($requested_lang, ['ka', 'en'])) {
+        $_SESSION['lang'] = $requested_lang;
+        setcookie('lang', $requested_lang, time() + (86400 * 30), "/"); // ინახება 30 დღე
+        $current_lang = $requested_lang;
+    }
+}
+
+// 2. თუ URL-ში არ არის, ვამოწმებთ სესიას ან ქუქის
+if (!isset($current_lang)) {
+    $current_lang = $_SESSION['lang'] ?? $_COOKIE['lang'] ?? null;
+}
+
+// 3. თუ საერთოდ არაფერია დაყენებული (პირველი შემოსვლაა), ვამოწმებთ სისტემურ ენას
+if (!$current_lang) {
+    $browser_lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? 'ka', 0, 2);
+    $current_lang = ($browser_lang === 'ka') ? 'ka' : 'en';
+}
+
+// 4. ვტვირთავთ შესაბამის ფაილს
+$lang_file = __DIR__ . "/lang/{$current_lang}.php";
+$lang = file_exists($lang_file) ? require $lang_file : [];
+
+// 5. დამხმარე ფუნქცია ტექსტებისთვის
+function __($key) {
+    global $lang;
+    return $lang[$key] ?? $key;
+}
 // ─── CONSTANTS ────────────────────────────────────────────────────────────
 
 define('USER_AGENT', 'GrubeliApp/1.0 (contact@grubeli.ge)');

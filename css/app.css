@@ -1935,13 +1935,6 @@ background: #13141b;
     font-family: 'BPG Arial', sans-serif;
 }
 
-.footer-credit {
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.2);
-    text-align: center;
-    margin-top: 20px;
-}
-
 
 
 .historical-link-show {
@@ -1965,7 +1958,7 @@ background: #13141b;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 9999;
+  z-index: 999;
   background: rgba(20, 25, 35, 0.65);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -2051,4 +2044,32 @@ background: #13141b;
 .app-banner-close:hover {
   background: rgba(255,255,255,0.15);
   color: #fff;
+}
+
+
+
+
+.lang-link {
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.6) !important;
+    text-decoration: none !important;
+    border-radius: 20px;
+    transition: all 0.3s ease-in-out;
+    letter-spacing: 0.5px;
+}
+
+/* როცა მომხმარებელი მაუსს მიიტანს */
+.lang-link:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* აქტიური ენის სტილი */
+.active-lang {
+    background: #ffffff !important;
+    color: #121212 !important; /* მუქ ფონზე თეთრი ბალიში შავი ტექსტით */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }

@@ -1,6 +1,12 @@
 <?php
-$pageTitle = "მსოფლიო დრო";
-$pageDesc = "შეამოწმეთ ადგილობრივი დრო მსოფლიოს მასშტაბით. მეზობელი ქვეყნები და გლობალური მეგაპოლისები რეალურ დროში Grubeli.ge-ზე.";
+require_once 'functions.php';
+
+// ვიღებთ თარგმანებს 'index_' პრეფიქსით
+$pageTitle   = __('global_time_title');
+$pageDesc    = __('global_time_desc');
+$pageOgTitle = __('global_time_og_title');
+$pageTwTitle = __('global_time_tw_title');
+$pageTwDesc  = __('global_time_tw_desc');
 include 'header.php';
 
 // ქალაქების სია დალაგებული პრიორიტეტით: მეზობლები -> ევროპა -> აზია/ამერიკა

@@ -145,8 +145,11 @@ $placeName = get_location_name($lat, $lon);
 </style>
 
 <?php
-$pageTitle = "ისტორიული მონაცემები";
-$pageDesc = "იხილეთ ამინდის ისტორიული მონაცემები და სტატისტიკა საქართველოში. Grubeli.ge-ს არქივი საშუალებას გაძლევთ გაიგოთ, როგორი ამინდი იყო წარსულში თქვენს ქალაქში.";
+$pageTitle   = __('historical_title');
+$pageDesc    = __('historical_desc');
+$pageOgTitle = __('historical_og_title');
+$pageTwTitle = __('historical_tw_title');
+$pageTwDesc  = __('historical_tw_desc');
 include 'header.php';
 ?>
 

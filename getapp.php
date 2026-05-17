@@ -1,7 +1,12 @@
 <?php
-$pageTitle = "Grubeli.ge Pro – Android აპლიკაცია";
-$pageDesc = "ჩამოტვირთეთ Grubeli.ge Pro Android აპლიკაცია. Push შეტყობინებები, მიწისძვრის გაფრთხილება, ხანძრის მონიტორინგი, AI ასისტენტი და მრავალი სხვა პრემიუმ ფუნქცია.";
-$pageKeywords = "grubeli ge pro, grubeli android apk, grubeli pro apk, ამინდის აპლიკაცია, ჩამოტვირთე აპი, weather app android, push notifications, ქართული ამინდის აპი";
+require_once 'functions.php';
+
+// ვიღებთ თარგმანებს 'index_' პრეფიქსით
+$pageTitle   = __('getapp_title');
+$pageDesc    = __('getapp_desc');
+$pageOgTitle = __('getapp_og_title');
+$pageTwTitle = __('getapp_tw_title');
+$pageTwDesc  = __('getapp_tw_desc');
 include 'header.php';
 ?>
 
@@ -155,25 +160,25 @@ include 'header.php';
 
         <div class="row g-4 text-start">
           <div class="col-md-6">
-            <div class="faq-item p-3">
+            <div class="faq-item p-3 h-100">
               <h6 class="text-white fw-bold mb-2"><i class="fa-solid fa-angle-right text-info me-2"></i>რა ღირს Grubeli.Ge Pro?</h6>
               <p class="small text-white-50 mb-0"><strong class="text-white">Grubeli.Ge Pro</strong> არის სიმბოლური ფასის მქონე აპლიკაცია. ეს თანხა პირდაპირ მიდის სერვერების, API-ების და პლატფორმის განვითარების უზრუნველსაყოფად. რეკლამისგან თავისუფალი გარემოს შენარჩუნება, რეალურ დროში გაფრთხილებები და AI-ზე დაფუძნებული ჭკვიანი ასისტენტი რესურსებს მოითხოვს — თქვენი მხარდაჭერა საშუალებას გვაძლევს, გავაგრძელოთ ხარისხიანი სერვისის შეთავაზება. ამ მხარდაჭერის გარეშე პლატფორმის არსებობა შეუძლებელი იქნებოდა.</p>
             </div>
           </div>
           <div class="col-md-6">
-            <div class="faq-item p-3">
+            <div class="faq-item p-3 h-100">
               <h6 class="text-white fw-bold mb-2"><i class="fa-solid fa-angle-right text-info me-2"></i>რა განსხვავებაა ვებ-ვერსიასა და აპს შორის?</h6>
               <p class="small text-white-50 mb-0">აპი გთავაზობთ <strong class="text-white">Push შეტყობინებებს</strong> (მიწისძვრა, ხანძარი, შტორმი), <strong class="text-white">ეკრანის ვიჯეტს</strong>, <strong class="text-white">Background Location</strong>-ს და <strong class="text-white">Offline ქეშს</strong>. ვებ-ვერსიაც ძლიერია, მაგრამ აპი — უფრო მეტია.</p>
             </div>
           </div>
           <div class="col-md-6">
-            <div class="faq-item p-3">
+            <div class="faq-item p-3 h-100">
               <h6 class="text-white fw-bold mb-2"><i class="fa-solid fa-angle-right text-info me-2"></i>არის აპი iOS-ისთვის?</h6>
               <p class="small text-white-50 mb-0">ამ ეტაპზე მხოლოდ <strong class="text-white">Android</strong>. iOS ვერსია განვითარების პროცესშია — მალე App Store-ზეც.</p>
             </div>
           </div>
           <div class="col-md-6">
-            <div class="faq-item p-3">
+            <div class="faq-item p-3 h-100">
               <h6 class="text-white fw-bold mb-2"><i class="fa-solid fa-angle-right text-info me-2"></i>რომელი Android ვერსიებია მხარდაჭერილი?</h6>
               <p class="small text-white-50 mb-0"><strong class="text-white">Android 8.0 (Oreo)</strong> და უფრო ახალი. ოპტიმიზებულია Material You-სთვის Android 12+-ზე.</p>
             </div>

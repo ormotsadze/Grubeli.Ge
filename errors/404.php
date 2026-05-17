@@ -1,13 +1,33 @@
+<?php
+require_once '../functions.php';
+
+$pageTitle   = __('404_title');
+$pageDesc    = __('404_desc');
+$pageOgTitle = __('404_og_title');
+$pageTwTitle = __('404_tw_title');
+$pageTwDesc  = __('404_tw_desc');
+?>
 <!DOCTYPE html>
-<html lang="ka">
+<html lang="<?php echo $_SESSION['lang'] ?? 'ka'; ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - გვერდი არ არსებობს | Grubeli.ge</title>
+    
+    <title><?php echo htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') . " | " . __('app_title'); ?></title>
+    <meta name="description" content="<?php echo htmlspecialchars($pageDesc, ENT_QUOTES, 'UTF-8'); ?>">
+    
+    <meta property="og:title" content="<?php echo htmlspecialchars($pageOgTitle, ENT_QUOTES, 'UTF-8'); ?>">
+    <meta property="og:description" content="<?php echo htmlspecialchars($pageDesc, ENT_QUOTES, 'UTF-8'); ?>">
+    <meta property="og:type" content="website">
+    
+    <meta name="twitter:title" content="<?php echo htmlspecialchars($pageTwTitle, ENT_QUOTES, 'UTF-8'); ?>">
+    <meta name="twitter:description" content="<?php echo htmlspecialchars($pageTwDesc, ENT_QUOTES, 'UTF-8'); ?>">
+
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/app.css?ver=1.1.0" rel="stylesheet">
     <link href="../icons/fontawesome/css/all.min.css?v-1.0.0" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=800;900&display=swap" rel="stylesheet">
+    
     <style>
         /* 404-ის უნიკალური სტილები */
         .error-404-page {
@@ -187,7 +207,6 @@
 
 <div class="error-404-page">
 
-    <!-- ფონის მოძრავი ღრუბლები -->
     <div class="bg-clouds">
         <div class="bg-cloud">☁️</div>
         <div class="bg-cloud">🌧️</div>
@@ -195,10 +214,8 @@
         <div class="bg-cloud">🌪️</div>
     </div>
 
-    <!-- ანიმირებული წვიმის წვეთები -->
     <div class="raindrops" id="raindrops"></div>
 
-    <!-- მთავარი ბარათი -->
     <div class="error-card-404">
         
         <div class="error-icon-main">🌀</div>
@@ -208,8 +225,7 @@
         <div class="error-title">ასეთი გვერდი არ არსებობს</div>
 
         <div class="error-message">
-        სად დაიკარგა ? რა მოქმედებაა...
-           
+            სად დაიკარგა ? რა მოქმედებაა...
         </div>
 
         <a href="../index.php" class="btn-404-home">
@@ -228,14 +244,12 @@
             const drop = document.createElement('span');
             drop.className = 'raindrop';
             drop.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-            drop.style.left = Math.random() * 100 + '%';
-            drop.style.fontSize = (0.7 + Math.random() * 1) + 'rem';
-            drop.style.animationDuration = (4 + Math.random() * 6) + 's';
-            drop.style.animationDelay = (Math.random() * 8) + 's';
+            drop.style.left = Math.random() * 100 + 'vw';
+            drop.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            drop.style.animationDelay = Math.random() * 2 + 's';
             container.appendChild(drop);
         }
     })();
-
 </script>
 
 </body>

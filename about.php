@@ -1,6 +1,12 @@
 <?php
-$pageTitle = "ჩვენ შესახებ";
-$pageDesc = "გაიცანით Grubeli.ge — საქართველოს AI-powered ამინდის პლატფორმა. რეალური მონაცემები, ჭკვიანი რჩევები, ქართულ ენაზე.";
+require_once 'functions.php';
+
+// ვიღებთ თარგმანებს 'about_' პრეფიქსით
+$pageTitle   = __('about_title');
+$pageDesc    = __('about_desc');
+$pageOgTitle = __('about_og_title');
+$pageTwTitle = __('about_tw_title');
+$pageTwDesc  = __('about_tw_desc');
 include 'header.php';
 ?>
 

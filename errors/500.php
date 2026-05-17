@@ -1,14 +1,34 @@
+<?php
+require_once '../functions.php';
+
+$pageTitle   = __('500_title');
+$pageDesc    = __('500_desc');
+$pageOgTitle = __('500_og_title');
+$pageTwTitle = __('500_tw_title');
+$pageTwDesc  = __('500_tw_desc');
+?>
 <!DOCTYPE html>
-<html lang="ka">
+<html lang="<?php echo $_SESSION['lang'] ?? 'ka'; ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>500 - სერვერის შეცდომა | Grubeli.ge</title>
+    
+    <title><?php echo htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') . " | " . __('app_title'); ?></title>
+    <meta name="description" content="<?php echo htmlspecialchars($pageDesc, ENT_QUOTES, 'UTF-8'); ?>">
+    
+    <meta property="og:title" content="<?php echo htmlspecialchars($pageOgTitle, ENT_QUOTES, 'UTF-8'); ?>">
+    <meta property="og:description" content="<?php echo htmlspecialchars($pageDesc, ENT_QUOTES, 'UTF-8'); ?>">
+    <meta property="og:type" content="website">
+    
+    <meta name="twitter:title" content="<?php echo htmlspecialchars($pageTwTitle, ENT_QUOTES, 'UTF-8'); ?>">
+    <meta name="twitter:description" content="<?php echo htmlspecialchars($pageTwDesc, ENT_QUOTES, 'UTF-8'); ?>">
+
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/app.css?ver=1.1.0" rel="stylesheet">
     <link href="../icons/fontawesome/css/all.min.css?v-1.0.0" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@800;900&display=swap" rel="stylesheet">
-    <style>
+    
+   <style>
         .error-404-page {
             min-height: 100vh;
             background: #18181d;
@@ -219,10 +239,9 @@
             const drop = document.createElement('span');
             drop.className = 'raindrop';
             drop.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-            drop.style.left = Math.random() * 100 + '%';
-            drop.style.fontSize = (0.7 + Math.random() * 1) + 'rem';
-            drop.style.animationDuration = (4 + Math.random() * 6) + 's';
-            drop.style.animationDelay = (Math.random() * 8) + 's';
+            drop.style.left = Math.random() * 100 + 'vw';
+            drop.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            drop.style.animationDelay = Math.random() * 2 + 's';
             container.appendChild(drop);
         }
     })();
