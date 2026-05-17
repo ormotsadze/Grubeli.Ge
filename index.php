@@ -71,7 +71,7 @@ $hist_display_text = "";
 if ($hist_temp !== null) {
     // ვამრგვალებთ მთელ ციფრამდე უფრო სუფთა ვიზუალისთვის
     $formatted_hist_temp = round($hist_temp);
-    $hist_display_text = "შარშან ამ დღეს: " . $formatted_hist_temp . "°C";
+   $hist_display_text = __('index_lastyear') . " " . $formatted_hist_temp . "°C";
 }
 // Auto prompt flag for AI suggestions
 $autoPrompt = true; // Set based on config or default
@@ -400,16 +400,16 @@ if ($hour >= 6 && $hour < 20) {
   <!-- მხოლოდ ერთი დაბნელების ფენა, ამბიენტური გლოუების გარეშე -->
   <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 1; border-radius: 40px;"></div>
 
-  <div class="card-body position-relative" style="z-index: 3; display: flex; flex-direction: column; justify-content: center; min-height: 320px;">
+<div class="card-body position-relative" style="z-index: 3; display: flex; flex-direction: column; justify-content: center; min-height: 320px;">
     
     <div class="location-header mb-2">
-      <h2 class="location-title m-0" style="font-family: 'BPG NinoMtavruli'; font-size: 1.5rem; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">
-        <i class="fa-solid fa-location-dot text-info me-2"></i><?php echo htmlspecialchars($placeName, ENT_QUOTES, 'UTF-8'); ?>
+      <h2 class="location-title m-0" style="font-family: 'BPG NinoMtavruli', sans-serif; font-size: 1.5rem; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+        <i class="fa-solid fa-location-dot text-info me-2"></i><?php echo htmlspecialchars(translate_place_name($placeName), ENT_QUOTES, 'UTF-8'); ?>
       </h2>
     </div>
     
     <p class="daytime mb-3" style="color: rgba(255,255,255,0.8); font-size: 0.9rem; letter-spacing: 0.5px; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">
-      <i class="fa-regular fa-calendar-days me-1"></i> <?php echo htmlspecialchars(format_georgian_datetime($now), ENT_QUOTES, 'UTF-8'); ?>
+      <i class="fa-regular fa-calendar-days me-1"></i> <?php echo htmlspecialchars(format_custom_datetime($now), ENT_QUOTES, 'UTF-8'); ?>
     </p>
 
     <?php if (isset($_GET['debug']) && $_GET['debug'] == '1'): ?>
@@ -424,7 +424,7 @@ if ($hour >= 6 && $hour < 20) {
              style="width: 110px; height: 110px; object-fit: contain; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.15));"
              width="110" height="110" 
              src="<?php echo htmlspecialchars($current_icon, ENT_QUOTES, 'UTF-8'); ?>" 
-             alt="ამინდის მთავარი აიკონი" />
+             alt="<?php echo ($_SESSION['lang'] ?? 'ka') === 'en' ? 'Weather Icon' : 'ამინდის მთავარი აიკონი'; ?>" />
       </div>
       
       <div class="weather-text d-flex align-items-start justify-content-center">
@@ -434,26 +434,32 @@ if ($hour >= 6 && $hour < 20) {
         <span class="unit ms-1 text-white-50" style="font-size: 1.5rem; font-weight: 300; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">&deg;C</span>
       </div>
     </div> 
-  <?php if ($hist_display_text): ?>
-    <div class="hist-simple-box">
-        <span class="hist-label">
-        
-           <span style="font-size: 0.8rem;"> <?php echo $hist_display_text; ?> </span>
-        </span>
-       <a href="historical-weather.php?lat=<?php echo $lat; ?>&lon=<?php echo $lon; ?>&date=<?php echo $one_year_ago; ?>" class="hist-mini-link">
-          <span class="historical-link-show"> ნახვა <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
-        </a>
-    </div>
-<?php endif; ?>
+
+    <?php if ($hist_display_text): ?>
+        <div class="hist-simple-box">
+            <span class="hist-label">
+               <span style="font-size: 0.8rem;"> <?php echo $hist_display_text; ?> </span>
+            </span>
+            <a href="historical-weather.php?lat=<?php echo $lat; ?>&lon=<?php echo $lon; ?>&date=<?php echo $one_year_ago; ?>" class="hist-mini-link">
+              <span class="historical-link-show"> 
+                <?php echo ($_SESSION['lang'] ?? 'ka') === 'en' ? 'View' : 'ნახვა'; ?> <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </span>
+            </a>
+        </div>
+    <?php endif; ?>
 
     <div class="weather-details-footer mt-3 pt-2" style="border-top: 1px solid rgba(255,255,255,0.15);">
      
-      <h3 class="weather-description mb-1" style="font-family: 'BPG NinoMtavruli'; font-size: 1.1rem; font-weight: 500; margin: 5px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-        <?php echo htmlspecialchars($current_desc, ENT_QUOTES, 'UTF-8'); ?>
-      </h3>
+     
+<h3 class="weather-description mb-1" style="font-family: 'BPG NinoMtavruli', sans-serif; font-size: 1.1rem; font-weight: 500; margin: 5px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+  <?php 
+    // ვიყენებთ მხოლოდ რეალურ, არსებულ ცვლადს და ვაზღვევთ ცარიელი სტრინგით
+    echo htmlspecialchars(get_weather_description_by_text($current_desc ?? ''), ENT_QUOTES, 'UTF-8'); 
+  ?>
+</h3>
       
       <p class="feels-like m-0" style="font-size: 0.85rem; color: rgba(255,255,255,0.7); text-shadow: 0 1px 2px rgba(0,0,0,0.3);">
-        <i class="fa-solid fa-temperature-half me-1"></i> შეგრძნებით: 
+        <i class="fa-solid fa-temperature-half me-1"></i> <?php echo ($_SESSION['lang'] ?? 'ka') === 'en' ? 'Feels like:' : 'შეგრძნებით:'; ?> 
         <strong class="text-white">
           <?php
             $feels = ($hourly && isset($currentIndex) && isset($hourly['apparent_temperature'][$currentIndex])) 
@@ -466,14 +472,13 @@ if ($hour >= 6 && $hour < 20) {
         </strong>
       </p>
 
-<?php require_once __DIR__ . '/ai/quotes.php'; ?>
- <p class="quote-text mt-3 mb-0 px-3" style="font-size: 0.9rem; color: rgba(255,255,255,0.8); text-shadow: 0 1px 3px rgba(0,0,0,0.2);">
-            <?php echo get_random_weather_quote(); ?>
-        </p>
+      <?php require_once __DIR__ . '/ai/quotes.php'; ?>
+      <p class="quote-text mt-3 mb-0 px-3" style="font-size: 0.9rem; color: rgba(255,255,255,0.8); text-shadow: 0 1px 3px rgba(0,0,0,0.2);">
+            <?php echo get_random_weather_quote($current_lang); ?>
+      </p>
 
     </div>
-
-  </div> 
+</div>
 </div>
 
 <?php if ($todayHoliday): ?>

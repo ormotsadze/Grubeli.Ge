@@ -191,7 +191,48 @@ function weather_code_to_geo() {
         99 => 'ქუხილი და სეტყვა'
     ];
 }
+// ახალი დამხმარე მასივი ინგლისურისთვის
+function get_weather_description_by_text($geo_text) {
+    // თუ მომხმარებელს ქართული აქვს ჩართული, პირდაპირ ვაბრუნებთ ორიგინალ ტექსტს
+    if (($_SESSION['lang'] ?? 'ka') === 'ka') {
+        return $geo_text;
+    }
 
+    // ქართული ტექსტების პირდაპირი თარგმანი ინგლისურად
+    $translation_map = [
+        'სუფთა ცა'                => 'Clear sky',
+        'მოწმენდილი ცა'           => 'Clear sky',
+        'ნაწილობრივ ღრუბლიანი'    => 'Partly cloudy',
+        'მცირე ღრუბელი'          => 'Mainly clear',
+        'ღრუბლიანი'               => 'Cloudy',
+        'მოღრუბლული'              => 'Overcast',
+        'ნისლი'                   => 'Fog',
+        'ნისლი და ყინვა'          => 'Depositing rime fog',
+        'მცირედ წვიმს'            => 'Light drizzle',
+        'წვიმა'                   => 'Rain',
+        'ძლიერი წვიმა'            => 'Heavy rain',
+        'ყინვიანი წვიმა'          => 'Freezing rain',
+        'ძლიერი ყინვიანი წვიმა'   => 'Heavy freezing rain',
+        'მცირე წვიმა'             => 'Light rain',
+        'მცირე თოვა'             => 'Light snow fall',
+        'თოვა'                    => 'Snow fall',
+        'ძლიერი თოვა'             => 'Heavy snow fall',
+        'სეტყვა'                  => 'Hail',
+        'ხანმოკლე თოვა'           => 'Snow showers',
+        'ქუხილი'                  => 'Thunderstorm',
+        'ქუხილი და სეტყვა'        => 'Thunderstorm with hail'
+    ];
+
+    $clean_text = trim($geo_text);
+
+    // თუ თარგმანი მოიძებნა, ვაბრუნებთ ინგლისურს, თუ ვერა - დააზღვიოს ტრანსლიტერაციით
+    if (array_key_exists($clean_text, $translation_map)) {
+        return $translation_map[$clean_text];
+    }
+
+    // რეზერვი: თუ რამე ახალი ტექსტია, რომ კოდი არ გაჩერდეს
+    return ucwords(transliterate_georgian($geo_text));
+}
 function weather_code_to_icon($code, $is_day = true) {
     $iconsDir = __DIR__ . DIRECTORY_SEPARATOR . 'icons' . DIRECTORY_SEPARATOR;
 
@@ -560,7 +601,19 @@ function format_georgian_datetime(DateTime $dt) {
     $month = $months_short[intval($dt->format('n')) - 1];
     return $dt->format('j') . ' ' . $month . ' ' . mb_substr($dayName,0,3) . '. ' . $dt->format('H:i');
 }
-
+function format_custom_datetime($datetime) {
+    // თუ შემოვიდა DateTime ობიექტი, პირდაპირ მას ვიყენებთ. 
+    // თუ შემოვიდა ტექსტი (string), მაშინ ვქმნით ახალ ობიექტს.
+    $date = ($datetime instanceof DateTime) ? $datetime : new DateTime($datetime);
+    
+    if (($_SESSION['lang'] ?? 'ka') === 'en') {
+        // ინგლისური ფორმატი: May 17, 2026 - 20:45
+        return $date->format('M d, Y - H:i');
+    }
+    
+    // ქართული ვერსიისთვის პირდაპირ ობიექტს ვატანთ შენს ფუნქციას, ყოველგვარი string-ად ქცევის გარეშე
+    return format_georgian_datetime($date);
+}
 // ─── HOLIDAYS ───────────────────────────────────────────────────────────
 
 function getGeorgianHolidays() {
@@ -864,6 +917,49 @@ function get_weather_alert($weather) {
     return null;
 }
 
+// 1. დამხმარე ფუნქცია ქართული ასოების ლათინურზე გადასაყვანად (ტრანსლიტერაცია)
+function transliterate_georgian($text) {
+    $geo_chars = ['ა','ბ','გ','დ','ე','ვ','ზ','თ','ი','კ','ლ','მ','ნ','ო','პ','ჟ','რ','ს','ტ','უ','ფ','ქ','ღ','ყ','შ','ჩ','ც','ძ','წ','ჭ','ხ','ჯ','ჰ'];
+    $eng_chars = ['a','b','g','d','e','v','z','th','i','k','l','m','n','o','p','zh','r','s','t','u','ph','q','gh','q','sh','ch','ts','dz','ts','ch','kh','j','h'];
+    
+    // ასევე მოვაშოროთ სიტყვები "რაიონი" ან "სოფელი" თუ API-დან მოყვება
+    $text = str_replace(['რაიონი', 'რაიონის', 'სოფელი'], ['Region', 'Region', 'Village'], $text);
+    
+    return str_replace($geo_chars, $eng_chars, $text);
+}
 
+// 2. მთავარი ფუნქცია ლოკაციის სათარგმნად cities.json-ის მიხედვით
+function translate_place_name($placeName) {
+    // თუ მიმდინარე ენა ქართულია, პირდაპირ ვაბრუნებთ ორიგინალ სახელს
+    if (($_SESSION['lang'] ?? 'ka') === 'ka') {
+        return $placeName;
+    }
+
+    // ვკითხულობთ შენს cities.json ფაილს
+    $jsonPath = __DIR__ . '/cities.json'; // შეცვალე გზა საჭიროებისამებრ
+    
+    if (file_exists($jsonPath)) {
+        $jsonData = file_get_contents($jsonPath);
+        $cities = json_decode($jsonData, true);
+        
+        if (is_array($cities)) {
+            foreach ($cities as $city) {
+                // თუ სახელი ზუსტად ემთხვევა (მაგალითად: "ბათუმი" ან "თელავის რაიონი")
+                if (trim($city['name']) === trim($placeName)) {
+                    // თუ json-ში მომავალში ჩაამატებ "name_en"-ს, პირდაპირ იმას წაიღებს
+                    if (isset($city['name_en'])) {
+                        return $city['name_en'];
+                    }
+                    
+                    // თუ json-ში ინგლისური სახელი არ გიწერია, ამ კონკრეტულ სახელს გაუკეთებს ტრანსლიტერაციას
+                    return ucwords(transliterate_georgian($placeName));
+                }
+            }
+        }
+    }
+
+    // თუ სახელი საერთოდ არ არის cities.json-ში (ანუ API-დან მოვიდა უცხოური ან სხვა ლოკაცია)
+    return ucwords(transliterate_georgian($placeName));
+}
 
 ?>

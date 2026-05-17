@@ -11,6 +11,7 @@ return [
     'index_og_title' => 'Grubeli.ge | ამინდის პროგნოზი მარტივად',
     'index_tw_title' => 'Grubeli.ge - ამინდი საქართველოში',
     'index_tw_desc' => 'გაიგე როგორი ამინდია შენს ქალაქში და მიიღე პერსონალური AI რჩევები Grubeli.ge-სგან.',
+     'index_lastyear' => 'შარშან ამ დღეს',
 
     // --- 2. ABOUT.PHP (ჩვენ შესახებ) ---
     'about_title' => 'ჩვენ შესახებ',

@@ -1,11 +1,11 @@
 <?php
-function get_random_weather_quote() {
-    // რადგან ეს ფაილი ai/ საქაღალდეშია, 
-    // ერთი დონით მაღლა უნდა ავიდეთ (..), რომ ვიპოვოთ quote.txt
-    $file = __DIR__ . '/quotes.txt'; 
-    
-    // თუ ფაილი მაინც სხვაგან გაქვს (მაგალითად ai/ საქაღალდეშივე), 
-    // მაშინ გამოიყენე: $file = __DIR__ . '/quote.txt';
+function get_random_weather_quote($lang = 'ka') {
+    // Choose file based on language
+    if ($lang === 'en') {
+        $file = __DIR__ . '/quotes_en.txt';
+    } else {
+        $file = __DIR__ . '/quotes.txt';
+    }
 
     if (file_exists($file)) {
         $quotes = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -14,7 +14,10 @@ function get_random_weather_quote() {
         }
     }
     
-    // ეს ტექსტი მხოლოდ მაშინ გამოჩნდება, თუ ფაილი საერთოდ ვერ იპოვა
-    return "ფაილი ვერ მოიძებნა: " . $file; 
+    // Fallback messages per language
+    if ($lang === 'en') {
+        return "Weather is the art of nature — enjoy every drop and ray! ☀️🌧️";
+    }
+    return "ამინდი ბუნების ხელოვნებაა — ისიამოვნე ყოველი წვეთით და სხივით! ☀️🌧️"; 
 }
 ?>
