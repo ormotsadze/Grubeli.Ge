@@ -337,6 +337,7 @@ fun MainScreen(modifier: Modifier = Modifier, onPageLoaded: () -> Unit, activity
                 
                 settings.apply {
                     javaScriptEnabled = true
+                    setGeolocationEnabled(true)
                     domStorageEnabled = true
                     @Suppress("DEPRECATION")
                     databaseEnabled = true
@@ -344,6 +345,15 @@ fun MainScreen(modifier: Modifier = Modifier, onPageLoaded: () -> Unit, activity
                     userAgentString = "GrubeliApp/1.0"
                     allowFileAccess = true
                     allowContentAccess = false
+                }
+
+                webChromeClient = object : WebChromeClient() {
+                    override fun onGeolocationPermissionsShowPrompt(
+                        origin: String?,
+                        callback: GeolocationPermissions.Callback?
+                    ) {
+                        callback?.invoke(origin, true, false)
+                    }
                 }
                 
                 webViewClient = object : WebViewClient() {

@@ -46,7 +46,7 @@ class WeatherWidget : AppWidgetProvider() {
         val cityName = prefs.getString("last_viewed_city", "საქართველო") ?: "საქართველო"
         
         val temp = prefs.getInt("widget_temp", 0)
-        val desc = prefs.getString("widget_desc", "დააჭირეთ ლოკაციას") ?: "დააჭირეთ ლოკაციას"
+        val desc = prefs.getString("widget_desc", "დააჭირეთ ლოკაციას აპლიკაციაში") ?: "დააჭირეთ ლოკაციას აპლიკაციაში"
         val code = prefs.getInt("widget_code", 0)
         val lastUpdate = prefs.getLong("widget_last_update", 0L)
         val hasData = lastUpdate != 0L
