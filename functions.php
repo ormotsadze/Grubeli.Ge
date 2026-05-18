@@ -37,6 +37,12 @@ if (!isset($_COOKIE['lang']) || $_COOKIE['lang'] !== $current_lang) {
     $_SESSION['lang'] = $current_lang;
 }
 
+// 6. დამხმარე ფუნქცია — ყველგან გამოიყენეთ ეს, $_SESSION['lang']-ის ნაცვლად
+//    Cookie > Session > 'ka' (shared hosting-ზე session იკარგება, cookie კი მუშაობს)
+function get_current_lang() {
+    return $_COOKIE['lang'] ?? $_SESSION['lang'] ?? 'ka';
+}
+
 // 4. ვტვირთავთ შესაბამის ფაილს
 $lang_file = __DIR__ . "/lang/{$current_lang}.php";
 $lang = file_exists($lang_file) ? require $lang_file : [];
@@ -206,7 +212,7 @@ function weather_code_to_geo() {
 // ახალი დამხმარე მასივი ინგლისურისთვის
 function get_weather_description_by_text($geo_text) {
     // თუ მომხმარებელს ქართული აქვს ჩართული, პირდაპირ ვაბრუნებთ ორიგინალ ტექსტს
-    if (($_SESSION['lang'] ?? 'ka') === 'ka') {
+    if (get_current_lang() === 'ka') {
         return $geo_text;
     }
 
@@ -618,7 +624,7 @@ function format_custom_datetime($datetime) {
     // თუ შემოვიდა ტექსტი (string), მაშინ ვქმნით ახალ ობიექტს.
     $date = ($datetime instanceof DateTime) ? $datetime : new DateTime($datetime);
     
-    if (($_SESSION['lang'] ?? 'ka') === 'en') {
+    if (get_current_lang() === 'en') {
         // ინგლისური ფორმატი: May 17, 2026 - 20:45
         return $date->format('M d, Y - H:i');
     }
@@ -943,7 +949,7 @@ function transliterate_georgian($text) {
 // 2. მთავარი ფუნქცია ლოკაციის სათარგმნად cities.json-ის მიხედვით
 function translate_place_name($placeName) {
     // თუ მიმდინარე ენა ქართულია, პირდაპირ ვაბრუნებთ ორიგინალ სახელს
-    if (($_SESSION['lang'] ?? 'ka') === 'ka') {
+    if (get_current_lang() === 'ka') {
         return $placeName;
     }
 
