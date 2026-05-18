@@ -282,7 +282,7 @@ if ($moon_phase < 0.0625 || $moon_phase >= 0.9375) {
       <a href="getapp.php" class="app-banner-btn" id="app-banner-download">
         <i class="fa-brands fa-google-play me-1"></i> <?php echo __('index_getapp'); ?>
       </a>
-      <button class="app-banner-close" id="app-banner-close" aria-label="დახურვა">&times;</button>
+      <button class="app-banner-close" id="app-banner-close" aria-label="<?php echo ($ai_lang === 'en' ? 'Close' : 'დახურვა'); ?>">&times;</button>
     </div>
   </div>
 </div>
@@ -575,7 +575,7 @@ if ($hour >= 6 && $hour < 20) {
                            
                         </div>
                     <?php endforeach; else: ?>
-                        <div class="text-white-50 p-3">მონაცემები არ არის</div>
+                        <div class="text-white-50 p-3"><?php echo ($ai_lang === 'en' ? 'No data available' : 'მონაცემები არ არის'); ?></div>
                     <?php endif; ?>
                 </div>
             </div>
@@ -908,6 +908,13 @@ document.addEventListener("DOMContentLoaded", function () {
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 }
 
+.feature-tile-text {
+    font-size: 0.9rem;
+    color: #fff;
+    font-weight: 600;
+    text-align: left;
+}
+
 /* Glow accent */
 .tile-glow {
     position: absolute;
@@ -1039,14 +1046,14 @@ document.addEventListener("DOMContentLoaded", function () {
          <a class='ai-button'>✨ <?php echo __('ai_assistant'); ?></a>
  <br><br>
 
-   UV ინდექსი: მზის რადიაციის სიმძლავრის საზომი. რაც უფრო მაღალია ციფრი, მით უფრო სწრაფად ზიანდება კანი.
+  <?php echo htmlspecialchars(__('index_uvindexexplain'), ENT_QUOTES, 'UTF-8'); ?>
 
           <br>  <br>
-<b><span style="color: #34EDA0">0-2</span> (დაბალი):</b> საფრთხე არ არსებობს.<br>
-<b><span style="color: #EDAC34">3-5</span> (საშუალო):</b> გამოიყენეთ დამცავი საშუალებები.<br>
-<b><span style="color: #EDAC34">6-7</span> (მაღალი):</b> მოერიდეთ მზეს 11-დან 16 საათამდე.<br>
-<b><span style="color: #F74040">8-10</span> (ძალიან მაღალი):</b> აუცილებელია ჩრდილი და დამცავი.<br>
-<b><span style="color: #F74040">11+</span> (ექსტრემალური):</b> მაქსიმალური სიფრთხილე!<br>
+<b><span style="color: #34EDA0">0-2</span> <?php echo __('index_uvindexlow'); ?>
+<b><span style="color: #EDAC34">3-5</span> <?php echo __('index_uvindexmedium'); ?>
+<b><span style="color: #EDAC34">6-7</span> <?php echo __('index_uvindexhigh'); ?>
+<b><span style="color: #F74040">8-10</span> <?php echo __('index_uvindexveryhigh'); ?>
+<b><span style="color: #F74040">11+</span> <?php echo __('index_uvindexextreme'); ?>
 
 
       </div>
@@ -1312,7 +1319,7 @@ function askQuickAI(question) {
     .catch(err => {
         console.error(err);
         textContainer.style.opacity = "1";
-        textContainer.innerText = "შეცდომაა კავშირისას.";
+        textContainer.innerText = "<?php echo ($ai_lang === 'en' ? 'Connection error.' : 'შეცდომაა კავშირისას.'); ?>";
     });
 }
 </script>
@@ -1324,11 +1331,11 @@ function askQuickAI(question) {
                 <a class='ai-button' style="margin-bottom: 15px; display: inline-block;">✨ <?php echo __('ai_assistant'); ?></a>
                 <br>
                 <div style="font-size: 14px; line-height: 1.6;">
-                    <b><span style="color: #34EDA0">0-50</span> (კარგი):</b> ჰაერი იდეალურად სუფთაა.<br>
-                    <b><span style="color: #34EDA0">51-100</span> (ზომიერი):</b> ხარისხი მისაღებია...<br>
-                    <b><span style="color: #EDAC34">101-150</span> (საფრთხილო):</b> მგრძნობიარე ჯგუფებისთვის არაჯანსაღია.<br>
-                    <b><span style="color: #F74040">151-200</span> (არაჯანსაღი):</b> ჰაერი დაბინძურებულია.<br>
-                    <b><span style="color: #F74040">200+</span> (საშიში):</b> საგანგაშო მდგომარეობა.
+                    <b><span style="color: #34EDA0">0-50</span> <?php echo __('ai_airqualitygood'); ?></b>
+                    <b><span style="color: #34EDA0">51-100</span> <?php echo __('ai_airqualityfair'); ?></b>
+                    <b><span style="color: #EDAC34">101-150</span> <?php echo __('ai_airqualitypoor'); ?></b>
+                    <b><span style="color: #F74040">151-200</span> <?php echo __('ai_airqualityverypoor'); ?></b>
+                    <b><span style="color: #F74040">200+</span> <?php echo __('ai_airqualityextreme'); ?></b>
                 </div>
             </div>
         </div>
@@ -1344,20 +1351,26 @@ function askQuickAI(question) {
   
   <div class="forecast-grid">
     <?php if (!empty($daily_items)): 
-      $days_short = ['კვი','ორშ','სამ','ოთხ','ხუთ','პარ','შაბ'];
-      foreach ($daily_items as $d): ?>
+      $days_short = ($ai_lang === 'en') ? ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] : ['კვი','ორშ','სამ','ოთხ','ხუთ','პარ','შაბ'];
+      foreach ($daily_items as $d): 
+        $daily_desc = $d['desc'];
+        if ($ai_lang === 'en' && isset($d['weather_code'])) {
+            $enDescMap = [0=>'Clear',1=>'Mainly clear',2=>'Partly cloudy',3=>'Overcast',45=>'Foggy',48=>'Rime fog',51=>'Lt drizzle',53=>'Mod drizzle',55=>'Dense drizzle',56=>'Fr. drizzle',57=>'Dense fr. drizzle',61=>'Light rain',63=>'Mod rain',65=>'Heavy rain',66=>'Fr. rain',67=>'Heavy fr. rain',71=>'Light snow',73=>'Mod snow',75=>'Heavy snow',77=>'Snow grains',80=>'Rain showers',81=>'Mod showers',82=>'Violent showers',85=>'Slight snow',86=>'Heavy snow',95=>'T-storm',96=>'T-storm+hail',99=>'T-storm+heavy hail'];
+            $daily_desc = $enDescMap[$d['weather_code']] ?? $d['desc'];
+        }
+      ?>
       <div class="forecast-card">
         <div class="forecast-date"><?php echo htmlspecialchars($days_short[intval($d['date']->format('w'))] . ' ' . $d['date']->format('d.m'), ENT_QUOTES, 'UTF-8'); ?></div>
        <img src="<?php echo htmlspecialchars($d['icon'], ENT_QUOTES, 'UTF-8'); ?>" 
-     alt="ამინდი - <?php echo htmlspecialchars($d['desc'], ENT_QUOTES, 'UTF-8'); ?>" 
+     alt="<?php echo ($ai_lang === 'en' ? 'Weather - ' : 'ამინდი - '); ?><?php echo htmlspecialchars($daily_desc, ENT_QUOTES, 'UTF-8'); ?>" 
      class="secondary-icon-weather" 
      width="40" height="40" 
      loading="lazy" />
         <div class="forecast-temp"><?php echo htmlspecialchars(is_numeric($d['temp_max']) ? round($d['temp_max']) : '--', ENT_QUOTES, 'UTF-8'); ?><span class="unit">&deg;C</span> / <?php echo htmlspecialchars(is_numeric($d['temp_min']) ? round($d['temp_min']) : '--', ENT_QUOTES, 'UTF-8'); ?><span class="unit">&deg;C</span></div>
-        <div class="forecast-desc"><?php echo htmlspecialchars($d['desc'], ENT_QUOTES, 'UTF-8'); ?></div>
+        <div class="forecast-desc"><?php echo htmlspecialchars($daily_desc, ENT_QUOTES, 'UTF-8'); ?></div>
       </div>
     <?php endforeach; else: ?>
-      <div>მონაცემი არ არის</div>
+      <div><?php echo ($ai_lang === 'en' ? 'No data' : 'მონაცემი არ არის'); ?></div>
     <?php endif; ?>
   </div>
 
