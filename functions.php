@@ -4,25 +4,37 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// 1. ვამოწმებთ, ხომ არ არის URL-ში მითითებული ენა (?lang=en)
+// 1. URL-ში მითითებულ ენას აქვს უმაღლესი პრიორიტეტი
 if (isset($_GET['lang'])) {
     $requested_lang = $_GET['lang'];
     if (in_array($requested_lang, ['ka', 'en'])) {
+        setcookie('lang', $requested_lang, time() + (86400 * 30), "/", "", false, true);
         $_SESSION['lang'] = $requested_lang;
-        setcookie('lang', $requested_lang, time() + (86400 * 30), "/"); // ინახება 30 დღე
         $current_lang = $requested_lang;
     }
 }
 
-// 2. თუ URL-ში არ არის, ვამოწმებთ სესიას ან ქუქის
+// 2. თუ URL-ში არ არის, ვამოწმებთ ქუქის (session-ზე მაღალი პრიორიტეტი — shared hosting-ზე სესიები იკარგება)
 if (!isset($current_lang)) {
-    $current_lang = $_SESSION['lang'] ?? $_COOKIE['lang'] ?? null;
+    // Cookie > Session — cookie მუშაობს shared hosting-ზეც
+    $current_lang = $_COOKIE['lang'] ?? $_SESSION['lang'] ?? null;
 }
 
-// 3. თუ საერთოდ არაფერია დაყენებული (პირველი შემოსვლაა), ვამოწმებთ სისტემურ ენას
+// 3. თუ არაფერია, პირველი შემოსვლა — ვამოწმებთ ბრაუზერის ენას
 if (!$current_lang) {
     $browser_lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? 'ka', 0, 2);
     $current_lang = ($browser_lang === 'ka') ? 'ka' : 'en';
+}
+
+// 4. თუ ჯერ კიდეც არაფერია (უსაფრთხოებისთვის) — ვაყენებთ ქართულს
+if (!$current_lang) {
+    $current_lang = 'ka';
+}
+
+// 5. შევინახოთ cookie ნებისმიერ შემთხვევაში, რომ shared hosting-ზეც იმუშაოს
+if (!isset($_COOKIE['lang']) || $_COOKIE['lang'] !== $current_lang) {
+    setcookie('lang', $current_lang, time() + (86400 * 30), "/", "", false, true);
+    $_SESSION['lang'] = $current_lang;
 }
 
 // 4. ვტვირთავთ შესაბამის ფაილს
