@@ -24,11 +24,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             list($ai_lat, $ai_lon) = resolve_coordinates($ai_lat, $ai_lon);
             $cityName = get_location_name($ai_lat, $ai_lon);
         } else {
-            $cityName = $_SESSION['city_name'] ?? 'თბილისი';
+            $cityName = $_SESSION['city_name'] ?? ($ai_lang === 'en' ? 'Tbilisi' : 'თბილისი');
             $ai_lat = $_SESSION['lat'] ?? 41.7151;
             $ai_lon = $_SESSION['lon'] ?? 44.8271;
         }
+
+        // თუ მომხმარებელს ინგლისური აქვს ჩართული, ნებისმიერ შემთხვევაში გადავთარგმნოთ ქალაქი
+        if ($ai_lang === 'en') {
+            $cityName = translate_place_name($cityName);
+        }
         
+       
+       
         $isDay = $_SESSION['is_day'] ?? 1;
         $dayStatus = $isDay ? __('its_day') : __('its_night');
         
