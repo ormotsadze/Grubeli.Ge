@@ -1348,31 +1348,37 @@ function askQuickAI(question) {
 
 
 <div class="container mt-3 mb-3">
+<div class="forecast-grid">
+  <?php if (!empty($daily_items)): 
   
-  <div class="forecast-grid">
-    <?php if (!empty($daily_items)): 
-      $days_short = ($ai_lang === 'en') ? ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] : ['კვი','ორშ','სამ','ოთხ','ხუთ','პარ','შაბ'];
-      foreach ($daily_items as $d): 
-        $daily_desc = $d['desc'];
-        if ($ai_lang === 'en' && isset($d['weather_code'])) {
-            $enDescMap = [0=>'Clear',1=>'Mainly clear',2=>'Partly cloudy',3=>'Overcast',45=>'Foggy',48=>'Rime fog',51=>'Lt drizzle',53=>'Mod drizzle',55=>'Dense drizzle',56=>'Fr. drizzle',57=>'Dense fr. drizzle',61=>'Light rain',63=>'Mod rain',65=>'Heavy rain',66=>'Fr. rain',67=>'Heavy fr. rain',71=>'Light snow',73=>'Mod snow',75=>'Heavy snow',77=>'Snow grains',80=>'Rain showers',81=>'Mod showers',82=>'Violent showers',85=>'Slight snow',86=>'Heavy snow',95=>'T-storm',96=>'T-storm+hail',99=>'T-storm+heavy hail'];
-            $daily_desc = $enDescMap[$d['weather_code']] ?? $d['desc'];
-        }
-      ?>
-      <div class="forecast-card">
-        <div class="forecast-date"><?php echo htmlspecialchars($days_short[intval($d['date']->format('w'))] . ' ' . $d['date']->format('d.m'), ENT_QUOTES, 'UTF-8'); ?></div>
-       <img src="<?php echo htmlspecialchars($d['icon'], ENT_QUOTES, 'UTF-8'); ?>" 
-     alt="<?php echo ($ai_lang === 'en' ? 'Weather - ' : 'ამინდი - '); ?><?php echo htmlspecialchars($daily_desc, ENT_QUOTES, 'UTF-8'); ?>" 
-     class="secondary-icon-weather" 
-     width="40" height="40" 
-     loading="lazy" />
-        <div class="forecast-temp"><?php echo htmlspecialchars(is_numeric($d['temp_max']) ? round($d['temp_max']) : '--', ENT_QUOTES, 'UTF-8'); ?><span class="unit">&deg;C</span> / <?php echo htmlspecialchars(is_numeric($d['temp_min']) ? round($d['temp_min']) : '--', ENT_QUOTES, 'UTF-8'); ?><span class="unit">&deg;C</span></div>
-        <div class="forecast-desc"><?php echo htmlspecialchars($daily_desc, ENT_QUOTES, 'UTF-8'); ?></div>
+    $days_short = ($ai_lang === 'en') ? ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] : ['კვი','ორშ','სამ','ოთხ','ხუთ','პარ','შაბ'];
+    
+    foreach ($daily_items as $d): 
+
+      $daily_desc = get_weather_description_by_text($d['desc'] ?? '');
+    ?>
+    <div class="forecast-card">
+      <div class="forecast-date">
+        <?php echo htmlspecialchars($days_short[intval($d['date']->format('w'))] . ' ' . $d['date']->format('d.m'), ENT_QUOTES, 'UTF-8'); ?>
       </div>
-    <?php endforeach; else: ?>
-      <div><?php echo ($ai_lang === 'en' ? 'No data' : 'მონაცემი არ არის'); ?></div>
-    <?php endif; ?>
-  </div>
+      
+      <img src="<?php echo htmlspecialchars($d['icon'], ENT_QUOTES, 'UTF-8'); ?>" 
+           alt="<?php echo ($ai_lang === 'en' ? 'Weather - ' : 'ამინდი - '); ?><?php echo htmlspecialchars($daily_desc, ENT_QUOTES, 'UTF-8'); ?>" 
+           class="secondary-icon-weather" 
+           width="40" height="40" 
+           loading="lazy" />
+           
+      <div class="forecast-temp">
+        <?php echo htmlspecialchars(is_numeric($d['temp_max']) ? round($d['temp_max']) : '--', ENT_QUOTES, 'UTF-8'); ?><span class="unit">&deg;C</span> / 
+        <?php echo htmlspecialchars(is_numeric($d['temp_min']) ? round($d['temp_min']) : '--', ENT_QUOTES, 'UTF-8'); ?><span class="unit">&deg;C</span>
+      </div>
+      
+      <div class="forecast-desc"><?php echo htmlspecialchars($daily_desc, ENT_QUOTES, 'UTF-8'); ?></div>
+    </div>
+  <?php endforeach; else: ?>
+    <div><?php echo ($ai_lang === 'en' ? 'No data' : 'მონაცემი არ არის'); ?></div>
+  <?php endif; ?>
+</div>
 
 </div>
 <script>

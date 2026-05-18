@@ -7,12 +7,23 @@ return [
       'its_day' => 'It is day',
       'its_night' => 'It is night',
        'its_uknow' => 'Unknown',
+       'not_found' => 'Not found',
+       'wind' => 'Wind',
+    'humidity' => 'Humidity',
+    'visibility' => 'Visibility',
+    'precipitation' => 'Precipitation',
+     'sunrise' => 'Sunrise',
+    'sunset' => 'Sunset',
+    'day_length' => 'Day Length',
+    'moon_phase' => 'Moon Phase',
+    'uv_index' => 'UV Index',
+    'air_quality' => 'Air Quality',
   
    // --- 1. INDEX.PHP (AI) ---
    'ai_tips' => 'AI Tips',
    'ai_assistant' => 'AI Assistant',
    'ai_wait' => 'Please wait a few seconds between questions.',
-
+   'ai_thinking' => 'Thinking...',
    'ai_umbrella' => 'Need an umbrella?',
 'ai_clothes' => 'What to wear?',
 'ai_glasses' => 'Sunglasses?',
@@ -21,6 +32,27 @@ return [
 'ai_exercise' => 'Do some exercise?',
 'ai_laundry' => 'Do the laundry?',
 'ai_bike' => 'Ride a bike?',
+
+
+
+ // --- 1. INDEX.PHP (air quality) ---
+   'ai_airqualitygood' => '(Good):</b> The air is ideally clean.<br>',
+   'ai_airqualityfair' => '(Fair):</b> The quality is acceptable...<br>',
+   'ai_airqualitypoor' => '(Poor):</b> Harmful to sensitive groups.<br>',
+   'ai_airqualityverypoor' => '(Very Poor):</b> The air is polluted<br>',
+   'ai_airqualityextreme' => '(Extreme):</b> The air is extremely polluted.<br>',
+
+
+
+ // --- 1. INDEX.PHP (UV) ---
+
+    'index_uvindexexplain' => ' UV Index: A measure of the strength of sun\'s ultraviolet radiation. The higher the number, the faster skin damage occurs.',
+    'index_uvindexlow' => '(Low):</b> No danger.<br>',
+    'index_uvindexmedium' => '(Moderate):</b> Use protective measures.<br>',
+    'index_uvindexhigh' => '(High):</b> Use protective measures and limit time outdoors.<br>',
+    'index_uvindexveryhigh' => '(Very High):</b> Maximum protection is necessary. Avoid being outdoors during midday.<br>',
+    'index_uvindexextreme' => '(Extreme):</b> Maximum protection is necessary. Avoid being outdoors during midday.',
+
  // --- 1. INDEX.PHP ---
     'index_title' => 'Weather Forecast in Georgia',
     'index_desc' => 'Real-time weather forecast in Batumi, Tbilisi and all Georgia. AI-smart tips, humidity, wind, and precipitation charts.',
@@ -28,6 +60,10 @@ return [
     'index_tw_title' => 'Grubeli.ge - Weather in Georgia',
     'index_tw_desc' => 'Find out the weather in your city and get personalized AI recommendations from Grubeli.ge.',
     'index_lastyear' => 'On this day last year',
+     'index_cityingeorgia' => 'City in Georgia...',
+     'index_cityingeorgia_not_found' => 'City not found...',
+    'index_getappdesc' => 'Download Android App',
+    'index_getapp' => 'Download',
 
     // --- 2. ABOUT.PHP (About Us) ---
     'about_title' => 'About Us',
