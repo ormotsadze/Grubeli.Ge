@@ -4,6 +4,9 @@ header('Pragma: no-cache');
 header('Expires: 0');
 require_once __DIR__ . '/functions.php';
 
+// განსაზღვრავს მიმდინარე ენას სესიიდან ან ქუქიდან
+$ai_lang = $_SESSION['lang'] ?? $_COOKIE['lang'] ?? 'ka';
+
 // Determine lat/lon using unified helper
 [$lat, $lon] = resolve_coordinates($_GET['lat'] ?? null, $_GET['lon'] ?? null);
 
@@ -48,8 +51,11 @@ $end_date = $re->format('Y-m-d');
 
 $data = fetch_historical($lat, $lon, $start_date, $end_date);
 
-// Reverse-geocode (cached)
+// Reverse-geocode (cached) და გადათარგმნა, თუ მომხმარებელი ინგლისურ ვერსიაზეა
 $placeName = get_location_name($lat, $lon);
+if ($ai_lang === 'en') {
+    $placeName = translate_place_name($placeName);
+}
 ?>
 <style>
 .premium-glass {
@@ -167,10 +173,11 @@ include 'header.php';
         <div class="compact-form">
           <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
             <label style="font-size:13px;color:rgba(255,255,255,0.5);">
-              <i class="fa-regular fa-keyboard me-1"></i> აირჩიეთ თარიღი (80 წ)
+              <i class="fa-regular fa-keyboard me-1"></i> 
+              <?php echo ($ai_lang === 'en' ? 'Select Date (80 yrs max)' : 'აირჩიეთ თარიღი (80 წ)'); ?>
             </label>
           </div>
-          <form method="get" class="history-form d-flex align-items-center gap-1" role="search" aria-label="ისტორიული ფილტრი">
+          <form method="get" class="history-form d-flex align-items-center gap-1" role="search" aria-label="<?php echo ($ai_lang === 'en' ? 'Historical Filter' : 'ისტორიული ფილტრი'); ?>">
             <input type="hidden" name="lat" value="<?php echo htmlspecialchars($lat, ENT_QUOTES, 'UTF-8'); ?>" />
             <input type="hidden" name="lon" value="<?php echo htmlspecialchars($lon, ENT_QUOTES, 'UTF-8'); ?>" />
             <input type="hidden" id="end_date" name="end_date" value="<?php echo htmlspecialchars($end_date, ENT_QUOTES, 'UTF-8'); ?>" />
@@ -182,7 +189,7 @@ include 'header.php';
               value="<?php echo htmlspecialchars($start_date, ENT_QUOTES, 'UTF-8'); ?>"
               max="<?php echo htmlspecialchars($end_date, ENT_QUOTES, 'UTF-8'); ?>"
               min="<?php echo htmlspecialchars($min_start->format('Y-m-d'), ENT_QUOTES, 'UTF-8'); ?>"
-              title="შეიყვანეთ თარიღი"
+              title="<?php echo ($ai_lang === 'en' ? 'Enter date' : 'შეიყვანეთ თარიღი'); ?>"
             />
             <button type="submit" class="btn btn-danger btn-sm flex-shrink-0 px-2">
               <i class="fa-solid fa-magnifying-glass"></i>
@@ -211,50 +218,56 @@ include 'header.php';
           $sd_icon = isset($icons[0]) ? icon_url($icons[0], true) : 'icons/sun.svg';
           $sd_max = isset($temps_max[0]) ? round($temps_max[0]) : '--';
           $sd_min = isset($temps_min[0]) ? round($temps_min[0]) : '--';
-          $sd_desc = isset($descs[0]) ? $descs[0] : '';
+          
+          // ამინდის დინამიური აღწერის თარგმანი ფუნქციით
+          $sd_desc = isset($descs[0]) ? get_weather_description_by_text($descs[0]) : '';
 
-          // Georgian day names
-          $geo_days = ['კვირა','ორშაბათი','სამშაბათი','ოთხშაბათი','ხუთშაბათი','პარასკევი','შაბათი'];
-          $geo_months = ['იანვარი','თებერვალი','მარტი','აპრილი','მაისი','ივნისი','ივლისი','აგვისტო','სექტემბერი','ოქტომბერი','ნოემბერი','დეკემბერი'];
+          // კვირისა და თვეების სახელები ენის მიხედვით
+          if ($ai_lang === 'en') {
+              $geo_days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+              $geo_months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+              $sd_date_geo = $geo_months[intval($sd_dt->format('n')) - 1] . ' ' . intval($sd_dt->format('j')) . ', ' . $sd_dt->format('Y');
+          } else {
+              $geo_days = ['კვირა','ორშაბათი','სამშაბათი','ოთხშაბათი','ხუთშაბათი','პარასკევი','შაბათი'];
+              $geo_months = ['იანვარი','თებერვალი','მარტი','აპრილი','მაისი','ივნისი','ივლისი','აგვისტო','სექტემბერი','ოქტომბერი','ნოემბერი','დეკემბერი'];
+              $sd_date_geo = intval($sd_dt->format('j')) . ' ' . $geo_months[intval($sd_dt->format('n')) - 1] . ' ' . $sd_dt->format('Y');
+          }
+          
           $sd_day_geo = $geo_days[intval($sd_dt->format('w'))];
-          $sd_month_geo = $geo_months[intval($sd_dt->format('n')) - 1];
-          $sd_date_geo = intval($sd_dt->format('j')) . ' ' . $sd_month_geo . ' ' . $sd_dt->format('Y');
       ?>
       <div class="premium-glass p-4 p-md-5 mb-4 position-relative overflow-hidden reveal-up text-center" style="background: linear-gradient(145deg, rgba(20,25,35,0.7) 0%, rgba(30,40,60,0.5) 100%); border: 1px solid rgba(255,255,255,0.06); border-radius: 28px;">
           <div class="ambient-glow" style="position:absolute; width:300px; height:300px; top:-80px; right:-80px; background:rgba(13,202,240,0.12); filter:blur(100px); pointer-events:none;"></div>
           <div class="ambient-glow" style="position:absolute; width:200px; height:200px; bottom:-60px; left:-60px; background:rgba(138,43,226,0.08); filter:blur(80px); pointer-events:none;"></div>
           
           <div class="position-relative" style="z-index:1;">
-              <!-- Label -->
               <div class="d-inline-block px-3 py-1 mb-3 rounded-pill" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08); font-size:0.75rem; color:rgba(255,255,255,0.6); letter-spacing:0.5px;">
-                  <i class="fa-regular fa-clock me-1"></i> შარშან ამ დღეს
+                  <i class="fa-regular fa-clock me-1"></i> 
+                  <?php echo ($ai_lang === 'en' ? 'On this day in history' : 'შარშან ამ დღეს'); ?>
               </div>
               
-              <!-- Date -->
-              <h2 class="fw-bold text-white mb-0" style="font-family:'BPG NinoMtavruli'; font-size:1.6rem; text-shadow:0 2px 8px rgba(0,0,0,0.3);">
+              <h2 class="fw-bold text-white mb-0" style="font-family:'BPG NinoMtavruli', sans-serif; font-size:1.6rem; text-shadow:0 2px 8px rgba(0,0,0,0.3);">
                   <?php echo htmlspecialchars($sd_date_geo, ENT_QUOTES, 'UTF-8'); ?>
               </h2>
               <p class="text-white-50 mb-4" style="font-size:0.85rem;">
                   <i class="fa-regular fa-calendar-days me-1"></i> <?php echo htmlspecialchars($sd_day_geo, ENT_QUOTES, 'UTF-8'); ?>
               </p>
               
-              <!-- Weather Icon + Temperatures -->
               <div class="d-flex flex-column align-items-center justify-content-center gap-3 mb-3">
                   <img src="<?php echo htmlspecialchars($sd_icon, ENT_QUOTES, 'UTF-8'); ?>" 
-                       alt="ამინდი" 
+                       alt="<?php echo ($ai_lang === 'en' ? 'Weather' : 'ამინდი'); ?>" 
                        style="width:90px; height:90px; object-fit:contain; filter:drop-shadow(0 8px 20px rgba(0,0,0,0.25));" 
                        class="float-icon" />
                   <div class="text-center">
                       <div class="d-flex align-items-baseline justify-content-center gap-4">
                           <div>
-                              <small class="text-white-50 d-block mb-1" style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.5px;">მაქს</small>
+                              <small class="text-white-50 d-block mb-1" style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.5px;"><?php echo ($ai_lang === 'en' ? 'Max' : 'მაქს'); ?></small>
                               <span class="fw-bold text-white" style="font-size:2.4rem; line-height:1; text-shadow:0 3px 10px rgba(0,0,0,0.2);">
                                   <?php echo htmlspecialchars($sd_max, ENT_QUOTES, 'UTF-8'); ?>
                               </span>
                               <span class="text-white-50" style="font-size:1.2rem;">°C</span>
                           </div>
                           <div class="px-3" style="border-left:1px solid rgba(255,255,255,0.12);">
-                              <small class="text-white-50 d-block mb-1" style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.5px;">მინ</small>
+                              <small class="text-white-50 d-block mb-1" style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.5px;"><?php echo ($ai_lang === 'en' ? 'Min' : 'მინ'); ?></small>
                               <span class="fw-bold text-white" style="font-size:2.4rem; line-height:1; text-shadow:0 3px 10px rgba(0,0,0,0.2);">
                                   <?php echo htmlspecialchars($sd_min, ENT_QUOTES, 'UTF-8'); ?>
                               </span>
@@ -264,8 +277,7 @@ include 'header.php';
                   </div>
               </div>
               
-              <!-- Description -->
-              <div class="d-inline-block px-4 py-2 rounded-pill" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); font-family:'BPG NinoMtavruli';">
+              <div class="d-inline-block px-4 py-2 rounded-pill" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); font-family:'BPG NinoMtavruli', sans-serif;">
                   <i class="fa-regular fa-cloud me-1 text-info"></i>
                   <?php echo htmlspecialchars($sd_desc, ENT_QUOTES, 'UTF-8'); ?>
               </div>
@@ -274,7 +286,7 @@ include 'header.php';
       <?php endif; ?>
 
       <?php if (!$data): ?>
-        <div class="alert alert-warning">ისტორიული მონაცემების მიღება ვერ მოხერხდა.</div>
+        <div class="alert alert-warning"><?php echo ($ai_lang === 'en' ? 'Failed to fetch historical data.' : 'ისტორიული მონაცემების მიღება ვერ მოხერხდა.'); ?></div>
       <?php elseif (!$single_day_mode): ?>
         <?php
         $labels = [];
@@ -289,8 +301,11 @@ include 'header.php';
 
         <div class="chart-card mb-3">
           <div style="color:#fff;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-            <div style="font-size:14px"><strong>ნაჩვენებია</strong>: <?php echo htmlspecialchars($start_date . ' - ' . $end_date, ENT_QUOTES, 'UTF-8'); ?></div>
-            <div class="chart-legend"><span style="color:#ff8a65">● მაქს</span> <span style="margin-left:8px;color:#4fc3f7">● მინ</span></div>
+            <div style="font-size:14px"><strong><?php echo ($ai_lang === 'en' ? 'Showing' : 'ნაჩვენებია'); ?></strong>: <?php echo htmlspecialchars($start_date . ' - ' . $end_date, ENT_QUOTES, 'UTF-8'); ?></div>
+            <div class="chart-legend">
+                <span style="color:#ff8a65">● <?php echo ($ai_lang === 'en' ? 'Max' : 'მაქს'); ?></span> 
+                <span style="margin-left:8px;color:#4fc3f7">● <?php echo ($ai_lang === 'en' ? 'Min' : 'მინ'); ?></span>
+            </div>
           </div>
           <canvas id="historyChart" height="120"></canvas>
         </div>
@@ -301,13 +316,15 @@ include 'header.php';
             $icon = isset($icons[$i]) ? icon_url($icons[$i], true) : 'icons/sun.svg';
             $dmax = isset($temps_max[$i]) ? round($temps_max[$i]) : '--';
             $dmin = isset($temps_min[$i]) ? round($temps_min[$i]) : '--';
-            $desc = isset($descs[$i]) ? $descs[$i] : '';
+            
+            // ამინდის აღწერის დინამიური თარგმანი
+            $desc = isset($descs[$i]) ? get_weather_description_by_text($descs[$i]) : '';
           ?>
           <div class="col-6 col-sm-4 col-md-3 mb-3">
             <div class="card bg-dark text-white">
               <div class="card-body text-center">
                 <div><?php echo $dt->format('d.m.Y'); ?></div>
-                <img src="<?php echo htmlspecialchars($icon, ENT_QUOTES, 'UTF-8'); ?>" style="width:56px;height:56px;" />
+                <img src="<?php echo htmlspecialchars($icon, ENT_QUOTES, 'UTF-8'); ?>" style="width:56px;height:56px;" alt="Weather icon" />
                 <div style="font-size:16px;"><?php echo htmlspecialchars($dmax, ENT_QUOTES, 'UTF-8'); ?>&deg; / <?php echo htmlspecialchars($dmin, ENT_QUOTES, 'UTF-8'); ?>&deg;</div>
                 <div style="font-size:12px;color:#ddd;"><?php echo htmlspecialchars($desc, ENT_QUOTES, 'UTF-8'); ?></div>
               </div>
@@ -408,7 +425,7 @@ include 'header.php';
           labels: labels,
           datasets: [
             {
-              label: 'Max',
+              label: '<?php echo ($ai_lang === 'en' ? 'Max' : 'მაქს'); ?>',
               data: maxs,
               backgroundColor: gradientMax,
               borderColor: '#ff8a65',
@@ -417,7 +434,7 @@ include 'header.php';
               fill: true
             },
             {
-              label: 'Min',
+              label: '<?php echo ($ai_lang === 'en' ? 'Min' : 'მინ'); ?>',
               data: mins,
               backgroundColor: gradientMin,
               borderColor: '#4fc3f7',

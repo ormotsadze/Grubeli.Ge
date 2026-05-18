@@ -33,6 +33,23 @@ return [
 'ai_laundry' => 'Do the laundry?',
 'ai_bike' => 'Ride a bike?',
 
+ // --- 1. footer.PHP (menu) ---
+'menu_home' => 'Home',
+'menu_archives' => 'Archives',
+'menu_menu' => 'Menu',
+'menu_contact' => 'Contact',
+
+
+ // --- 1. footer.PHP (drawer menu) ---
+  'drawermenu_home' => 'Home Page',
+  'drawermenu_onthisday' => 'On This Day',
+  'drawermenu_worldtime' => 'World Time',
+  'drawermenu_holidays' => 'Holidays',
+  'drawermenu_getapp' => 'Get App',
+  'drawermenu_getappversion' => 'Android Version',
+  'drawermenu_privacy' => 'Privacy Policy',
+  'drawermenu_about' => 'About Us',
+  'drawermenu_jobs' => 'Careers',
 
 
  // --- 1. INDEX.PHP (air quality) ---
@@ -85,7 +102,12 @@ return [
     'contact_og_title' => 'Contact Grubeli | Support',
     'contact_tw_title' => 'Contact - Grubeli.ge',
     'contact_tw_desc' => 'Have questions or ideas? Write to us and our team will get back to you shortly.',
-
+   // --- 4. onthisday.php.PHP (On This Day in History) ---
+    'onthisday_title' => 'On This Day in History',
+    'onthisday_desc' => 'Learn about the history of this day. Historical data in Georgia.',
+    'onthisday_og_title' => 'On This Day in History | Grubeli.ge',
+    'onthisday_tw_title' => 'On This Day in History',
+    'onthisday_tw_desc' => 'See what happened on this day throughout history.',
     // --- 5. GETAPP.PHP (Download App) ---
     'getapp_title' => 'Grubeli.ge Pro – Android App',
     'getapp_desc' => 'Download Grubeli.ge Pro app for Android. Get push notifications, earthquake alerts, and AI assistant insights directly on your phone.',

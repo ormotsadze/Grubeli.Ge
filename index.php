@@ -3,7 +3,7 @@ header('Cache-Control: no-cache, no-store, must-revalidate');
 header('Pragma: no-cache');
 header('Expires: 0');
 
-
+$ai_lang = $_SESSION['lang'] ?? $_COOKIE['lang'] ?? 'ka';
 
 // 1. სესია და აუცილებელი ფუნქციები
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
@@ -14,9 +14,8 @@ require_once __DIR__ . '/functions.php';
 
 // 3. მონაცემების წამოღება (პარალელურად weather + air)
 $weatherData = fetch_weather_and_air($lat, $lon);
-// შემოწმება, რომ მონაცემები ცარიელი არ არის
 if (!$weatherData['weather']) {
-    echo "ამინდის მონაცემების ჩატვირთვა ვერ მოხერხდა.";
+    echo ($ai_lang === 'en') ? "Failed to load weather data." : "ამინდის მონაცემების ჩატვირთვა ვერ მოხერხდა.";
     exit;
 }
 $weather = $weatherData['weather'];
@@ -31,7 +30,6 @@ if ($weather) {
     // ფუნქცია თავად იპოვის შიგნით $current-საც და $hourly-საც
     $weather_alert = get_weather_alert($weather);
 }
-$ai_lang = $_SESSION['lang'] ?? 'ka';
 if ($vis_meters > 0) {
     $vis_km = round($vis_meters / 1000, 1) . ($ai_lang === 'en' ? " km" : " კმ");
 } else {
@@ -301,19 +299,42 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
                 <i class="fa-solid fa-fire-flame-curved text-danger me-2 pulse-animation" style="font-size: 1.3rem;"></i>
                 <div class="text-truncate">
                     <div class="d-flex align-items-center gap-2">
-        <h6 class="m-0 fw-bold text-truncate" style="font-size: 0.9rem;">
-                            ხანძარი: <?php echo htmlspecialchars($p['region'] ?? 'საქართველო', ENT_QUOTES, 'UTF-8'); ?>
+                        <h6 class="m-0 fw-bold text-truncate" style="font-size: 0.9rem;">
+                            <?php 
+                                echo ($ai_lang === 'en' ? 'Fire: ' : 'ხანძარი: ');                              
+                                $regionName = $p['region'] ?? 'საქართველო';
+                                if ($ai_lang === 'en') {
+                                    $regionName = translate_place_name($regionName);
+                                    if ($regionName === 'საქართველო') $regionName = 'Georgia'; 
+                                }
+                                echo htmlspecialchars($regionName, ENT_QUOTES, 'UTF-8'); 
+                            ?>
                         </h6>
                     </div>
                     <small class="text-white-50" style="font-size: 0.7rem;">
-                        სტატუსი: <span class="text-white"><?php echo htmlspecialchars($p['conf'] ?? 'საშუალო', ENT_QUOTES, 'UTF-8'); ?></span> | 
-                        ტემპ: <span class="text-white"><?php echo htmlspecialchars($p['temp'] ?? round(($p['bright'] ?? 273.15) - 273.15), ENT_QUOTES, 'UTF-8'); ?>°C</span>
+                        <?php 
+                            echo ($ai_lang === 'en' ? 'Status: ' : 'სტატუსი: '); 
+                        ?>
+                        <span class="text-white">
+                            <?php 
+                                $conf_status = $p['conf'] ?? 'საშუალო';
+                                if ($ai_lang === 'en') {
+                                    $status_map = ['დაბალი' => 'Low', 'საშუალო' => 'Medium', 'მაღალი' => 'High'];
+                                    $conf_status = $status_map[$conf_status] ?? $conf_status;
+                                }
+                                echo htmlspecialchars($conf_status, ENT_QUOTES, 'UTF-8'); 
+                            ?>
+                        </span> | 
+                        
+                        <?php 
+                            echo ($ai_lang === 'en' ? 'Temp: ' : 'ტემპ: '); 
+                        ?>
+                        <span class="text-white"><?php echo htmlspecialchars($p['temp'] ?? round(($p['bright'] ?? 273.15) - 273.15), ENT_QUOTES, 'UTF-8'); ?>°C</span>
                     </small>
                 </div>
             </div>
-
             <a href="<?php echo htmlspecialchars($mapUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" class="btn btn-danger py-1 px-2 ms-2" style="font-size: 0.65rem; border-radius: 8px; font-weight: 600; white-space: nowrap;">
-                <i class="fa-solid fa-location-dot"></i> რუკა
+                <i class="fa-solid fa-location-dot"></i> <?php echo ($ai_lang === 'en' ? 'Map' : 'რუკა'); ?>
             </a>
         </div>
     </div>
@@ -332,10 +353,34 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
                 <i class="fa-solid <?php echo $weather_alert['icon']; ?> <?php echo $text_class; ?> me-2 pulse-animation" style="font-size: 1.3rem;"></i>
                 <div class="text-truncate">
                     <h6 class="m-0 fw-bold text-truncate" style="font-size: 0.9rem;">
-                        <?php echo $weather_alert['title']; ?>
+                        <?php 
+                            echo htmlspecialchars($weather_alert['title'] ?? '', ENT_QUOTES, 'UTF-8'); 
+                        ?>
                     </h6>
                     <small class="text-white-50" style="font-size: 0.7rem;">
-                        <?php echo $weather_alert['status']; ?> | ქარი: <span class="text-white"><?php echo $weather_alert['wind']; ?> კმ/სთ</span>
+                        <?php 
+                            $alert_status = $weather_alert['status'] ?? '';
+                            if ($ai_lang === 'en') {
+                                $status_translations = [
+                                    'აქტიური' => 'Active',
+                                    'მოსალოდნელი' => 'Expected',
+                                    'საშიში' => 'Dangerous'
+                                ];
+                                $alert_status = $status_translations[$alert_status] ?? $alert_status;
+                            }
+                            echo htmlspecialchars($alert_status, ENT_QUOTES, 'UTF-8'); 
+                        ?> | 
+                        
+                        <?php 
+                            echo ($ai_lang === 'en' ? 'Wind: ' : 'ქარი: '); 
+                        ?> 
+                        <span class="text-white">
+                            <?php 
+                                $wind_speed = htmlspecialchars($weather_alert['wind'] ?? '0', ENT_QUOTES, 'UTF-8');
+                                $wind_unit = ($ai_lang === 'en' ? ' km/h' : ' კმ/სთ');
+                                echo $wind_speed . $wind_unit;
+                            ?>
+                        </span>
                     </small>
                 </div>
             </div>
@@ -353,12 +398,28 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
             <i class="fa-solid fa-house-chimney-crack text-danger pulse-animation" style="font-size: 2rem;"></i>
         </div>
         <div>
-            <h5 class="m-0 text-white fw-bold" style="font-family: 'BPG NinoMtavruli';">
-                ყურადღება: მიწისძვრა!
+            <h5 class="m-0 text-white fw-bold" style="font-family: 'BPG NinoMtavruli', sans-serif;">
+                <?php 
+                    echo ($ai_lang === 'en' ? 'Attention: Earthquake!' : 'ყურადღება: მიწისძვრა!'); 
+                ?>
             </h5>
             <p class="m-0 text-white-50" style="font-size: 0.9rem;">
-                დაფიქსირდა <strong><?php echo htmlspecialchars((string)$eqAlert['mag'], ENT_QUOTES, 'UTF-8'); ?></strong>
-                მაგნიტუდის ბიძგები: <?php echo htmlspecialchars($georgianPlace, ENT_QUOTES, 'UTF-8'); ?> (<?php echo htmlspecialchars($eqAlert['time'], ENT_QUOTES, 'UTF-8'); ?>)
+                <?php 
+                    $magnitude = htmlspecialchars((string)$eqAlert['mag'], ENT_QUOTES, 'UTF-8');
+                    $time_str = htmlspecialchars($eqAlert['time'] ?? '', ENT_QUOTES, 'UTF-8');
+                    
+                    $placeName = $georgianPlace;
+                    if ($ai_lang === 'en') {
+                        $placeName = translate_place_name($georgianPlace);
+                    }
+                    $placeName = htmlspecialchars($placeName, ENT_QUOTES, 'UTF-8');
+
+                    if ($ai_lang === 'en') {
+                        echo "Detected <strong>" . $magnitude . "</strong> magnitude tremors: " . $placeName . " (" . $time_str . ")";
+                    } else {
+                        echo "დაფიქსირდა <strong>" . $magnitude . "</strong> მაგნიტუდის ბიძგები: " . $placeName . " (" . $time_str . ")";
+                    }
+                ?>
             </p>
         </div>
     </div>

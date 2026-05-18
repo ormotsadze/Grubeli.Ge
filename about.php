@@ -23,13 +23,14 @@ include 'header.php';
           <h1 class="display-5 fw-bolder text-gradient-premium m-0">ჩვენ შესახებ</h1>
         </div>
         <p class="lead text-white-80 fw-light">
-          <strong class="text-white">Grubeli.ge</strong> არის საქართველოზე ორიენტირებული ამინდის პლატფორმა, რომელიც აერთიანებს რეალურ მეტეოროლოგიურ მონაცემებს და <strong class="text-white">ხელოვნური ინტელექტის</strong> ანალიზს — ქართულ ენაზე.
+          <strong class="text-white">Grubeli.ge</strong> არის საქართველოზე ორიენტირებული ამინდის 
+          პლატფორმა, რომელიც აერთიანებს რეალურ მეტეოროლოგიურ მონაცემებს და <strong class="text-white">ხელოვნური ინტელექტის</strong> ანალიზს.
         </p>
       </div>
       <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
         <div class="status-pill d-inline-flex align-items-center">
           <i class="fas fa-info-circle me-2 text-primary"></i>
-          <span class="fw-bold">სტატუსი: BETA ვერსია</span>
+          <span class="fw-bold">სტატუსი: BETA</span>
         </div>
       </div>
     </div>

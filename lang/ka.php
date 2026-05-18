@@ -33,6 +33,23 @@ return [
 'ai_laundry' => 'სარეცხი გავფინო?',
 'ai_bike' => 'ველოპროგნოზი',
 
+ // --- 1. footer.PHP (menu) ---
+'menu_home' => 'მთავარი',
+'menu_archives' => 'არქივი',
+'menu_menu' => 'მენიუ',
+'menu_contact' => 'კონტაქტი',
+
+ // --- 1. footer.PHP (drawer menu) ---
+  'drawermenu_home' => 'მთავარი გვერდი',
+  'drawermenu_onthisday' => 'ეს დღე ისტორიაში',
+  'drawermenu_worldtime' => 'მსოფლიო დრო',
+  'drawermenu_holidays' => 'დღესასწაულები',
+  'drawermenu_getapp' => 'ჩამოტვირთე აპი',
+  'drawermenu_getappversion' => 'Android ვერსია',
+  'drawermenu_privacy' => 'წესები',
+  'drawermenu_about' => 'ჩვენ შესახებ',
+  'drawermenu_jobs' => 'ვაკანსია',
+
 
   // --- 1. INDEX.PHP (air quality) ---
    'ai_airqualitygood' => '(კარგი):</b> ჰაერი იდეალურად სუფთაა.<br>',
@@ -86,7 +103,12 @@ return [
     'contact_og_title' => 'დაუკავშირდით გრუბელს | კონტაქტი',
     'contact_tw_title' => 'კონტაქტი - Grubeli.ge',
     'contact_tw_desc' => 'გაქვთ კითხვები ან იდეები? მოგვწერეთ და ჩვენი გუნდი მალე გიპასუხებთ.',
-
+      // --- 4. onthisday.php.PHP (ამ დღეს) ---
+    'onthisday_title' => 'ამ დღეს ისტორიაში',
+    'onthisday_desc' => 'გაიგეთ როგორი ისტორია იყო ამ დღეს წლებში. ისტორიული მონაცემები საქართველოში.',
+    'onthisday_og_title' => 'ამ დღეს ისტორიაში | Grubeli.ge',
+    'onthisday_tw_title' => 'ამ დღეს ისტორიაში',
+    'onthisday_tw_desc' => 'ნახე როგორ გადავლით დღეს წლებში.',
     // --- 5. GETAPP.PHP (აპლიკაციის ჩამოტვირთვა) ---
     'getapp_title' => 'Grubeli.ge Pro – Android აპლიკაცია',
     'getapp_desc' => 'ჩამოტვირთეთ Grubeli.ge Pro აპლიკაცია Android-ისთვის. მიიღეთ Push შეტყობინებები, მიწისძვრის გაფრთხილებები და AI ასისტენტის რჩევები პირდაპირ სმარტფონში.',

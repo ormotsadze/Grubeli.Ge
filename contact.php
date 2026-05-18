@@ -89,18 +89,14 @@ include 'header.php';
             <h3 class="text-white mb-2">სოციალური ქსელები</h3>
             <p class="text-white-60 mb-4">გამოგვიწერეთ, რომ პირველმა მიიღოთ განახლებები ახალი ფუნქციების, ამინდის შესახებ და სხვა სასარგებლო ინფორმაცია.</p>
             <div class="social-grid">
-              <a href="https://facebook.com/grubeli.ge" target="_blank" rel="noopener" class="social-pill">
+              <a href="https://www.facebook.com/grubeliofficial/" target="_blank" rel="noopener" class="social-pill">
                 <i class="fab fa-facebook-f me-2"></i> Facebook
               </a>
-             <a href="https://instagram.com/grubeli.ge" target="_blank" rel="noopener" class="social-pill">
+             <a href="https://m.me/grubeliofficial" target="_blank" rel="noopener" class="social-pill">
                  <i class="fa-brands fa-facebook-messenger"></i> Messenger
               </a>
-              <a href="https://instagram.com/grubeli.ge" target="_blank" rel="noopener" class="social-pill">
-                <i class="fab fa-instagram me-2"></i> Instagram
-              </a>
-              <a href="https://tiktok.com/@grubeli.ge" target="_blank" rel="noopener" class="social-pill">
-                <i class="fa-brands fa-tiktok me-2"></i> TikTok
-              </a>
+            
+            
                 <a href="https://github.com/ormotsadze/Grubeli.Ge" target="_blank" rel="noopener" class="social-pill">
                 <i class="fa-brands fa-github me-2"></i> Github
               </a>

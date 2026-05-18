@@ -7,12 +7,12 @@ $histUrl = 'historical-weather.php?lat=' . rawurlencode($mLat) . '&lon=' . rawur
     <div class="footer-inner">
         <a href="index.php" class="footer-item">
             <i class="fa-solid fa-house"></i>
-            <span>მთავარი</span>
+            <span style="font-family: '<?php echo __('font_family'); ?>';"><?php echo __('menu_home'); ?></span>
         </a>
        <a href="<?php echo htmlspecialchars($histUrl, ENT_QUOTES, 'UTF-8'); ?>" class="footer-item">
       
            <i class="fa-solid fa-cloud-arrow-down"></i>
-            <span>არქივი</span>
+            <span style="font-family: '<?php echo __('font_family'); ?>';"><?php echo __('menu_archives'); ?></span>
         </a>
 
      <?php 
@@ -25,11 +25,11 @@ if ($current_page == 'index.php' || $current_page == 'historical-weather.php') :
 <?php endif; ?>
          <a class="footer-item" href="javascript:void(0)" onclick="toggleMyMenu()" role="button">
     <i class="fa-solid fa-bars-staggered"></i>
-    <span>მენიუ</span>
+    <span style="font-family: '<?php echo __('font_family'); ?>';"><?php echo __('menu_menu'); ?></span>
 </a>
 <a href="contact.php" class="footer-item">
 <i class="fa-regular fa-envelope"></i>
-    <span>კონტაქტი</span>
+    <span style="font-family: '<?php echo __('font_family'); ?>';"><?php echo __('menu_contact'); ?></span>
 </a>
        
     </div>
@@ -59,36 +59,37 @@ if ($current_page == 'index.php' || $current_page == 'historical-weather.php') :
                 <div class="link-icon">
                     <i class="fa-solid fa-house"></i>
                 </div>
-                <span>მთავარი გვერდი</span>
+                <span style="font-family: '<?php echo __('font_family'); ?>';"><?php echo __('drawermenu_home'); ?></span>
             </a>
 
-           <a href="<?php echo htmlspecialchars($histUrl, ENT_QUOTES, 'UTF-8'); ?>" class="drawer-link hist-link">
+           <a href="onthisday.php" class="drawer-link hist-link">
                 <div class="link-icon">
-                 <i class="fa-solid fa-cloud-arrow-down"></i>
+              
+                  <i class="fa-solid fa-calendar-day"></i>
                 </div>
-                <span>ამინდის არქივი</span>
+                <span style="font-family: '<?php echo __('font_family'); ?>';"><?php echo __('drawermenu_onthisday'); ?></span>
             </a>
             
             <a href="global-time.php" class="drawer-link">
                 <div class="link-icon">
                 <i class="fa-regular fa-clock"></i>
                 </div>
-                <span>მსოფლიო დრო</span>
+                <span style="font-family: '<?php echo __('font_family'); ?>';"><?php echo __('drawermenu_worldtime'); ?></span>
             </a>
          
   <a href="holidays.php" class="drawer-link">
                 <div class="link-icon">
               <i class="fa-solid fa-champagne-glasses"></i>
                 </div>
-                <span>დღესასწაულები</span>
+                <span style="font-family: '<?php echo __('font_family'); ?>';"><?php echo __('drawermenu_holidays'); ?></span>
             </a>
  <a href="getapp.php" id="appDownloadLink" class="drawer-link getapp">
     <div class="link-icon app-icon">
         <i class="fa-brands fa-google-play"></i>
     </div>
     <div class="app-text-wrapper">
-        <span class="app-title">ჩამოტვირთე აპი</span>
-        <span class="app-subtitle">Android ვერსია</span>
+        <span class="app-title" style="font-family: '<?php echo __('font_family'); ?>';"><?php echo __('drawermenu_getapp'); ?></span>
+        <span class="app-subtitle"><?php echo __('drawermenu_getappversion'); ?></span>
     </div>
 
 </a>
@@ -108,13 +109,8 @@ if ($current_page == 'index.php' || $current_page == 'historical-weather.php') :
             <i class="fa-brands fa-facebook-messenger"></i>
         </a>
         
-        <a href="https://instagram.com/grubeli.ge" target="_blank" class="social-btn ig">
-            <i class="fa-brands fa-instagram"></i>
-        </a>
-        
-        <a href="https://tiktok.com/@grubeli.ge" target="_blank" class="social-btn tk">
-            <i class="fa-brands fa-tiktok"></i>
-        </a>
+      
+      
          <a href="https://github.com/ormotsadze/Grubeli.Ge" target="_blank" class="social-btn git">
           <i class="fa-brands fa-github"></i>
         </a>
@@ -134,15 +130,15 @@ if ($current_page == 'index.php' || $current_page == 'historical-weather.php') :
 <div class="lang-switcher-container d-flex justify-content-center align-items-center">
     <div class="lang-pill-box p-1 d-flex align-items-center" style="background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; backdrop-filter: blur(10px);">
         
-        <a href="?lang=ka" class="lang-link <?php echo $current_lang === 'ka' ? 'active-lang' : ''; ?>">KA</a>
-        <a href="?lang=en" class="lang-link <?php echo $current_lang === 'en' ? 'active-lang' : ''; ?>">EN</a>
+        <a href="?lang=ka" class="lang-link <?php echo $current_lang === 'ka' ? 'active-lang' : ''; ?>">GEO</a>
+        <a href="?lang=en" class="lang-link <?php echo $current_lang === 'en' ? 'active-lang' : ''; ?>">ENG</a>
         
     </div>
 </div>
     <div class="footer-links-grid">
-        <a href="privacy.php" class="f-link">წესები</a>
-        <a href="about.php" class="f-link">ჩვენ შესახებ</a>
-        <a href="jobs.php" class="f-link">ვაკანსია</a>
+        <a href="privacy.php" class="f-link" style="font-family: '<?php echo __('font_family'); ?>';"><?php echo __('drawermenu_privacy'); ?></a>
+        <a href="about.php" class="f-link" style="font-family: '<?php echo __('font_family'); ?>';"><?php echo __('drawermenu_about'); ?></a>
+        <a href="jobs.php" class="f-link" style="font-family: '<?php echo __('font_family'); ?>';"><?php echo __('drawermenu_jobs'); ?></a>
     </div>
 
     <div class="data-credits mt-2 pt-2">

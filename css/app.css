@@ -756,7 +756,6 @@ border-image-slice: 1;
 
 #site-footer .footer-item span { 
     font-size: 13px; 
-    font-family: 'BPG NinoMtavruli', sans-serif; 
     font-weight: 500;
 }
 
@@ -1527,9 +1526,7 @@ background: #13141b;
 /* Messenger-ის განსხვავებული სტილი */
 .social-btn.msg:hover {background: linear-gradient(135deg, #00B2FF 0%, #006AFF 100%);   }
 .social-btn.fb:hover { background: #1877F2; }
-.social-btn.ig:hover { background: linear-gradient(45deg, #f09433, #dc2743, #bc1888); }
-.social-btn.tk:hover { background: #000; }
-.social-btn.git:hover { background:#24292e; }
+.social-btn.git:hover { background:#0c0e0f; }
 
 /* აქტიური დაჭერის ეფექტი */
 .social-btn:active {
@@ -1581,7 +1578,6 @@ background: #13141b;
     color: rgba(255, 255, 255, 0.4);
     text-decoration: none;
     transition: all 0.3s ease;
-    font-family: 'BPG NinoMtavruli', sans-serif;
     position: relative;
 }
 
