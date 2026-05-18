@@ -31,10 +31,11 @@ if ($weather) {
     // ფუნქცია თავად იპოვის შიგნით $current-საც და $hourly-საც
     $weather_alert = get_weather_alert($weather);
 }
+$ai_lang = $_SESSION['lang'] ?? 'ka';
 if ($vis_meters > 0) {
-    $vis_km = round($vis_meters / 1000, 1) . " კმ";
+    $vis_km = round($vis_meters / 1000, 1) . ($ai_lang === 'en' ? " km" : " კმ");
 } else {
-    $vis_km = "10+ კმ"; // თუ API 0-ს აბრუნებს, ეს ხშირად ნიშნავს იდეალურ ხილვადობას
+    $vis_km = $ai_lang === 'en' ? "10+ km" : "10+ კმ";
 }
 // 4. IP-სგან დამოუკიდებელი ქალაქის სახელი (cached Nominatim)
 $placeName = get_location_name($lat, $lon);
@@ -161,20 +162,34 @@ $uv_class = 'uv-low';
 $uv_text = '---';
 
 if ($uv_value !== null) {
-    if ($uv_value < 3) { $uv_class = 'uv-low'; $uv_text = 'დაბალი'; }
-    elseif ($uv_value < 6) { $uv_class = 'uv-moderate'; $uv_text = 'საშუალო'; }
-    elseif ($uv_value < 8) { $uv_class = 'uv-high'; $uv_text = 'მაღალი'; }
-    elseif ($uv_value < 11) { $uv_class = 'uv-very-high'; $uv_text = 'ძალიან მაღალი'; }
-    else { $uv_class = 'uv-extreme'; $uv_text = 'ექსტრემალური'; }
+    if ($ai_lang === 'en') {
+        if ($uv_value < 3) { $uv_class = 'uv-low'; $uv_text = 'Low'; }
+        elseif ($uv_value < 6) { $uv_class = 'uv-moderate'; $uv_text = 'Moderate'; }
+        elseif ($uv_value < 8) { $uv_class = 'uv-high'; $uv_text = 'High'; }
+        elseif ($uv_value < 11) { $uv_class = 'uv-very-high'; $uv_text = 'Very High'; }
+        else { $uv_class = 'uv-extreme'; $uv_text = 'Extreme'; }
+    } else {
+        if ($uv_value < 3) { $uv_class = 'uv-low'; $uv_text = 'დაბალი'; }
+        elseif ($uv_value < 6) { $uv_class = 'uv-moderate'; $uv_text = 'საშუალო'; }
+        elseif ($uv_value < 8) { $uv_class = 'uv-high'; $uv_text = 'მაღალი'; }
+        elseif ($uv_value < 11) { $uv_class = 'uv-very-high'; $uv_text = 'ძალიან მაღალი'; }
+        else { $uv_class = 'uv-extreme'; $uv_text = 'ექსტრემალური'; }
+    }
 }
 // AQI
 $aq_label = '--'; $aq_class = '';
 if ($air_quality && isset($air_quality['hourly']['time']) && isset($currentIndex)) {
     $aq_v = intval($air_quality['hourly']['us_aqi'][$currentIndex] ?? 0);
     if ($aq_v > 0) {
-        if ($aq_v <= 50) { $aq_label = $aq_v . ' (კარგი)'; $aq_class='aq-good'; }
-        elseif ($aq_v <= 100) { $aq_label = $aq_v . ' (ზომიერი)'; $aq_class='aq-moderate'; }
-        else { $aq_label = $aq_v . ' (ყურადღება)'; $aq_class='aq-unhealthy'; }
+        if ($ai_lang === 'en') {
+            if ($aq_v <= 50) { $aq_label = $aq_v . ' (Good)'; $aq_class='aq-good'; }
+            elseif ($aq_v <= 100) { $aq_label = $aq_v . ' (Moderate)'; $aq_class='aq-moderate'; }
+            else { $aq_label = $aq_v . ' (Unhealthy)'; $aq_class='aq-unhealthy'; }
+        } else {
+            if ($aq_v <= 50) { $aq_label = $aq_v . ' (კარგი)'; $aq_class='aq-good'; }
+            elseif ($aq_v <= 100) { $aq_label = $aq_v . ' (ზომიერი)'; $aq_class='aq-moderate'; }
+            else { $aq_label = $aq_v . ' (ყურადღება)'; $aq_class='aq-unhealthy'; }
+        }
     }
 }
 
@@ -191,7 +206,7 @@ if (isset($weather['daily']['sunrise'][0]) && isset($weather['daily']['sunset'][
     
     // დღის ხანგრძლივობის გამოთვლა
     $diff = $sr->diff($ss);
-    $day_length = $diff->format('%h სთ %i წთ');
+    $day_length = $diff->format(($ai_lang === 'en' ? '%h hr %i min' : '%h სთ %i წთ'));
 }
 
 // --- მთვარის ფაზის გამოთვლა (API-ს გარეშე) ---
@@ -201,46 +216,50 @@ $moon_age_sec = (time() - $moon_known_new) % $moon_synodic;
 if ($moon_age_sec < 0) $moon_age_sec += $moon_synodic;
 $moon_phase = $moon_age_sec / $moon_synodic; // 0..1
 
+// Moon phase names by language
+$moon_names_ka = ['ახალი მთვარე', 'ნახევარმთვარე', 'პირველი მეოთხედი', 'მზარდი მთვარე', 'სავსე მთვარე', 'კლებადი მთვარე', 'ბოლო მეოთხედი', 'მცირე ნახევარმთვარე'];
+$moon_names_en = ['New Moon', 'Waxing Crescent', 'First Quarter', 'Waxing Gibbous', 'Full Moon', 'Waning Gibbous', 'Last Quarter', 'Waning Crescent'];
+
 // 0     0.125   0.25    0.375   0.5     0.625   0.75    0.875   1
 // AM    NMC     PM      MZ      SM      DK      BM      MNP     AM
 if ($moon_phase < 0.0625 || $moon_phase >= 0.9375) {
     $moon_phase_idx = 0;
-    $moon_name = 'ახალი მთვარე';
+    $moon_name = ($ai_lang === 'en') ? $moon_names_en[0] : $moon_names_ka[0];
     $moon_icon = 'fa-regular fa-circle';
     $moon_color = '#d4a853';
 } elseif ($moon_phase < 0.1875) {
     $moon_phase_idx = 1;
-    $moon_name = 'ნახევარმთვარე';
+    $moon_name = ($ai_lang === 'en') ? $moon_names_en[1] : $moon_names_ka[1];
     $moon_icon = 'fa-solid fa-moon';
     $moon_color = '#d4a853';
 } elseif ($moon_phase < 0.3125) {
     $moon_phase_idx = 2;
-    $moon_name = 'პირველი მეოთხედი';
+    $moon_name = ($ai_lang === 'en') ? $moon_names_en[2] : $moon_names_ka[2];
     $moon_icon = 'fa-solid fa-moon';
     $moon_color = '#e8c56c';
 } elseif ($moon_phase < 0.4375) {
     $moon_phase_idx = 3;
-    $moon_name = 'მზარდი მთვარე';
+    $moon_name = ($ai_lang === 'en') ? $moon_names_en[3] : $moon_names_ka[3];
     $moon_icon = 'fa-solid fa-moon';
     $moon_color = '#f4d88a';
 } elseif ($moon_phase < 0.5625) {
     $moon_phase_idx = 4;
-    $moon_name = 'სავსე მთვარე';
+    $moon_name = ($ai_lang === 'en') ? $moon_names_en[4] : $moon_names_ka[4];
     $moon_icon = 'fa-solid fa-circle';
     $moon_color = '#ffe066';
 } elseif ($moon_phase < 0.6875) {
     $moon_phase_idx = 5;
-    $moon_name = 'კლებადი მთვარე';
+    $moon_name = ($ai_lang === 'en') ? $moon_names_en[5] : $moon_names_ka[5];
     $moon_icon = 'fa-solid fa-moon';
     $moon_color = '#f4d88a';
 } elseif ($moon_phase < 0.8125) {
     $moon_phase_idx = 6;
-    $moon_name = 'ბოლო მეოთხედი';
+    $moon_name = ($ai_lang === 'en') ? $moon_names_en[6] : $moon_names_ka[6];
     $moon_icon = 'fa-solid fa-moon';
     $moon_color = '#e8c56c';
 } else {
     $moon_phase_idx = 7;
-    $moon_name = 'მცირე ნახევარმთვარე';
+    $moon_name = ($ai_lang === 'en') ? $moon_names_en[7] : $moon_names_ka[7];
     $moon_icon = 'fa-solid fa-moon';
     $moon_color = '#d4a853';
 }
@@ -256,12 +275,12 @@ if ($moon_phase < 0.0625 || $moon_phase >= 0.9375) {
       <img src="images/logo/logo.png" alt="Grubeli" class="app-banner-logo">
       <div>
         <div class="app-banner-title">Grubeli.ge  <span class="version-badge">PRO</span></div>
-        <div class="app-banner-sub">ჩამოტვირთე Android აპი</div>
+        <div class="app-banner-sub"><?php echo __('index_getappdesc'); ?></div>
       </div>
     </div>
     <div class="app-banner-right">
       <a href="getapp.php" class="app-banner-btn" id="app-banner-download">
-        <i class="fa-brands fa-google-play me-1"></i> ჩამოტვირთვა
+        <i class="fa-brands fa-google-play me-1"></i> <?php echo __('index_getapp'); ?>
       </a>
       <button class="app-banner-close" id="app-banner-close" aria-label="დახურვა">&times;</button>
     </div>
@@ -363,7 +382,7 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
             <input type="search" 
                    id="citySearch" 
                    class="search-input" 
-                   placeholder="ქალაქი საქართველოში..." 
+                   placeholder="<?php echo __('index_cityingeorgia'); ?>" 
                    autocomplete="off"
                    enterkeyhint="search" 
                    role="combobox" 
@@ -676,7 +695,7 @@ document.addEventListener("DOMContentLoaded", function () {
       <i class="fa-solid fa-wind"></i>
         </div>
         <div class="tile-body">
-          <span class="tile-label">ქარი</span>
+          <span class="tile-label"><?php echo __('wind'); ?></span>
           <span class="tile-value">
  <?php
             $wind = $current['windspeed'] ?? (($hourly && isset($currentIndex) && isset($hourly['windspeed_10m'][$currentIndex])) ? $hourly['windspeed_10m'][$currentIndex] : (($hourly && isset($firstIndex) && isset($hourly['windspeed_10m'][$firstIndex])) ? $hourly['windspeed_10m'][$firstIndex] : '--'));
@@ -694,7 +713,7 @@ document.addEventListener("DOMContentLoaded", function () {
        <i class="fa-solid fa-droplet"></i> 
         </div>
         <div class="tile-body">
-          <span class="tile-label">ტენიანობა</span>
+          <span class="tile-label"><?php echo __('humidity'); ?></span>
           <span class="tile-value">
             <?php
             $hum = ($hourly && isset($currentIndex) && isset($hourly['relativehumidity_2m'][$currentIndex])) ? $hourly['relativehumidity_2m'][$currentIndex] . '%' : (($hourly && isset($firstIndex) && isset($hourly['relativehumidity_2m'][$firstIndex])) ? $hourly['relativehumidity_2m'][$firstIndex] : '--');
@@ -713,7 +732,7 @@ document.addEventListener("DOMContentLoaded", function () {
        <i class="fa-solid fa-eye-low-vision"></i>
         </div>
         <div class="tile-body">
-          <span class="tile-label">ხილვადობა</span>
+          <span class="tile-label"><?php echo __('visibility'); ?></span>
           <span class="tile-value">
 
        <?php echo $vis_km; ?>
@@ -729,7 +748,7 @@ document.addEventListener("DOMContentLoaded", function () {
          <i class="fa-solid fa-cloud-showers-heavy"></i> 
         </div>
         <div class="tile-body">
-          <span class="tile-label">ნალექის ალბათობა</span>
+          <span class="tile-label"><?php echo __('precipitation'); ?></span>
           <span class="tile-value">
 
            <?php 
@@ -748,7 +767,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <i class="fa-regular fa-sun" style="color: #ffc107;"></i>
         </div>
         <div class="tile-body">
-          <span class="tile-label">მზის ამოსვლა</span>
+          <span class="tile-label"><?php echo __('sunrise'); ?></span>
           <span class="tile-value"><?php echo htmlspecialchars($sunrise_label, ENT_QUOTES, 'UTF-8'); ?></span>
         </div>
       </div>
@@ -762,7 +781,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <i class="fa-solid fa-cloud-sun" style="color: #4F72C2;"></i>
         </div>
         <div class="tile-body">
-          <span class="tile-label">მზის ჩასვლა</span>
+          <span class="tile-label"><?php echo __('sunset'); ?></span>
           <span class="tile-value"><?php echo htmlspecialchars($sunset_label, ENT_QUOTES, 'UTF-8'); ?></span>
         </div>
       </div>
@@ -775,7 +794,7 @@ document.addEventListener("DOMContentLoaded", function () {
        <i class="fa-solid fa-clock-rotate-left"></i>
         </div>
         <div class="tile-body">
-          <span class="tile-label">დღის ხანგძლივობა</span>
+          <span class="tile-label"><?php echo __('day_length'); ?></span>
           <span class="feature-tile-text"><?php echo $day_length; ?></span>
         </div>
       </div>
@@ -789,7 +808,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <i class="<?php echo $moon_icon; ?>" style="color:<?php echo $moon_color; ?>"></i>
         </div>
         <div class="tile-body">
-          <span class="tile-label">მთვარის ფაზა</span>
+          <span class="tile-label"><?php echo __('moon_phase'); ?></span>
           <span class="feature-tile-text"><?php echo htmlspecialchars($moon_name, ENT_QUOTES, 'UTF-8'); ?></span>
         </div>
       </div>
@@ -806,7 +825,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <i class="fa-solid fa-sun-plant-wilt"></i>
         </div>
         <div class="tile-body">
-          <span class="tile-label">UV ინდექსი</span>
+          <span class="tile-label"><?php echo __('uv_index'); ?></span>
           <span class="tile-value">
             <?php if ($uv_value === null): ?>
               --:--
@@ -832,7 +851,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <i class="fa-solid fa-aquarius"></i>
         </div>
         <div class="tile-body">
-          <span class="tile-label">ჰაერი</span>
+          <span class="tile-label"><?php echo __('air_quality'); ?></span>
           <span class="feature-tile-text"><?php echo htmlspecialchars($aq_label, ENT_QUOTES, 'UTF-8'); ?></span>
         </div>
       </div>
@@ -1017,7 +1036,7 @@ document.addEventListener("DOMContentLoaded", function () {
       <div class="modal-content bg-dark text-white ai-border-only">
       
      <div class="modal-body text-start">
-         <a class='ai-button'>✨ AI განმარტება</a>
+         <a class='ai-button'>✨ <?php echo __('ai_assistant'); ?></a>
  <br><br>
 
    UV ინდექსი: მზის რადიაციის სიმძლავრის საზომი. რაც უფრო მაღალია ციფრი, მით უფრო სწრაფად ზიანდება კანი.
@@ -1251,11 +1270,10 @@ function askQuickAI(question) {
     const textContainer = document.getElementById('ai-text-content');
     const responseContainer = document.getElementById('ai-response-container'); 
     
-    if(!textContainer) {
-        console.error("ID 'ai-text-content' ვერ მოიძებნა!");
-        return;
-    }
-
+   if (!textContainer) {
+    console.error("ID 'ai-text-content' <?php echo __('not_found'); ?>!");
+    return;
+}
     if(responseContainer) {
         responseContainer.style.display = "block"; 
         responseContainer.scrollIntoView({ 
@@ -1265,7 +1283,7 @@ function askQuickAI(question) {
     }
 
     textContainer.style.opacity = "0.5";
-    textContainer.innerHTML = " ✨ ვფიქრობ...";
+  textContainer.innerHTML = " ✨ <?php echo __('ai_thinking'); ?>";
 
     const params = new URLSearchParams();
     params.append('message', question);
@@ -1303,7 +1321,7 @@ function askQuickAI(question) {
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-dark text-white ai-border-only" style="border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
             <div class="modal-body text-start">
-                <a class='ai-button' style="margin-bottom: 15px; display: inline-block;">✨ AI განმარტება</a>
+                <a class='ai-button' style="margin-bottom: 15px; display: inline-block;">✨ <?php echo __('ai_assistant'); ?></a>
                 <br>
                 <div style="font-size: 14px; line-height: 1.6;">
                     <b><span style="color: #34EDA0">0-50</span> (კარგი):</b> ჰაერი იდეალურად სუფთაა.<br>
@@ -1431,7 +1449,7 @@ function askQuickAI(question) {
             } else {
                 const div = document.createElement('div');
                 div.className = 'list-group-item no-result';
-                div.innerText = 'ქალაქი ვერ მოიძებნა ✌️';
+                div.innerText = '<?php echo __('index_cityingeorgia_not_found'); ?> ✌️';
                 suggestionBox.appendChild(div);
             }
         }, 250);
