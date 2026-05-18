@@ -3,7 +3,25 @@ return [
     'app_title' => 'GRUBELI.GE',
     'app_title_sub' => 'ამინდი მარტივად',
     'my_location' => 'ჩემი ლოკაცია',
+    'font_family' => 'BPG NinoMtavruli',
+     'its_day' => 'დღეა',
+      'its_night' => 'ღამეა',
+   'its_uknow' => 'უცნობია',
    
+   // --- 1. INDEX.PHP (AI) ---
+   'ai_tips' => 'AI რჩევები',
+'ai_assistant' => 'AI ასისტენტი',
+'ai_wait' => 'გთხოვთ, დაიცადოთ რამდენიმე წამი კითხვებს შორის.',
+
+
+'ai_umbrella' => 'დამჭირდება ქოლგა?',
+'ai_clothes' => 'რა ჩავიცვა?',
+'ai_glasses' => 'მზის სათვალე',
+'ai_walk' => 'სეირნობა?',
+'ai_carwash' => 'მანქანა გავრეცხო?',
+'ai_exercise' => 'ვივარჯიში?',
+'ai_laundry' => 'სარეცხი გავფინო?',
+'ai_bike' => 'ველოპროგნოზი',
 
     // --- 1. INDEX.PHP (მთავარი გვერდი) ---
     'index_title' => 'ამინდის პროგნოზი საქართველოში',

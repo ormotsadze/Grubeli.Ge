@@ -403,7 +403,7 @@ if ($hour >= 6 && $hour < 20) {
 <div class="card-body position-relative" style="z-index: 3; display: flex; flex-direction: column; justify-content: center; min-height: 320px;">
     
     <div class="location-header mb-2">
-      <h2 class="location-title m-0" style="font-family: 'BPG NinoMtavruli', sans-serif; font-size: 1.5rem; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+      <h2 class="location-title m-0" style="font-family: '<?php echo __('font_family'); ?>'; font-size: 1.5rem; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">
         <i class="fa-solid fa-location-dot text-info me-2"></i><?php echo htmlspecialchars(translate_place_name($placeName), ENT_QUOTES, 'UTF-8'); ?>
       </h2>
     </div>
@@ -451,7 +451,7 @@ if ($hour >= 6 && $hour < 20) {
     <div class="weather-details-footer mt-3 pt-2" style="border-top: 1px solid rgba(255,255,255,0.15);">
      
      
-<h3 class="weather-description mb-1" style="font-family: 'BPG NinoMtavruli', sans-serif; font-size: 1.1rem; font-weight: 500; margin: 5px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+<h3 class="weather-description mb-1" style="font-family: '<?php echo __('font_family'); ?>', sans-serif; font-size: 1.1rem; font-weight: 500; margin: 5px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
   <?php 
     // ვიყენებთ მხოლოდ რეალურ, არსებულ ცვლადს და ვაზღვევთ ცარიელი სტრინგით
     echo htmlspecialchars(get_weather_description_by_text($current_desc ?? ''), ENT_QUOTES, 'UTF-8'); 
@@ -1040,7 +1040,7 @@ document.addEventListener("DOMContentLoaded", function () {
 <div class="ai-accordion closed mb-3 shadow-sm">
     <button class="ai-accordion-header" onclick="toggleAIAccordion()">
         <div class="ai-accordion-left">
-            <span>✨ AI რჩევები</span>
+            <span>✨ <?php echo __('ai_tips'); ?></span>
         </div>
         <i class="fa-solid fa-chevron-up ai-accordion-icon" id="aiAccordionIcon"></i>
     </button>
@@ -1050,7 +1050,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <div id="ai-response-container" style="display: none; margin-bottom: 20px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 25px; position: relative;">
                 <button onclick="closeAIResponse()" class="close-ai-btn" style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: white; cursor: pointer;">✖</button>
                 <div class="ai-badge-wrapper" style="margin-bottom: 10px;">
-                    <span class="ai-badge">✨ AI ასისტენტი</span>
+                    <span class="ai-badge">✨ <?php echo __('ai_assistant'); ?></span>
                 </div>
                 <p id="ai-text-content" class="ai-status-text" style="margin: 0; padding-right: 30px; line-height: 1.5; color: #e0e6ed;"></p>
             </div>
@@ -1058,35 +1058,35 @@ document.addEventListener("DOMContentLoaded", function () {
             <div class="suggestion-grid">
                 <button class="suggest-btn" onclick="askQuickAI('დამჭირდება დღეს ქოლგა?')">
                     <span class="btn-icon">🌂</span>
-                    <span class="btn-text">ქოლგა?</span>
+                    <span class="btn-text"><?php echo __('ai_umbrella'); ?></span>
                 </button>
                 <button class="suggest-btn" onclick="askQuickAI('როგორ ჩავიცვა დღეს?')">
                     <span class="btn-icon">🧥</span>
-                    <span class="btn-text">რა ჩავიცვა?</span>
+                    <span class="btn-text"><?php echo __('ai_clothes'); ?></span>
                 </button>
                 <button class="suggest-btn" onclick="askQuickAI('მზის სათვალე დამჭირდება?')">
                     <span class="btn-icon">😎</span>
-                    <span class="btn-text">მზის სათვალე?</span>
+                    <span class="btn-text"><?php echo __('ai_glasses'); ?></span>
                 </button>
                 <button class="suggest-btn" onclick="askQuickAI('გამოდგება ამინდი სეირნობისთვის?')">
                     <span class="btn-icon">🚶</span>
-                    <span class="btn-text">სეირნობა</span>
+                    <span class="btn-text"><?php echo __('ai_walk'); ?></span>
                 </button>
                 <button class="suggest-btn" onclick="askQuickAI('გამოდგება ამინდი მანქანის გასარეცხად?')">
                     <span class="btn-icon">🚗 </span>
-                    <span class="btn-text">გარეცხვა</span>
+                    <span class="btn-text"><?php echo __('ai_carwash'); ?></span>
                 </button>
                 <button class="suggest-btn" onclick="askQuickAI('შეიძლება დღეს გარეთ სირბილი ან ვარჯიში?')">
                     <span class="btn-icon">🏃</span>
-                    <span class="btn-text">ვარჯიში</span>
+                    <span class="btn-text"><?php echo __('ai_exercise'); ?></span>
                 </button>
                 <button class="suggest-btn" onclick="askQuickAI('გაშრება სარეცხი გარეთ სწრაფად?')">
                     <span class="btn-icon">🧺</span>
-                    <span class="btn-text">სარეცხის გაფენა</span>
+                    <span class="btn-text"><?php echo __('ai_laundry'); ?></span>
                 </button>
                 <button class="suggest-btn" onclick="askQuickAI('ველოსიპედით სასეირნოდ კარგი ამინდია?')">
                     <span class="btn-icon">🚲</span>
-                    <span class="btn-text">ველო</span>
+                    <span class="btn-text"><?php echo __('ai_bike'); ?></span>
                 </button>
             </div>
         </div>

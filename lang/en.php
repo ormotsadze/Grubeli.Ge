@@ -3,8 +3,25 @@ return [
     'app_title' => 'GRUBELI.GE',
     'app_title_sub' => 'Weather Made Easy',
     'my_location' => 'My Location',
+    'font_family' => 'poppins',
+      'its_day' => 'It is day',
+      'its_night' => 'It is night',
+       'its_uknow' => 'Unknown',
+  
+   // --- 1. INDEX.PHP (AI) ---
+   'ai_tips' => 'AI Tips',
+   'ai_assistant' => 'AI Assistant',
+   'ai_wait' => 'Please wait a few seconds between questions.',
 
-
+   'ai_umbrella' => 'Need an umbrella?',
+'ai_clothes' => 'What to wear?',
+'ai_glasses' => 'Sunglasses?',
+'ai_walk' => 'Go for a walk?',
+'ai_carwash' => 'Wash the car?',
+'ai_exercise' => 'Do some exercise?',
+'ai_laundry' => 'Do the laundry?',
+'ai_bike' => 'Ride a bike?',
+ // --- 1. INDEX.PHP ---
     'index_title' => 'Weather Forecast in Georgia',
     'index_desc' => 'Real-time weather forecast in Batumi, Tbilisi and all Georgia. AI-smart tips, humidity, wind, and precipitation charts.',
     'index_og_title' => 'Grubeli.ge | Weather Forecast Made Easy',

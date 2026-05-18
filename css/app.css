@@ -64,7 +64,7 @@ html {
 }
 body {
 background: #18181d;
-font-family: 'BPG Arial', sans-serif;
+font-family: 'BPG Arial', poppins, sans-serif;
 color: #9ba8c5;
 padding-bottom: 90px !important;
 padding-top: env(safe-area-inset-top);
