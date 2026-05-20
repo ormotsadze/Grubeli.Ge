@@ -8,7 +8,7 @@ $pageTwTitle = __('404_tw_title');
 $pageTwDesc  = __('404_tw_desc');
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $_SESSION['lang'] ?? 'ka'; ?>">
+<html lang="<?php echo get_current_lang(); ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

@@ -1,4 +1,3 @@
-
 <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -8,16 +7,17 @@ if (session_status() === PHP_SESSION_NONE) {
 if (isset($_GET['lang'])) {
     $requested_lang = $_GET['lang'];
     if (in_array($requested_lang, ['ka', 'en'])) {
-        setcookie('lang', $requested_lang, time() + (86400 * 30), "/", "", false, true);
+        // httponly=false — JS-მაც უნდა წაიკითხოს cookie shared hosting-ზე
+        setcookie('lang', $requested_lang, time() + (86400 * 365), "/", "", false, false);
         $_SESSION['lang'] = $requested_lang;
         $current_lang = $requested_lang;
     }
 }
 
-// 2. თუ URL-ში არ არის, ვამოწმებთ ქუქის (session-ზე მაღალი პრიორიტეტი — shared hosting-ზე სესიები იკარგება)
 if (!isset($current_lang)) {
     // Cookie > Session — cookie მუშაობს shared hosting-ზეც
-    $current_lang = $_COOKIE['lang'] ?? $_SESSION['lang'] ?? null;
+    $lang_val = $_COOKIE['lang'] ?? $_SESSION['lang'] ?? null;
+    $current_lang = $lang_val ? trim($lang_val) : null;
 }
 
 // 3. თუ არაფერია, პირველი შემოსვლა — ვამოწმებთ ბრაუზერის ენას
@@ -32,14 +32,21 @@ if (!$current_lang) {
 }
 
 // 5. შევინახოთ cookie ნებისმიერ შემთხვევაში, რომ shared hosting-ზეც იმუშაოს
+//    httponly=false — JS-საც სჭირდება getCookie('lang')-ით წაკითხვა
 if (!isset($_COOKIE['lang']) || $_COOKIE['lang'] !== $current_lang) {
-    setcookie('lang', $current_lang, time() + (86400 * 30), "/", "", false, true);
+    setcookie('lang', $current_lang, time() + (86400 * 365), "/", "", false, false);
     $_SESSION['lang'] = $current_lang;
 }
+// ყოველთვის ვწერთ lang cookie-ს (SameSite Lax) JS-ისთვის
+setcookie('lang_client', $current_lang, time() + (86400 * 365), "/", "", false, false);
 
 // 6. დამხმარე ფუნქცია — ყველგან გამოიყენეთ ეს, $_SESSION['lang']-ის ნაცვლად
 //    Cookie > Session > 'ka' (shared hosting-ზე session იკარგება, cookie კი მუშაობს)
 function get_current_lang() {
+    // GET-ს უმაღლესი პრიორიტეტი (JS-დან ?lang=en მოდის)
+    if (isset($_GET['lang']) && in_array($_GET['lang'], ['ka', 'en'])) {
+        return $_GET['lang'];
+    }
     return $_COOKIE['lang'] ?? $_SESSION['lang'] ?? 'ka';
 }
 
@@ -953,8 +960,8 @@ function translate_place_name($placeName) {
         return $placeName;
     }
 
-    // ვკითხულობთ შენს cities.json ფაილს
-    $jsonPath = __DIR__ . '/cities.json'; // შეცვალე გზა საჭიროებისამებრ
+    // ვკითხულობთ cities.json ფაილს (name_en / region_en-თვის)
+    $jsonPath = __DIR__ . '/cities.json';
     
     if (file_exists($jsonPath)) {
         $jsonData = file_get_contents($jsonPath);
@@ -962,21 +969,48 @@ function translate_place_name($placeName) {
         
         if (is_array($cities)) {
             foreach ($cities as $city) {
-                // თუ სახელი ზუსტად ემთხვევა (მაგალითად: "ბათუმი" ან "თელავის რაიონი")
                 if (trim($city['name']) === trim($placeName)) {
-                    // თუ json-ში მომავალში ჩაამატებ "name_en"-ს, პირდაპირ იმას წაიღებს
-                    if (isset($city['name_en'])) {
+                    // name_en-ს ვიყენებთ, თუ არსებობს
+                    if (isset($city['name_en']) && !empty($city['name_en'])) {
                         return $city['name_en'];
                     }
-                    
-                    // თუ json-ში ინგლისური სახელი არ გიწერია, ამ კონკრეტულ სახელს გაუკეთებს ტრანსლიტერაციას
+                    // Fallback: transliteration
                     return ucwords(transliterate_georgian($placeName));
                 }
             }
         }
     }
 
-    // თუ სახელი საერთოდ არ არის cities.json-ში (ანუ API-დან მოვიდა უცხოური ან სხვა ლოკაცია)
+    // თუ cities.json-ში ვერ მოიძებნა, ვცდილობთ region_en-ის გამოყენებას
+    // მაგ: "დასავლეთ საქართველო" → "West Georgia"
+    $regionTranslations = [
+        'დასავლეთ საქართველო' => 'West Georgia',
+        'აღმოსავლეთ საქართველო' => 'East Georgia',
+        'სამხრეთ საქართველო' => 'South Georgia',
+        'ჩრდილოეთ საქართველო' => 'North Georgia',
+        'შიდა ქართლი / მცხეთა-მთიანეთი' => 'Shida Kartli / Mtskheta-Mtianeti',
+        'კახეთის რეგიონი' => 'Kakheti Region',
+        'დასავლეთ საქართველო' => 'West Georgia',
+        'აჭარა' => 'Adjara',
+        'იმერეთი' => 'Imereti',
+        'კახეთი' => 'Kakheti',
+        'ქართლი' => 'Kartli',
+        'სამეგრელო' => 'Samegrelo',
+        'სვანეთი' => 'Svaneti',
+        'გურია' => 'Guria',
+        'სამცხე-ჯავახეთი' => 'Samtskhe-Javakheti',
+        'მცხეთა-მთიანეთი' => 'Mtskheta-Mtianeti',
+        'ქვემო ქართლი' => 'Kvemo Kartli',
+        'შიდა ქართლი' => 'Shida Kartli',
+        'რაჭა-ლეჩხუმი' => 'Racha-Lechkhumi',
+        'სამხრეთ ოსეთი' => 'South Ossetia',
+        'საქართველო' => 'Georgia',
+    ];
+    if (isset($regionTranslations[$placeName])) {
+        return $regionTranslations[$placeName];
+    }
+
+    // Final fallback: transliteration
     return ucwords(transliterate_georgian($placeName));
 }
 

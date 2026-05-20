@@ -212,6 +212,65 @@ document.addEventListener('click', function(event) {
   <script src="js/geolocation.js" ></script>
 
 <script>
+/**
+ * LANGUAGE PERSISTENCE FOR WEBVIEW
+ * Stores language preference in localStorage and ensures all
+ * internal navigation links preserve the ?lang= parameter.
+ */
+(function() {
+    // 1. Detect current language from URL or cookie
+    const urlParams = new URLSearchParams(window.location.search);
+    const langFromUrl = urlParams.get('lang');
+    const currentLang = langFromUrl || getCookie('lang') || 'ka';
+    
+    // 2. Save to localStorage for cross-page persistence
+    if (currentLang) {
+        localStorage.setItem('grubeli_lang', currentLang);
+    }
+    
+    // 3. Auto-append ?lang= to all internal links (except lang switcher links)
+    const savedLang = localStorage.getItem('grubeli_lang') || currentLang;
+    document.addEventListener('click', function(e) {
+        const link = e.target.closest('a');
+        if (!link) return;
+        if (!link.href) return;
+        if (link.href.startsWith('javascript:')) return;
+        if (link.href.startsWith('#')) return;
+        if (link.target === '_blank') return;
+        
+        // Skip lang switcher links (they already have ?lang=)
+        if (link.classList.contains('lang-link')) return;
+        
+        // Only internal links
+        const linkUrl = new URL(link.href, window.location.origin);
+        if (linkUrl.origin !== window.location.origin) return;
+        
+        // If lang is not already in the URL, add it
+        if (!linkUrl.searchParams.has('lang') && savedLang && savedLang !== 'ka') {
+            linkUrl.searchParams.set('lang', savedLang);
+            link.href = linkUrl.toString();
+        }
+    });
+    
+    // 4. Also fix any existing links on the page
+    document.addEventListener('DOMContentLoaded', function() {
+        const saved = localStorage.getItem('grubeli_lang');
+        if (saved && saved !== 'ka') {
+            document.querySelectorAll('a:not(.lang-link)').forEach(function(a) {
+                if (!a.href) return;
+                if (a.href.startsWith('javascript:')) return;
+                try {
+                    const url = new URL(a.href, window.location.origin);
+                    if (url.origin === window.location.origin && !url.searchParams.has('lang')) {
+                        url.searchParams.set('lang', saved);
+                        a.href = url.toString();
+                    }
+                } catch(e) {}
+            });
+        }
+    });
+})();
+
 window.addEventListener('load', function() {
     const currentCity = "<?php echo addslashes($city_name ?? ''); ?>";
 

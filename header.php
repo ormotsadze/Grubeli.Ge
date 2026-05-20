@@ -33,7 +33,7 @@ require_once __DIR__ . '/functions.php';
 
     if (lat && lon) {
         const url = new URL(window.location.href);
-        // თუ URL-ში ლოკაცია არ გვაქვს, დავამატოთ და გადავტვირთოთ
+        // თუ URL-ში ლოკაცია არ გვაქვს, დავამატოთ (შენახული query params-ის ჩათვლით!)
         if (!url.searchParams.get("lat")) {
             url.searchParams.set("lat", lat);
             url.searchParams.set("lon", lon);
@@ -41,6 +41,24 @@ require_once __DIR__ . '/functions.php';
         }
     }
 })();
+    </script>
+    
+    <!-- LANGUAGE FIX for shared hosting: ensure lang param survives via cookie -->
+    <script>
+    (function() {
+        // On shared hosting, append ?lang= from cookie if missing in URL
+        var url = new URL(window.location.href);
+        if (!url.searchParams.get('lang')) {
+            var langCookie = (function(name) {
+                var m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+                return m ? decodeURIComponent(m[1]) : null;
+            })('lang_client');
+            if (langCookie && langCookie !== 'ka') {
+                url.searchParams.set('lang', langCookie);
+                window.location.replace(url.toString());
+            }
+        }
+    })();
     </script>
   </head>
   <body class="d-flex flex-column min-vh-100 premium-bg">

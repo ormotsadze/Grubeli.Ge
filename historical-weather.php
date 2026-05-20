@@ -4,8 +4,8 @@ header('Pragma: no-cache');
 header('Expires: 0');
 require_once __DIR__ . '/functions.php';
 
-// განსაზღვრავს მიმდინარე ენას სესიიდან ან ქუქიდან
-$ai_lang = $_SESSION['lang'] ?? $_COOKIE['lang'] ?? 'ka';
+// განსაზღვრავს მიმდინარე ენას get_current_lang()-დან (cookie > session > 'ka')
+$ai_lang = get_current_lang();
 
 // Determine lat/lon using unified helper
 [$lat, $lon] = resolve_coordinates($_GET['lat'] ?? null, $_GET['lon'] ?? null);

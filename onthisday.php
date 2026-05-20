@@ -1,6 +1,6 @@
 <?php
 require_once 'functions.php';
-$ai_lang = $_SESSION['lang'] ?? $_COOKIE['lang'] ?? 'ka';
+$ai_lang = get_current_lang();
 $pageTitle   = __('onthisday_title');
 $pageDesc    = __('onthisday_desc');
 $pageOgTitle = __('onthisday_og_title');

@@ -1,13 +1,21 @@
 <?php
 header('Cache-Control: no-cache, no-store, must-revalidate');
+date_default_timezone_set('Asia/Tbilisi');
 header('Pragma: no-cache');
 header('Expires: 0');
 
-$ai_lang = $_SESSION['lang'] ?? $_COOKIE['lang'] ?? 'ka';
-
-// 1. სესია და აუცილებელი ფუნქციები
+// 1. სესია და აუცილებელი ფუნქციები (უნდა იყოს ყველაფერზე ადრე!)
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 require_once __DIR__ . '/functions.php';
+
+// 2. $ai_lang — ვიღებთ functions.php-ის get_current_lang()-დან, რომელიც სწორად კითხულობს cookie > session > 'ka'
+$ai_lang = get_current_lang();
+
+// 3. __t helper — თუ 'ka' ან 'en'
+function __t($ka, $en) {
+    $lang = get_current_lang();
+    return ($lang === 'en') ? $en : $ka;
+}
 
 // 2. კოორდინატების განსაზღვრა (ერთიანი helper)
 [$lat, $lon] = resolve_coordinates($_GET['lat'] ?? null, $_GET['lon'] ?? null);
@@ -267,6 +275,7 @@ if ($moon_phase < 0.0625 || $moon_phase >= 0.9375) {
 
 
 ?>
+
 <div id="app-banner" class="app-banner">
   <div class="app-banner-inner">
     <div class="app-banner-left">
@@ -504,7 +513,7 @@ if ($hour >= 6 && $hour < 20) {
              style="width: 110px; height: 110px; object-fit: contain; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.15));"
              width="110" height="110" 
              src="<?php echo htmlspecialchars($current_icon, ENT_QUOTES, 'UTF-8'); ?>" 
-             alt="<?php echo ($_SESSION['lang'] ?? 'ka') === 'en' ? 'Weather Icon' : 'ამინდის მთავარი აიკონი'; ?>" />
+             alt="<?php echo ($ai_lang === 'en' ? 'Weather Icon' : 'ამინდის მთავარი აიკონი'); ?>" />
       </div>
       
       <div class="weather-text d-flex align-items-start justify-content-center">
@@ -522,7 +531,7 @@ if ($hour >= 6 && $hour < 20) {
             </span>
             <a href="historical-weather.php?lat=<?php echo $lat; ?>&lon=<?php echo $lon; ?>&date=<?php echo $one_year_ago; ?>" class="hist-mini-link">
               <span class="historical-link-show"> 
-                <?php echo ($_SESSION['lang'] ?? 'ka') === 'en' ? 'View' : 'ნახვა'; ?> <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                <?php echo ($ai_lang === 'en' ? 'View' : 'ნახვა'); ?> <i class="fa-solid fa-arrow-up-right-from-square"></i>
               </span>
             </a>
         </div>
@@ -539,7 +548,7 @@ if ($hour >= 6 && $hour < 20) {
 </h3>
       
       <p class="feels-like m-0" style="font-size: 0.85rem; color: rgba(255,255,255,0.7); text-shadow: 0 1px 2px rgba(0,0,0,0.3);">
-        <i class="fa-solid fa-temperature-half me-1"></i> <?php echo ($_SESSION['lang'] ?? 'ka') === 'en' ? 'Feels like:' : 'შეგრძნებით:'; ?> 
+        <i class="fa-solid fa-temperature-half me-1"></i> <?php echo get_current_lang() === 'en' ? 'Feels like:' : 'შეგრძნებით:'; ?> 
         <strong class="text-white">
           <?php
             $feels = ($hourly && isset($currentIndex) && isset($hourly['apparent_temperature'][$currentIndex])) 
@@ -970,7 +979,10 @@ document.addEventListener("DOMContentLoaded", function () {
 }
 
 .feature-tile-text {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    word-wrap: break-word;      /* ძველი ბრაუზერებისთვის */
+    overflow-wrap: break-word;  /* თანამედროვე სტანდარტი */
+    max-width: 100%;
     color: #fff;
     font-weight: 600;
     text-align: left;
@@ -1410,17 +1422,23 @@ function askQuickAI(question) {
 
 <div class="container mt-3 mb-3">
 <div class="forecast-grid">
-  <?php if (!empty($daily_items)): 
-  
-    $days_short = ($ai_lang === 'en') ? ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] : ['კვი','ორშ','სამ','ოთხ','ხუთ','პარ','შაბ'];
+  <?php 
+  if (!empty($daily_items)): 
+    // განვსაზღვროთ ენის მასივი გარედან ან ფუნქციით
+    $days_short = (trim($ai_lang) === 'en') ? ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] : ['კვი','ორშ','სამ','ოთხ','ხუთ','პარ','შაბ'];
     
     foreach ($daily_items as $d): 
-
+      // დარწმუნდით, რომ get_weather_description_by_text ფუნქცია სწორად კითხულობს $ai_lang-ს
+      // (თუ ის არ არის გლობალური, შესაძლოა იქაც იკარგება ენა)
       $daily_desc = get_weather_description_by_text($d['desc'] ?? '');
-    ?>
+  ?>
     <div class="forecast-card">
       <div class="forecast-date">
-        <?php echo htmlspecialchars($days_short[intval($d['date']->format('w'))] . ' ' . $d['date']->format('d.m'), ENT_QUOTES, 'UTF-8'); ?>
+        <?php 
+          // ენის უსაფრთხო ჩატვირთვა
+          $day_index = intval($d['date']->format('w'));
+          echo htmlspecialchars($days_short[$day_index] . ' ' . $d['date']->format('d.m'), ENT_QUOTES, 'UTF-8'); 
+        ?>
       </div>
       
       <img src="<?php echo htmlspecialchars($d['icon'], ENT_QUOTES, 'UTF-8'); ?>" 
@@ -1447,8 +1465,16 @@ function askQuickAI(question) {
     const searchInput = document.getElementById('citySearch');
     const suggestionBox = document.getElementById('suggestions');
 
-    // 1. დავამატოთ ფორმის კონტროლი (მობილურისთვის კრიტიკულია)
-    // თუ HTML-ში არ გაქვს <form>, JavaScript-ით შევქმნათ გარსი
+    // 1. detect current site language — if 'en', show English names
+    const siteLang = (function() {
+        var p = new URLSearchParams(window.location.search);
+        return p.get('lang') || (function(n) {
+            var m = document.cookie.match(new RegExp('(?:^|; )' + n + '=([^;]*)'));
+            return m ? decodeURIComponent(m[1]) : 'ka';
+        })('lang_client') || 'ka';
+    })();
+
+    // 1.5. wrap in form if not already
     const searchWrapper = searchInput.closest('.search-wrapper') || searchInput.parentElement;
     if (searchWrapper.tagName !== 'FORM') {
         const form = document.createElement('form');
@@ -1456,8 +1482,8 @@ function askQuickAI(question) {
         form.onsubmit = (e) => {
             e.preventDefault();
             const firstMatch = suggestionBox.querySelector('.list-group-item');
-            if (firstMatch && !firstMatch.innerText.includes('ვერ მოიძებნა')) {
-                firstMatch.click(); // ავტომატურად აირჩიოს პირველივე შედეგი
+            if (firstMatch && !firstMatch.innerText.includes('<?php echo __('index_cityingeorgia_not_found'); ?>')) {
+                firstMatch.click();
             }
         };
         searchWrapper.parentNode.insertBefore(form, searchWrapper);
@@ -1482,8 +1508,11 @@ function askQuickAI(question) {
         return result;
     }
 
-    fetch('cities.json')
-        .then(response => response.json())
+    fetch('cities.json?v=2')
+        .then(response => {
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            return response.json();
+        })
         .then(data => { cities = data; })
         .catch(error => console.error('Error loading cities:', error));
 
@@ -1495,19 +1524,30 @@ function askQuickAI(question) {
             suggestionBox.innerHTML = '';
             if (cities.length === 0 || val.length < 2) return;
 
+            // Try matching against:
+            // 1. Georgian name (city.name)
+            // 2. Latin → Georgian transliteration of input (valGeo)
+            // 3. English name (city.name_en) — if site is in English mode
             let valGeo = latinToGeorgian(val);
             const matches = cities.filter(city => {
-                const cityNameLower = city.name.toLowerCase();
-                return cityNameLower.includes(val) || cityNameLower.includes(valGeo);
+                const nameKa = city.name.toLowerCase();
+                const nameEn = (city.name_en || '').toLowerCase();
+                // Match Georgian name, transliterated input, or English name
+                return nameKa.includes(val) || nameKa.includes(valGeo) || nameEn.includes(val);
             }).slice(0, 5);
 
             if (matches.length > 0) {
                 matches.forEach(city => {
                     const div = document.createElement('div');
                     div.className = 'list-group-item';
-                    div.innerHTML = `<strong>${city.name}</strong> <small style="color: #aaa;">| ${city.region}</small>`;
                     
-                    // ფუნქცია ლოკაციის შესანახად და გადასასვლელად
+                    // In English mode: show English name + English region
+                    // In Georgian mode: show Georgian name + Georgian region
+                    const displayName = (siteLang === 'en' && city.name_en) ? city.name_en : city.name;
+                    const displayRegion = (siteLang === 'en' && city.region_en) ? city.region_en : (city.region || '');
+                    
+                    div.innerHTML = `<strong>${displayName}</strong> <small style="color: #aaa;">| ${displayRegion}</small>`;
+                    
                     const selectCity = () => {
                         if (typeof window.startLoading === 'function') window.startLoading();
                         localStorage.setItem('lat', city.lat);
@@ -1523,7 +1563,7 @@ function askQuickAI(question) {
                     };
 
                     div.onclick = selectCity;
-                    div.ontouchstart = selectCity; // მობილურისთვის
+                    div.ontouchstart = selectCity;
                     suggestionBox.appendChild(div);
                 });
             } else {
@@ -1535,7 +1575,7 @@ function askQuickAI(question) {
         }, 250);
     });
 
-    // ძებნის ველის გასუფთავება გვერდზე დაწკაპუნებისას
+    // clear suggestions when clicking outside
     document.addEventListener('click', (e) => {
         if (!suggestionBox.contains(e.target) && e.target !== searchInput) {
             suggestionBox.innerHTML = '';

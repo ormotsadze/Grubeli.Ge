@@ -25,6 +25,18 @@
     
     # ფონტები
     ExpiresByType font/woff2 "access plus 1 year"
+    
+    # JSON — NO CACHE (cities.json, cache-ის განახლებისთვის)
+    ExpiresByType application/json "access plus 0 seconds"
+</IfModule>
+
+# PHP — NO CACHE (dynamic content)
+<IfModule mod_headers.c>
+    <FilesMatch "\.(php|json)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
+    </FilesMatch>
 </IfModule>
 
 
@@ -35,3 +47,5 @@ ErrorDocument 500 /errors/500.php
 
 
 ErrorDocument 403 /errors/404.php
+
+php_value output_buffering 4096

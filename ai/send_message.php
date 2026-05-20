@@ -11,7 +11,7 @@ if (isset($_SESSION['last_ai_query']) && ($currentTime - $_SESSION['last_ai_quer
 $_SESSION['last_ai_query'] = $currentTime;
 
 // Determine current language from session
-$ai_lang = $_SESSION['lang'] ?? $_COOKIE['lang'] ?? 'ka';
+$ai_lang = get_current_lang();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userMsg = mb_substr(trim($_POST['message'] ?? ''), 0, 300);
