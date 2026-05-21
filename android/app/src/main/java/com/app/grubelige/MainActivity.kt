@@ -77,7 +77,7 @@ object WeatherUtils {
 }
 
 class MainActivity : ComponentActivity() {
-    
+
     private var isWebViewLoaded by mutableStateOf(false)
 
     inner class WebAppInterface(private val webView: WebView?) {
@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
             try {
                 val data = JSONObject(jsonData)
                 val prefs = getSharedPreferences(WeatherUtils.PREFS_NAME, MODE_PRIVATE)
-                
+
                 val cityName = WeatherUtils.cleanCityName(data.optString("city_name"))
                 val tempVal = data.opt("temp")?.toString()?.replace(",", ".")?.toDoubleOrNull()
 
@@ -176,13 +176,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+
+        // Ensure CookieManager accepts cookies globally and persists sessions
+        CookieManager.getInstance().setAcceptCookie(true)
+
         enableEdgeToEdge()
         window.addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
 
         createNotificationChannel()
         subscribeToUrgentAlerts()
         checkBatteryOptimization()
-        
+
         val permissionsToRequest = mutableListOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
@@ -267,8 +271,8 @@ class MainActivity : ComponentActivity() {
     private fun createNotificationChannel() {
         val channelId = "urgent_alerts_channel"
         val channel = NotificationChannel(
-            channelId, 
-            "Urgent Alerts", 
+            channelId,
+            "Urgent Alerts",
             NotificationManager.IMPORTANCE_HIGH
         ).apply {
             description = "Weather updates and alerts"
@@ -334,7 +338,13 @@ fun MainScreen(modifier: Modifier = Modifier, onPageLoaded: () -> Unit, activity
             val webView = WebView(ctx).apply {
                 id = android.R.id.primary
                 webViewInstance = this
-                
+
+                // Cookie management configuration for session and language persistence
+                val cookieManager = CookieManager.getInstance()
+                cookieManager.setAcceptCookie(true)
+                cookieManager.setAcceptThirdPartyCookies(this, true)
+                CookieManager.setAcceptFileSchemeCookies(true)
+
                 settings.apply {
                     javaScriptEnabled = true
                     setGeolocationEnabled(true)
@@ -342,9 +352,13 @@ fun MainScreen(modifier: Modifier = Modifier, onPageLoaded: () -> Unit, activity
                     @Suppress("DEPRECATION")
                     databaseEnabled = true
                     cacheMode = WebSettings.LOAD_DEFAULT
-                    userAgentString = "GrubeliApp/1.0"
+                    // Stable User Agent for session persistence
+                    userAgentString = "Mozilla/5.0 (Linux; Android 13; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Mobile Safari/537.36"
                     allowFileAccess = true
-                    allowContentAccess = false
+                    allowContentAccess = true
+                    mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                    loadWithOverviewMode = true
+                    useWideViewPort = true
                 }
 
                 webChromeClient = object : WebChromeClient() {
@@ -355,15 +369,29 @@ fun MainScreen(modifier: Modifier = Modifier, onPageLoaded: () -> Unit, activity
                         callback?.invoke(origin, true, false)
                     }
                 }
-                
+
                 webViewClient = object : WebViewClient() {
+                    override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+                        CookieManager.getInstance().flush() // Ensure session cookies are synced
+
+                        // Extract and save language preference if present in URL (e.g., lang=en)
+                        url?.let {
+                            val uri = Uri.parse(it)
+                            val lang = uri.getQueryParameter("lang")
+                            if (!lang.isNullOrBlank()) {
+                                ctx.getSharedPreferences(WeatherUtils.PREFS_NAME, Context.MODE_PRIVATE).edit {
+                                    putString("app_lang", lang)
+                                }
+                            }
+                        }
+                    }
+
                     override fun onPageFinished(view: WebView?, url: String?) {
+                        CookieManager.getInstance().flush() // Force persist cookies on every load
                         swipeRefreshLayout.isRefreshing = false
                         onPageLoaded()
-                        // ანახლებს მდგომარეობას, შეუძლია თუ არა უკან დაბრუნება
                         canGoBack.value = view?.canGoBack() ?: false
-                        
-                        // Auto-send token on every load
+
                         FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
                             val js = "javascript:if(window.setFCMToken) window.setFCMToken('$token');"
                             view?.loadUrl(js)
@@ -372,7 +400,6 @@ fun MainScreen(modifier: Modifier = Modifier, onPageLoaded: () -> Unit, activity
 
                     override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
                         super.doUpdateVisitedHistory(view, url, isReload)
-                        // ანახლებს მდგომარეობას ისტორიის ყოველი ცვლილებისას
                         canGoBack.value = view?.canGoBack() ?: false
                     }
 
@@ -384,13 +411,24 @@ fun MainScreen(modifier: Modifier = Modifier, onPageLoaded: () -> Unit, activity
                         }
                     }
                 }
-                
+
                 addJavascriptInterface(activity.WebAppInterface(this), "AndroidBridge")
 
                 val prefs = ctx.getSharedPreferences(WeatherUtils.PREFS_NAME, Context.MODE_PRIVATE)
                 val lastCity = prefs.getString("last_viewed_city", "")
-                val url = if (lastCity.isNullOrBlank()) WeatherUtils.BASE_URL else "${WeatherUtils.BASE_URL}?city=$lastCity"
-                loadUrl(url)
+                val savedLang = prefs.getString("app_lang", "") // Get stored language
+
+                // Construct URL with city and language persistence
+                var finalUrl = WeatherUtils.BASE_URL
+                val params = mutableListOf<String>()
+                if (!lastCity.isNullOrBlank()) params.add("city=$lastCity")
+                if (!savedLang.isNullOrBlank()) params.add("lang=$savedLang")
+
+                if (params.isNotEmpty()) {
+                    finalUrl += "?" + params.joinToString("&")
+                }
+
+                loadUrl(finalUrl)
             }
 
             swipeRefreshLayout.apply {

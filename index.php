@@ -770,7 +770,7 @@ document.addEventListener("DOMContentLoaded", function () {
  <?php
             $wind = $current['windspeed'] ?? (($hourly && isset($currentIndex) && isset($hourly['windspeed_10m'][$currentIndex])) ? $hourly['windspeed_10m'][$currentIndex] : (($hourly && isset($firstIndex) && isset($hourly['windspeed_10m'][$firstIndex])) ? $hourly['windspeed_10m'][$firstIndex] : '--'));
             echo htmlspecialchars($wind, ENT_QUOTES, 'UTF-8'); 
-            ?> <small style="font-size: 10px;">კმ/სთ</small>
+            ?> <small style="font-size: 10px;"><?php echo ($ai_lang === 'en' ? 'km/h' : 'კმ/სთ'); ?></small>
 
           </span>
         </div>

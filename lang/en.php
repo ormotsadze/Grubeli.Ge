@@ -102,12 +102,13 @@ return [
     'contact_og_title' => 'Contact Grubeli | Support',
     'contact_tw_title' => 'Contact - Grubeli.ge',
     'contact_tw_desc' => 'Have questions or ideas? Write to us and our team will get back to you shortly.',
-   // --- 4. onthisday.php.PHP (On This Day in History) ---
-    'onthisday_title' => 'On This Day in History',
-    'onthisday_desc' => 'Learn about the history of this day. Historical data in Georgia.',
-    'onthisday_og_title' => 'On This Day in History | Grubeli.ge',
-    'onthisday_tw_title' => 'On This Day in History',
-    'onthisday_tw_desc' => 'See what happened on this day throughout history.',
+
+    // --- 4. onthisday.php.PHP (On This Day) ---
+    'onthisday_title' => 'Born & Died On This Day',
+    'onthisday_desc' => 'Learn about the people who were born and died on this day in history.',
+    'onthisday_og_title' => 'Born & Died On This Day | Grubeli.ge',
+    'onthisday_tw_title' => 'Born & Died On This Day',
+    'onthisday_tw_desc' => 'Learn about the people who were born and died on this day in history.',
     // --- 5. GETAPP.PHP (Download App) ---
     'getapp_title' => 'Grubeli.ge Pro – Android App',
     'getapp_desc' => 'Download Grubeli.ge Pro app for Android. Get push notifications, earthquake alerts, and AI assistant insights directly on your phone.',
@@ -148,5 +149,26 @@ return [
     'privacy_og_title' => 'Privacy Policy | Grubeli.ge',
     'privacy_tw_title' => 'Data Protection - Grubeli.ge',
     'privacy_tw_desc' => 'Read more about how we ensure the safety and security of your data on our app and website.',
-  
+
+
+      // --- 1. CONTACT.PHP (AI) ---
+    'contact_title' => 'Contact Us',
+    'contact_desc' => 'Do you have any questions, suggestions, or interested in collaborating? Our team at <strong class="text-white">Grubeli.ge</strong> is ready to assist you. Please choose the most convenient platform to reach out.</p>',
+    'contact_online' => '24/7 Online',
+    'contact_email' => 'Email',
+    'contact_email_desc' => 'Email us anytime — we respond within 2 hours',
+    'contact_whatsapp' => 'WhatsApp',
+    'contact_whatsapp_desc' => 'Quick message — we respond as soon as possible',
+    'contact_messenger' => 'Messenger',
+    'contact_messenger_desc' => 'Connect directly via Facebook Messenger',
+    'contact_phone' => 'Call Us',
+    'contact_phone_desc' => 'Call us during business hours. Mon–Fri, 10:00–19:00, Sat, 10:00–16:00',
+     'contact_social_title' => 'Social Media',
+   'contact_social_desc' => 'Follow us to be the first to receive updates on new features, weather insights, and other useful information.</p>',
+   'contact_official_apps' => 'Official Apps',
+   'contact_official_apps_desc' => 'Grubeli.ge\'s official app is currently available only on Android. Download now <b style="color: white">Grubeli.Ge</b>  <span class="version-badge">PRO</span> to get real-time weather updates and AI recommendations directly on your phone.',
+ 'contact_official_apps_download' => 'Download Now',
+ 'contact_official_apps_google_play' => 'Google Play',
+
+
 ];

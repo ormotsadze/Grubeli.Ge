@@ -24,7 +24,7 @@ class WeatherWidget : AppWidgetProvider() {
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val componentName = ComponentName(context, WeatherWidget::class.java)
             val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
-            
+
             for (id in appWidgetIds) {
                 updateAppWidget(context, appWidgetManager, id)
             }
@@ -42,27 +42,27 @@ class WeatherWidget : AppWidgetProvider() {
         )
         views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)
 
-        // 1. ლოკაციის წამოღება Android Bridge-დან (last_viewed_city)
-        val cityName = prefs.getString("last_viewed_city", "საქართველო") ?: "საქართველო"
-        
+        // 1. ლოკაციის წამოღება (პრიორიტეტი ენიჭება widget_city_name-ს, რომელიც პირდაპირ API-დან მოდის)
+        val cityName = prefs.getString("widget_city_name", prefs.getString("last_viewed_city", "საქართველო")) ?: "საქართველო"
+
         val temp = prefs.getInt("widget_temp", 0)
         val desc = prefs.getString("widget_desc", "დააჭირეთ ლოკაციას აპლიკაციაში") ?: "დააჭირეთ ლოკაციას აპლიკაციაში"
         val code = prefs.getInt("widget_code", 0)
         val lastUpdate = prefs.getLong("widget_last_update", 0L)
         val hasData = lastUpdate != 0L
 
-        // 2. ავტომატური დღე/ღამის ლოგიკა საათების მიხედვით
+        // 2. დღე/ღამის ლოგიკა: პრიორიტეტი ენიჭება API-დან მოსულ სტატუსს (widget_is_day)
         val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-        val isNight = hour >= 20 || hour < 6
-        val autoIsDay = !isNight
+        val isNightFallback = hour >= 20 || hour < 6
+        val isDay = prefs.getBoolean("widget_is_day", !isNightFallback)
 
-        updateUI(views, cityName, temp, desc, code, autoIsDay, hasData)
+        updateUI(views, cityName, temp, desc, code, isDay, hasData)
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
     private fun updateUI(views: RemoteViews, city: String, temp: Int, desc: String, code: Int, isDay: Boolean, hasData: Boolean) {
         views.setTextViewText(R.id.widget_city, city)
-        
+
         if (hasData) {
             views.setTextViewText(R.id.widget_temp, "$temp°")
             views.setTextViewText(R.id.widget_desc, desc)
@@ -72,8 +72,8 @@ class WeatherWidget : AppWidgetProvider() {
         }
 
         views.setImageViewResource(R.id.widget_icon, getWeatherIcon(code, isDay))
-        
-        // ფონის შერჩევა ავტომატური დღე/ღამის მიხედვით
+
+        // ფონის შერჩევა დღე/ღამის მიხედვით
         val backgroundRes = if (isDay) R.drawable.widget_bg_day_image else R.drawable.widget_bg_night_image
         views.setImageViewResource(R.id.widget_background_image, backgroundRes)
     }

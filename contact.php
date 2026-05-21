@@ -20,16 +20,16 @@ include 'header.php';
       <div class="col-lg-8">
         <div class="mb-4">
           <i class="fas fa-comments me-3 text-info float-icon" style="font-size:clamp(2rem,5vw,3rem);"></i>
-          <h1 class="display-5 fw-bolder text-gradient-premium m-0">კონტაქტი</h1>
+          <h1 class="display-5 fw-bolder text-gradient-premium m-0"><?= __('contact_title') ?></h1>
         </div>
         <p class="lead text-white-80 fw-light">
-          გაქვთ შეკითხვა, შენიშვნა ან გსურთ თანამშრომლობა? <strong class="text-white">Grubeli.ge</strong>-ს გუნდი მზად არის გიპასუხოთ. აირჩიეთ თქვენთვის მოსახერხებელი პლატფორმა.
+          <?= __('contact_desc') ?>
         </p>
       </div>
       <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
         <div class="status-pill d-inline-flex align-items-center">
           <span class="pulse-dot me-2"></span>
-          <span class="fw-bold">24/7 ონლაინ</span>
+          <span class="fw-bold"><?= __('contact_online') ?></span>
         </div>
       </div>
     </div>
@@ -41,8 +41,8 @@ include 'header.php';
       <a href="mailto:info@grubeli.ge" class="text-decoration-none h-100 d-block">
         <div class="premium-glass p-4 h-100 card-accent-cyan interactive-card text-center">
           <div class="icon-hexagon hex-cyan mx-auto mb-3"><i class="fas fa-envelope"></i></div>
-          <h5 class="text-white mb-2">ელ-ფოსტა</h5>
-          <p class="small text-white-50 mb-3">მოგვწერეთ ნებისმიერ დროს — ვპასუხობთ 24 საათში</p>
+          <h5 class="text-white mb-2"><?= __('contact_email') ?></h5>
+          <p class="small text-white-50 mb-3"><?= __('contact_email_desc') ?></p>
           <span class="text-info fw-bold">info@grubeli.ge</span>
         </div>
       </a>
@@ -52,20 +52,20 @@ include 'header.php';
       <a href="https://wa.me/995555123456" target="_blank" rel="noopener" class="text-decoration-none h-100 d-block">
         <div class="premium-glass p-4 h-100 card-accent-emerald interactive-card text-center">
           <div class="icon-hexagon hex-emerald mx-auto mb-3"><i class="fab fa-whatsapp"></i></div>
-          <h5 class="text-white mb-2">WhatsApp</h5>
-          <p class="small text-white-50 mb-3">სწრაფი შეტყობინება — ვპასუხობთ რაც შეიძლება მალე</p>
-          <span class="color-emerald fw-bold">+995 5xx xx xx xx</span>
+          <h5 class="text-white mb-2"><?= __('contact_whatsapp') ?></h5>
+          <p class="small text-white-50 mb-3"><?= __('contact_whatsapp_desc') ?></p>
+          <span class="color-emerald fw-bold">+995 51 10 40 12</span>
         </div>
       </a>
     </div>
 
     <div class="col-lg-3 col-md-6 reveal-up delay-3">
-      <a href="https://m.me/grubeli.ge" target="_blank" rel="noopener" class="text-decoration-none h-100 d-block">
+      <a href="https://m.me/grubeliofficial" target="_blank" rel="noopener" class="text-decoration-none h-100 d-block">
         <div class="premium-glass p-4 h-100 card-accent-purple interactive-card text-center">
           <div class="icon-hexagon hex-purple mx-auto mb-3"><i class="fab fa-facebook-messenger"></i></div>
-          <h5 class="text-white mb-2">Messenger</h5>
-          <p class="small text-white-50 mb-3">Facebook Messenger-ით პირდაპირ დაგვიკავშირდით</p>
-          <span class="color-purple fw-bold">Grubeli.ge გვერდი</span>
+          <h5 class="text-white mb-2"><?= __('contact_messenger') ?></h5>
+          <p class="small text-white-50 mb-3"><?= __('contact_messenger_desc') ?></p>
+          <span class="color-purple fw-bold">Messenger <i class="fa-solid fa-up-right-from-square"></i></span>
         </div>
       </a>
     </div>
@@ -74,9 +74,9 @@ include 'header.php';
       <a href="tel:+995555123456" class="text-decoration-none h-100 d-block">
         <div class="premium-glass p-4 h-100 card-accent-orange interactive-card text-center">
           <div class="icon-hexagon hex-orange mx-auto mb-3"><i class="fas fa-phone-alt"></i></div>
-          <h5 class="text-white mb-2">ტელეფონი</h5>
-          <p class="small text-white-50 mb-3">ორშ–პარ, 10:00–19:00</p>
-          <span class="text-warning fw-bold">+995 5xx xx xx xx</span>
+          <h5 class="text-white mb-2"><?= __('contact_phone') ?></h5>
+          <p class="small text-white-50 mb-3"><?= __('contact_phone_desc') ?></p>
+          <span class="text-warning fw-bold">+995 510 10 40 12</span>
         </div>
       </a>
     </div>
@@ -86,8 +86,8 @@ include 'header.php';
         <div class="ambient-glow glow-1" style="opacity:0.07;"></div>
         <div class="row align-items-center position-relative z-index-1">
           <div class="col-lg-8">
-            <h3 class="text-white mb-2">სოციალური ქსელები</h3>
-            <p class="text-white-60 mb-4">გამოგვიწერეთ, რომ პირველმა მიიღოთ განახლებები ახალი ფუნქციების, ამინდის შესახებ და სხვა სასარგებლო ინფორმაცია.</p>
+            <h3 class="text-white mb-2"><?= __('contact_social_title') ?></h3>
+            <p class="text-white-60 mb-4"><?= __('contact_social_desc') ?></p>
             <div class="social-grid">
               <a href="https://www.facebook.com/grubeliofficial/" target="_blank" rel="noopener" class="social-pill">
                 <i class="fab fa-facebook-f me-2"></i> Facebook
@@ -119,23 +119,17 @@ include 'header.php';
           <div class="col-lg-12 text-center mb-4 mb-lg-0">
             <h3 class="text-white mb-2  align-items-center gap-3">
          
-              ოფიციალური აპლიკაციები
+      <i class="fa-solid fa-mobile-screen-button me-2"></i> <?= __('contact_official_apps') ?>
             </h3>
-            <p class="text-white-60 mb-3">Grubeli.ge-ს ოფიციალური აპი ჯერ-ჯერობით ხელმისაწვდომია მხოლოდ  Android-ზე.</p>
+            <p class="text-white-60 mb-3"><?= __('contact_official_apps_desc') ?></p>
             <a href="#" class="btn-app d-inline-flex align-items-center gap-3" style="margin:5px">
               <i class="fa-brands fa-google-play"></i>
               <div class="text-start">
-                <div style="font-size:10px;opacity:0.7;">ჩამოტვირთეთ</div>
-                <div style="font-size:14px;font-weight:600;">Google Play</div>
+                <div style="font-size:14px;opacity:0.7;"><?= __('contact_official_apps_download') ?></div>
+                <div style="font-size:18px;font-weight:600;"><?= __('contact_official_apps_google_play') ?></div>
               </div>
             </a>
-             <a href="#" class="btn-app d-inline-flex align-items-center disabled gap-3" style="margin:5px">
-            <i class="fa-brands fa-app-store-ios"></i>
-              <div class="text-start">
-                <div class="text-danger" style="font-size:10px;opacity:1;"><b>მიუწვდომელია</b></div>
-                <div style="font-size:14px;font-weight:600;">App Store</div>
-              </div>
-            </a>
+            
           </div>
          
         </div>

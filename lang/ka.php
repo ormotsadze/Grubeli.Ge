@@ -41,7 +41,7 @@ return [
 
  // --- 1. footer.PHP (drawer menu) ---
   'drawermenu_home' => 'მთავარი გვერდი',
-  'drawermenu_onthisday' => 'ეს დღე ისტორიაში',
+  'drawermenu_onthisday' => 'ამ დღეს...',
   'drawermenu_worldtime' => 'მსოფლიო დრო',
   'drawermenu_holidays' => 'დღესასწაულები',
   'drawermenu_getapp' => 'ჩამოტვირთე აპი',
@@ -77,11 +77,9 @@ return [
     'index_lastyear' => 'შარშან ამ დღეს',
     'index_cityingeorgia' => 'ქალაქი საქართველოში...',
     'index_cityingeorgia_not_found' => 'ქალაქი ვერ მოიძებნა...',
-    'index_getappdesc' => 'ჩამოტვირთე Android აპი',
+    'index_getappdesc' => 'Android აპი',
     'index_getapp' => 'ჩამოტვირთვა',
-    
-
-
+  
 
     // --- 2. ABOUT.PHP (ჩვენ შესახებ) ---
     'about_title' => 'ჩვენ შესახებ',
@@ -103,12 +101,13 @@ return [
     'contact_og_title' => 'დაუკავშირდით გრუბელს | კონტაქტი',
     'contact_tw_title' => 'კონტაქტი - Grubeli.ge',
     'contact_tw_desc' => 'გაქვთ კითხვები ან იდეები? მოგვწერეთ და ჩვენი გუნდი მალე გიპასუხებთ.',
+
       // --- 4. onthisday.php.PHP (ამ დღეს) ---
-    'onthisday_title' => 'ამ დღეს ისტორიაში',
-    'onthisday_desc' => 'გაიგეთ როგორი ისტორია იყო ამ დღეს წლებში. ისტორიული მონაცემები საქართველოში.',
-    'onthisday_og_title' => 'ამ დღეს ისტორიაში | Grubeli.ge',
-    'onthisday_tw_title' => 'ამ დღეს ისტორიაში',
-    'onthisday_tw_desc' => 'ნახე როგორ გადავლით დღეს წლებში.',
+    'onthisday_title' => 'დღეს დაიბადნენ და გარდაიცვალნენ',
+    'onthisday_desc' => 'გაიგეთ ვინ დაიბადა და ვინ გარდაიცვალა ამ დღეს ისტორიაში.',
+    'onthisday_og_title' => 'დღეს დაიბადნენ და გარდაიცვალნენ | Grubeli.ge',
+    'onthisday_tw_title' => 'დღეს დაიბადნენ და გარდაიცვალნენ',
+    'onthisday_tw_desc' => 'გაიგეთ ვინ დაიბადა და ვინ გარდაიცვალა ამ დღეს ისტორიაში.',
     // --- 5. GETAPP.PHP (აპლიკაციის ჩამოტვირთვა) ---
     'getapp_title' => 'Grubeli.ge Pro – Android აპლიკაცია',
     'getapp_desc' => 'ჩამოტვირთეთ Grubeli.ge Pro აპლიკაცია Android-ისთვის. მიიღეთ Push შეტყობინებები, მიწისძვრის გაფრთხილებები და AI ასისტენტის რჩევები პირდაპირ სმარტფონში.',
@@ -149,7 +148,24 @@ return [
     'privacy_og_title' => 'კონფიდენციალურობის პოლიტიკა | Grubeli.ge',
     'privacy_tw_title' => 'მონაცემთა დაცვა - Grubeli.ge',
     'privacy_tw_desc' => 'გაიგეთ მეტი იმის შესახებ, თუ როგორ ვზრუნავთ თქვენი მონაცემების უსაფრთხოებაზე ჩვენს აპლიკაციასა და ვებ-გვერდზე.',
-
-
     
+
+     // --- 1. CONTACT.PHP (AI) ---
+    'contact_title' => 'კონტაქტი',
+    'contact_desc' => 'გაქვთ შეკითხვა, შენიშვნა ან გსურთ თანამშრომლობა? <strong class="text-white">Grubeli.ge</strong>-ს გუნდი მზად არის გიპასუხოთ. აირჩიეთ თქვენთვის მოსახერხებელი პლატფორმა.</p>',
+    'contact_online' => '24/7 ონლაინ',
+    'contact_email' => 'ელ-ფოსტა',
+    'contact_email_desc' => 'მოგვწერეთ ნებისმიერ დროს — ვპასუხობთ ორიოდე საათში',
+  'contact_whatsapp' => 'WhatsApp',
+    'contact_whatsapp_desc' => 'სწრაფი შეტყობინება — ვპასუხობთ რაც შეიძლება მალე',
+    'contact_messenger' => 'Messenger',
+    'contact_messenger_desc' => 'Facebook Messenger-ით პირდაპირ დაგვიკავშირდებით',
+    'contact_phone' => 'დაგვირეკეთ',
+    'contact_phone_desc' => 'დაგვირეკეთ სამუშაო საათებში. ორშ–პარ, 10:00–19:00, შაბათი, 10:00–16:00',
+     'contact_social_title' => 'სოციალური ქსელები',
+     'contact_social_desc' => 'გამოგვიწერეთ, რომ პირველმა მიიღოთ განახლებები ახალი ფუნქციების, ამინდის შესახებ, ნახოთ ჩვენი სახალისო ქარდები და ვიდეოები  და სხვა.',
+      'contact_official_apps' => 'ოფიციალური აპები',
+      'contact_official_apps_desc' => 'დაინსტალირეთ ოფიციალური აპი <b style="color: white">Grubeli.Ge</b>  <span class="version-badge">PRO</span>  (ჯერ-ჯერობით მხოლოდ Android-თვის) და დამატებით მიიღეთ პრემიუმ ფუნქციები.',
+      'contact_official_apps_download' => 'Download Now',
+      'contact_official_apps_google_play' => 'Google Play',
 ];
