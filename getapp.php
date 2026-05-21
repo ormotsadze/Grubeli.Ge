@@ -33,8 +33,9 @@ include 'header.php';
             <span class="fw-bold">Grubeli.Ge   <span class="version-badge">PRO</span></span>
           </div>
           <div class="status-pill d-inline-flex align-items-center">
-            <i class="fa-solid fa-mobile-screen-button me-2 text-info"></i>
-            <span class="fw-bold">დააინსტალირე აპი</span>
+         
+            <i class="fa-brands fa-android me-2"></i>
+            <span class="fw-bold">Android აპი</span>
           </div>
         </div>
       </div>
@@ -43,34 +44,17 @@ include 'header.php';
 
   <!-- Download Buttons -->
   <div class="row g-4 mb-4 reveal-up delay-1">
-    <div class="col-md-6">
-      <a href="app-release.apk" class="premium-glass p-4 h-100 d-block text-center text-decoration-none download-card card-accent-cyan interactive-card" download>
-        <div class="icon-hexagon hex-cyan mx-auto mb-3" style="width:70px;height:70px;font-size:2rem;">
-          <i class="fa-solid fa-download"></i>
-        </div>
-        <h4 class="text-white fw-bold mb-2">პირდაპირი APK</h4>
-        <p class="text-white-60 small mb-3">ჩამოტვირთე აპკ ფაილი პირდაპირ საიტიდან</p>
-        <span class="badge bg-info bg-opacity-25 text-info px-3 py-2 rounded-pill fs-6 fw-normal">
-          <i class="fa-solid fa-circle-down me-1"></i> ჩამოტვირთვა (4.5 MB)
-        </span>
-        <div class="mt-3 text-white-50 small">
-          <i class="fa-solid fa-shield-halved me-1 text-success"></i> უსაფრთხო · სწრაფი · პირდაპირი ბმული
-        </div>
-      </a>
-    </div>
-    <div class="col-md-6">
+    <div class="col-md-12">
       <a href="https://play.google.com/store/apps/details?id=ge.grubeli.weatherapp" target="_blank" rel="noopener" class="premium-glass p-4 h-100 d-block text-center text-decoration-none download-card card-accent-emerald interactive-card">
         <div class="icon-hexagon hex-emerald mx-auto mb-3" style="width:70px;height:70px;font-size:2rem;">
           <i class="fa-brands fa-google-play"></i>
         </div>
         <h4 class="text-white fw-bold mb-2">Google Play Store</h4>
-        <p class="text-white-60 small mb-3">მიიღე ოფიციალური ვერსია Google Play-დან</p>
+        <p class="text-white-60 small mb-3">ოფიციალური ვერსია Google Play-ზე</p>
         <span class="badge px-3 py-2 rounded-pill fs-6 fw-normal" style="background:rgba(32,201,151,0.25);color:#20c997;">
           <i class="fa-brands fa-google-play me-1"></i> Google Play Store
         </span>
-        <div class="mt-3 text-white-50 small">
-          <i class="fa-solid fa-star me-1 text-warning"></i> ავტომატური განახლებები · ოფიციალური წყარო
-        </div>
+      
       </a>
     </div>
   </div>
@@ -78,78 +62,64 @@ include 'header.php';
   <!-- Features -->
   <div class="row g-4">
 
-    <div class="col-lg-6 reveal-up delay-1">
+    <div class="col-lg-12 reveal-up delay-1">
       <div class="premium-glass p-5 h-100 card-accent-cyan interactive-card">
         <h3 class="mb-4 text-white d-flex align-items-center">
           <div class="icon-hexagon hex-cyan me-3"><i class="fa-solid fa-mobile-screen"></i></div>
           რატომ Android აპლიკაცია?
         </h3>
-        <p class="text-white-60 mb-4">ვებ-ვერსიაც კომფორტულია, მაგრამ <strong class="text-white">Grubeli.Ge Pro</strong> მოგცემთ იმ ფუნქციებს, რაც ბრაუზერში შეუძლებელია:</p>
+        <p class="text-white-60 mb-4">ვებ-ვერსიაც კომფორტულია, მაგრამ <strong class="text-white">Grubeli.Ge</strong> <span class="version-badge">PRO</span> მოგცემთ დამატებით პრემიუმ ფუნქციებს, რაც ბრაუზერში არ არის:</p>
 
-        <div class="data-item">
-          <i class="fa-solid fa-bell text-info"></i>
-          <div>
-            <h6 class="text-white mb-1">Push შეტყობინებები</h6>
-            <p class="small text-white-50 mb-0">მიიღეთ რეალურ დროში გაფრთხილებები მიწისძვრის, ხანძრის, შტორმის ან ყოველდღიური ამინდის შესახებ — მაშინაც კი, როცა აპი დახურულია.</p>
+        <div class="row g-3 features-grid">
+          <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+              <div class="feature-icon-wrap"><span class="feature-icon">✨</span></div>
+              <h6 class="text-white mb-1">AI რჩევები</h6>
+              <p class="small text-white-50 mb-0">ღილაკზე ერთი თითის დაჭერით, მიიღეთ ინდივიდუალური რჩევები თქვენი ამინდის პირობების მიხედვით - დამჭირდება სათვალე? რა ჩავიცვა? დღეს გავრეცხო მანქანა? და ასე შემდეგ.</p>
+            </div>
           </div>
-        </div>
-
-        <div class="data-item mt-2">
-          <i class="fa-solid fa-house-chimney-crack text-danger"></i>
-          <div>
-            <h6 class="text-white mb-1">მიწისძვრის გაფრთხილება</h6>
-            <p class="small text-white-50 mb-0">M4.0+ ბიძგების შესახებ მყისიერი შეტყობინება, სანამ ახალ ამბებს ნახავთ.</p>
+          <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+              <div class="feature-icon-wrap"><i class="fa-solid fa-bell text-info"></i></div>
+              <h6 class="text-white mb-1">Push შეტყობინებები</h6>
+              <p class="small text-white-50 mb-0">მიიღეთ რეალურ დროში გაფრთხილებები მიწისძვრის, ხანძრის, შტორმის ან ყოველდღიური ამინდის შესახებ — მაშინაც კი, როცა აპი დახურულია.</p>
+            </div>
           </div>
-        </div>
-
-        <div class="data-item mt-2">
-          <i class="fa-solid fa-fire-flame-curved text-warning"></i>
-          <div>
-            <h6 class="text-white mb-1">ხანძრის მონიტორინგი</h6>
-            <p class="small text-white-50 mb-0">NASA FIRMS-ის რეალურ დროში მონაცემები — ღია ხანძრების გაფრთხილება თქვენს რეგიონში.</p>
+          <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+              <div class="feature-icon-wrap"><i class="fa-solid fa-house-chimney-crack text-danger"></i></div>
+              <h6 class="text-white mb-1">მიწისძვრის გაფრთხილება</h6>
+              <p class="small text-white-50 mb-0">M4.0+ ბიძგების შესახებ მყისიერი შეტყობინება, სანამ ახალ ამბებს ნახავთ.</p>
+            </div>
           </div>
-        </div>
-
-        <div class="data-item mt-2">
-          <i class="fa-solid fa-wind text-info"></i>
-          <div>
-            <h6 class="text-white mb-1">შტორმის გაფრთხილება</h6>
-            <p class="small text-white-50 mb-0">საშიში ამინდის პირობების (ძლიერი ქარი, ქარიშხალი, სეტყვა) დროული შეტყობინება.</p>
+          <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+              <div class="feature-icon-wrap"><i class="fa-solid fa-fire-flame-curved text-warning"></i></div>
+              <h6 class="text-white mb-1">ხანძრის მონიტორინგი</h6>
+              <p class="small text-white-50 mb-0">NASA FIRMS-ის რეალურ დროში მონაცემები — ღია ხანძრების გაფრთხილება თქვენს რეგიონში.</p>
+            </div>
           </div>
-        </div>
-
-        <div class="data-item mt-2">
-          <i class="fa-solid fa-widget text-success"></i>
-          <div>
-            <h6 class="text-white mb-1">ეკრანის ვიჯეტი</h6>
-            <p class="small text-white-50 mb-0">მთავარ ეკრანზე ვიჯეტი — ამინდი ერთი შეხედვით, აპის გახსნის გარეშე.</p>
+          <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+              <div class="feature-icon-wrap"><i class="fa-solid fa-wind text-info"></i></div>
+              <h6 class="text-white mb-1">შტორმის გაფრთხილება</h6>
+              <p class="small text-white-50 mb-0">საშიში ამინდის პირობების (ძლიერი ქარი, ქარიშხალი, სეტყვა) დროული შეტყობინება.</p>
+            </div>
           </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+              <div class="feature-icon-wrap"><i class="fa-solid fa-grip"></i></div>
+              <h6 class="text-white mb-1">ეკრანის პრემიუმ ვიჯეტი</h6>
+              <p class="small text-white-50 mb-0">ვიჯეთი მთავარ ეკრანზე — ყველა საჭირო ინფორმაცია, აპის გახსნის გარეშე.</p>
+            </div>
+          </div>
+        
         </div>
-
+<span class="text-white-50 small mt-3 d-block"><i class="fa-solid fa-align-left"></i> და კიდევ ბევრი სხვა ფუნქცია, რომელიც მუდმივად ემატება აპლიკაციას.</span>
       </div>
     </div>
 
-    <div class="col-lg-6 reveal-up delay-2">
-      <div class="premium-glass p-5 h-100 card-accent-emerald interactive-card">
-        <h3 class="mb-4 text-white d-flex align-items-center">
-          <div class="icon-hexagon hex-emerald me-3"><i class="fa-solid fa-star"></i></div>
-          პრემიუმ ფუნქციები
-        </h3>
-
-        <ul class="premium-list">
-          <li><i class="fa-regular fa-bell color-emerald"></i> <span><strong>FCM Push შეტყობინებები</strong> — მიწისძვრა, ხანძარი, ქარიშხალი, ყოველდღიური ამინდი, Solar Flare.</span></li>
-          <li><i class="fa-solid fa-grip"></i> <span><strong>ვიჯეტი მთავარ ეკრანზე</strong> — Android-ის ვიჯეტი, განახლდება ავტომატურად.</span></li>
-          <li><i class="fa-solid fa-truck-fast"></i> <span><strong>ჩქარი ჩატვირთვა</strong> — WebView-ის ოპტიმიზებული ქეში, მინიმალური ტრაფიკი.</span></li>
-          <li><i class="fa-solid fa-street-view"></i> <span><strong>ავტომატური ლოკაცია</strong> — Android-ის GPS-ის ზუსტი განსაზღვრა, Background Location.</span></li>
-          <li><i class="fa-solid fa-plane-slash"></i> <span><strong>Offline ქეში</strong> — ბოლო მონაცემები ხელმისაწვდომია ინტერნეტის გარეშეც.</span></li>
-          <li><i class="fa-solid fa-code-commit"></i> <span><strong>Native ბრიჯი</strong> — Android ↔ JavaScript ბრძანებები, FCM-ის რეგისტრაცია.</span></li>
-          <li><i class="fa-regular fa-bell-slash"></i> <span><strong>შეტყობინებების მართვა</strong> — ჩართე/გამორთე კატეგორიები: Earthquake, Fire, Storm, Daily, Solar.</span></li>
-          <li><i class="fa-solid fa-wand-sparkles"></i> <span><strong>10-წუთიანი ინტერვალი</strong> — ფონური განახლება, გაფრთხილებების მყისიერი მიღება.</span></li>
-          <li><i class="fa-regular fa-clone"></i> <span><strong>Manifest V3</strong> — თანამედროვე WebView, Material You დიზაინი.</span></li>
-          <li><i class="fa-solid fa-shield-halved"></i> <span><strong>უსაფრთხო</strong> — მინიმალური ნებართვები, გამჭვირვალე წყაროს კოდი.</span></li>
-        </ul>
-      </div>
-    </div>
+   
 
     <div class="col-lg-12 reveal-up delay-3">
       <div class="premium-glass p-5 card-accent-orange interactive-card text-center">
@@ -158,72 +128,57 @@ include 'header.php';
           ხშირად დასმული კითხვები
         </h3>
 
-        <div class="row g-4 text-start">
-          <div class="col-md-6">
-            <div class="faq-item p-3 h-100">
-              <h6 class="text-white fw-bold mb-2"><i class="fa-solid fa-angle-right text-info me-2"></i>რა ღირს Grubeli.Ge Pro?</h6>
-              <p class="small text-white-50 mb-0"><strong class="text-white">Grubeli.Ge Pro</strong> არის სიმბოლური ფასის მქონე აპლიკაცია. ეს თანხა პირდაპირ მიდის სერვერების, API-ების და პლატფორმის განვითარების უზრუნველსაყოფად. რეკლამისგან თავისუფალი გარემოს შენარჩუნება, რეალურ დროში გაფრთხილებები და AI-ზე დაფუძნებული ჭკვიანი ასისტენტი რესურსებს მოითხოვს — თქვენი მხარდაჭერა საშუალებას გვაძლევს, გავაგრძელოთ ხარისხიანი სერვისის შეთავაზება. ამ მხარდაჭერის გარეშე პლატფორმის არსებობა შეუძლებელი იქნებოდა.</p>
+        <div class="accordion accordion-flush" id="faqAccordion">
+          <div class="accordion-item bg-transparent">
+            <h2 class="accordion-header" id="flush-headingOne">
+              <button class="accordion-button collapsed text-white bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                რა ღირს აპლიკაცია?
+              </button>
+            </h2>
+            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#faqAccordion">
+              <div class="accordion-body text-white-50 text-start">
+                <strong class="text-white">Grubeli.Ge</strong> <span class="version-badge">PRO</span> არის სიმბოლური ფასის მქონე აპლიკაცია. ეს თანხა პირდაპირ მიდის სერვერების, API-ების და პლატფორმის განვითარების უზრუნველსაყოფად. რეკლამისგან თავისუფალი გარემოს შენარჩუნება, რეალურ დროში გაფრთხილებები და AI-ზე დაფუძნებული ჭკვიანი ასისტენტი რესურსებს მოითხოვს — თქვენი მხარდაჭერა საშუalian. ам мхарdаჭeрiс гaрeшe плаtfоrmiс арceбoбa шeуძlеბeли iქнeбoდa.
+              </div>
             </div>
           </div>
-          <div class="col-md-6">
-            <div class="faq-item p-3 h-100">
-              <h6 class="text-white fw-bold mb-2"><i class="fa-solid fa-angle-right text-info me-2"></i>რა განსხვავებაა ვებ-ვერსიასა და აპს შორის?</h6>
-              <p class="small text-white-50 mb-0">აპი გთავაზობთ <strong class="text-white">Push შეტყობინებებს</strong> (მიწისძვრა, ხანძარი, შტორმი), <strong class="text-white">ეკრანის ვიჯეტს</strong>, <strong class="text-white">Background Location</strong>-ს და <strong class="text-white">Offline ქეშს</strong>. ვებ-ვერსიაც ძლიერია, მაგრამ აპი — უფრო მეტია.</p>
+          <div class="accordion-item bg-transparent">
+            <h2 class="accordion-header" id="flush-headingTwo">
+              <button class="accordion-button collapsed text-white bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                რა განსხვავებაა ვებ-ვერსიასა და აპს შორის?
+              </button>
+            </h2>
+            <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#faqAccordion">
+              <div class="accordion-body text-white-50 text-start">
+                აპი გთავაზობთ <strong class="text-white">Push შეტყობინებებს</strong> (მიწისძვრა, ხანძარი, შტორმი), <strong class="text-white">ეკრანის ვიჯეტს</strong>, <strong class="text-white">Background Location</strong>-ს და <strong class="text-white">Offline ქეშს</strong>. ვებ-ვერსიაც ძლიერია, მაგრამ აპი — უფრო მეტია.
+              </div>
             </div>
           </div>
-          <div class="col-md-6">
-            <div class="faq-item p-3 h-100">
-              <h6 class="text-white fw-bold mb-2"><i class="fa-solid fa-angle-right text-info me-2"></i>არის აპი iOS-ისთვის?</h6>
-              <p class="small text-white-50 mb-0">ამ ეტაპზე მხოლოდ <strong class="text-white">Android</strong>. iOS ვერსია განვითარების პროცესშია — მალე App Store-ზეც.</p>
+          <div class="accordion-item bg-transparent">
+            <h2 class="accordion-header" id="flush-headingThree">
+              <button class="accordion-button collapsed text-white bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                არის აპი iOS-ისთვის?
+              </button>
+            </h2>
+            <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#faqAccordion">
+              <div class="accordion-body text-white-50 text-start">
+                ამ ეტაპზე მხოლოდ <strong class="text-white">Android</strong>. iOS ვერსია განვითარების პროცესშია — მალე App Store-ზეც.
+              </div>
             </div>
           </div>
-          <div class="col-md-6">
-            <div class="faq-item p-3 h-100">
-              <h6 class="text-white fw-bold mb-2"><i class="fa-solid fa-angle-right text-info me-2"></i>რომელი Android ვერსიებია მხარდაჭერილი?</h6>
-              <p class="small text-white-50 mb-0"><strong class="text-white">Android 8.0 (Oreo)</strong> და უფრო ახალი. ოპტიმიზებულია Material You-სთვის Android 12+-ზე.</p>
+          <div class="accordion-item bg-transparent">
+            <h2 class="accordion-header" id="flush-headingFour">
+              <button class="accordion-button collapsed text-white bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
+                რომელი Android ვერსიებია მხარდაჭერილი?
+              </button>
+            </h2>
+            <div id="flush-collapseFour" class="accordion-collapse collapse" aria-labelledby="flush-headingFour" data-bs-parent="#faqAccordion">
+              <div class="accordion-body text-white-50 text-start">
+                <strong class="text-white">Android 8.0 (Oreo)</strong> და უფრო ახალი. ოპტიმიზებულია Material You-სთვის Android 12+-ზე.
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- How to Install -->
-    <div class="col-lg-12 reveal-up delay-3">
-      <div class="premium-glass p-5 card-accent-purple interactive-card">
-        <h3 class="mb-4 text-white d-flex align-items-center">
-          <div class="icon-hexagon hex-purple me-3"><i class="fa-solid fa-circle-info"></i></div>
-          როგორ დავაყენოთ?
-        </h3>
-        <div class="row g-4">
-          <div class="col-md-6">
-            <div class="install-step p-3">
-              <div class="step-number">1</div>
-              <h6 class="text-white mb-1">ჩამოტვირთეთ APK</h6>
-              <p class="small text-white-50 mb-0">დააჭირეთ ღილაკს „პირდაპირი APK“ ან გადადით Google Play Store-ზე.</p>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="install-step p-3">
-              <div class="step-number">2</div>
-              <h6 class="text-white mb-1">დაუშვით უცნობი წყაროები</h6>
-              <p class="small text-white-50 mb-0">თუ APK-დაა აყენებთ, ჩართეთ <strong class="text-white">„Install from unknown sources“</strong> პარამეტრი.</p>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="install-step p-3">
-              <div class="step-number">3</div>
-              <h6 class="text-white mb-1">დააყენეთ აპი</h6>
-              <p class="small text-white-50 mb-0">გახსენით ჩამოტვირთული ფაილი და მიყევით ინსტრუქციას. ინსტალაცია გრძელდება რამდენიმე წამს.</p>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="install-step p-3">
-              <div class="step-number">4</div>
-              <h6 class="text-white mb-1">დაიწყეთ გამოყენება</h6>
-              <p class="small text-white-50 mb-0">გახსენით აპი, მიანიჭეთ ლოკაციის ნებართვა და ისიამოვნეთ ყველა ფუნქციით!</p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -231,6 +186,14 @@ include 'header.php';
 </main>
 
 <style>
+  .accordion-button {
+    background: rgba(255,255,255,0.05) !important;
+    color: #fff !important;
+    border-radius: 18px !important;
+  }
+  .accordion-body {
+    border-radius: 18px !important;
+  }
 .download-card {
   border-radius: 24px;
   transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -249,27 +212,101 @@ include 'header.php';
   background: rgba(0,0,0,0.3);
   border-color: rgba(255,255,255,0.1);
 }
-.install-step {
-  background: rgba(0,0,0,0.2);
-  border-radius: 16px;
-  border-left: 3px solid rgba(138,43,226,0.5);
-  position: relative;
-  padding-left: 50px !important;
+.accordion-item {
+    border: none;
 }
-.step-number {
-  position: absolute;
-  left: 12px;
-  top: 12px;
-  width: 28px;
-  height: 28px;
-  background: rgba(138,43,226,0.3);
-  color: #a78bfa;
-  border-radius: 50%;
+.accordion-button {
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    background-color: rgba(0,0,0,0.2) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: all 0.25s ease;
+}
+.accordion-button:not(.collapsed) {
+    background-color: rgba(0,0,0,0.3) !important;
+    border-color: rgba(255,255,255,0.1);
+}
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(255,255,255,0.2);
+}
+.accordion-button::after {
+    filter: invert(1) brightness(200%);
+}
+.accordion-body {
+    padding: 0.5rem 1.25rem 1.5rem;
+    border-radius: 8px;
+    background-color: rgba(0,0,0,0.1);
+    margin-bottom: 0.5rem;
+}
+
+.features-grid {
+  margin-top: 1rem;
+}
+
+.feature-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 18px;
+  padding: 1.5rem 1.25rem;
+  height: 100%;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  flex-direction: column;
+}
+
+.feature-card:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.12);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+}
+
+.feature-icon-wrap {
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: rgba(255,255,255,0.05);
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.feature-icon-wrap i {
+  font-size: 1.4rem;
+}
+
+.feature-card h6 {
+  font-size: 1rem;
   font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.feature-card p {
   font-size: 0.85rem;
+  line-height: 1.5;
+  flex: 1;
+}
+
+@media (max-width: 576px) {
+  .feature-card {
+    padding: 1.25rem 1rem;
+  }
+  .feature-icon-wrap {
+    width: 42px;
+    height: 42px;
+    font-size: 1.25rem;
+  }
+  .feature-icon-wrap i {
+    font-size: 1.2rem;
+  }
 }
 </style>
 
