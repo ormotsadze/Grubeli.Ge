@@ -39,13 +39,12 @@ if (!defined('GROQ_API_KEY')) {
 }
 
 
-
-
-// config.php-ს ბოლოში დაამატე:
-
 $nasaKey = getenv('NASA_MAP_KEY');
+$footballKey = getenv('API_FOOTBALL_KEY');
+
 
 // კონსტანტის განსაზღვრა NASA-სთვის
 if ($nasaKey && !defined('NASA_MAP_KEY')) {
     define('NASA_MAP_KEY', $nasaKey);
 }
+

@@ -685,12 +685,22 @@ function getGeorgianHolidays() {
     return json_decode(file_get_contents($cacheFile), true) ?? [];
 }
 
+
+// 1. ჯერ მივიღოთ მონაცემები შენი არსებული ფუნქციით
 $allHolidays = getGeorgianHolidays();
 $todayDate = date('Y-m-d');
 $todayHoliday = null;
+
+// 2. ახალი ლოგიკა, რომელიც ითვალისწინებს ენას
 foreach ($allHolidays as $h) {
     if (isset($h['date']) && $h['date'] === $todayDate) {
-        $todayHoliday = !empty($h['localName']) ? $h['localName'] : ($h['name'] ?? null);
+        // აქ ვიყენებთ ენის შესამოწმებელს
+        // $current_lang ცვლადი უკვე გექნება functions.php-ში განსაზღვრული
+        if ($current_lang === 'ka') {
+            $todayHoliday = !empty($h['localName']) ? $h['localName'] : ($h['name'] ?? null);
+        } else {
+            $todayHoliday = !empty($h['name']) ? $h['name'] : ($h['localName'] ?? null);
+        }
         break;
     }
 }
@@ -981,6 +991,11 @@ function translate_place_name($placeName) {
         }
     }
 
+
+
+
+
+    
     // თუ cities.json-ში ვერ მოიძებნა, ვცდილობთ region_en-ის გამოყენებას
     // მაგ: "დასავლეთ საქართველო" → "West Georgia"
     $regionTranslations = [
@@ -1064,6 +1079,7 @@ function otd_translate_text($text) {
     
     return $text;
 }
+
 
 
 ?>

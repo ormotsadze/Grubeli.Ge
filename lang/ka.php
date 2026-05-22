@@ -32,6 +32,7 @@ return [
 'ai_exercise' => 'ვივარჯიში?',
 'ai_laundry' => 'სარეცხი გავფინო?',
 'ai_bike' => 'ველოპროგნოზი',
+'today_is_holiday' => 'დღეს უქმე დღეა',
 
  // --- 1. footer.PHP (menu) ---
 'menu_home' => 'მთავარი',
@@ -41,9 +42,8 @@ return [
 
  // --- 1. footer.PHP (drawer menu) ---
   'drawermenu_home' => 'მთავარი გვერდი',
-  'drawermenu_onthisday' => 'ამ დღეს...',
-  'drawermenu_worldtime' => 'მსოფლიო დრო',
   'drawermenu_holidays' => 'დღესასწაულები',
+    'drawermenu_worldtime' => 'მსოფლიო დრო',
   'drawermenu_getapp' => 'ჩამოტვირთე აპი',
   'drawermenu_getappversion' => 'Android ვერსია',
   'drawermenu_privacy' => 'წესები',
@@ -60,7 +60,6 @@ return [
 
 
  // --- 1. INDEX.PHP (UV) ---
-
     'index_uvindexexplain' => ' UV ინდექსი: მზის რადიაციის სიმძლავრის საზომი. რაც უფრო მაღალია ციფრი, მით უფრო სწრაფად ზიანდება კანი.',
     'index_uvindexlow' => '(დაბალი):</b> საფრთხე არ არსებობს.<br>',
     'index_uvindexmedium' => '(საშუალო):</b> გამოიყენეთ დამცავი საშუალებები.<br>',
@@ -168,4 +167,6 @@ return [
       'contact_official_apps_desc' => 'დაინსტალირეთ ოფიციალური აპი <b style="color: white">Grubeli.Ge</b>  <span class="version-badge">PRO</span>  (ჯერ-ჯერობით მხოლოდ Android-თვის) და დამატებით მიიღეთ პრემიუმ ფუნქციები.',
       'contact_official_apps_download' => 'Download Now',
       'contact_official_apps_google_play' => 'Google Play',
+
+
 ];

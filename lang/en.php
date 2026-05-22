@@ -32,6 +32,7 @@ return [
 'ai_exercise' => 'Do some exercise?',
 'ai_laundry' => 'Do the laundry?',
 'ai_bike' => 'Ride a bike?',
+'today_is_holiday' => 'Today is a holiday',
 
  // --- 1. footer.PHP (menu) ---
 'menu_home' => 'Home',
@@ -42,7 +43,6 @@ return [
 
  // --- 1. footer.PHP (drawer menu) ---
   'drawermenu_home' => 'Home Page',
-  'drawermenu_onthisday' => 'On This Day',
   'drawermenu_worldtime' => 'World Time',
   'drawermenu_holidays' => 'Holidays',
   'drawermenu_getapp' => 'Get App',
@@ -169,6 +169,8 @@ return [
    'contact_official_apps_desc' => 'Grubeli.ge\'s official app is currently available only on Android. Download now <b style="color: white">Grubeli.Ge</b>  <span class="version-badge">PRO</span> to get real-time weather updates and AI recommendations directly on your phone.',
  'contact_official_apps_download' => 'Download Now',
  'contact_official_apps_google_play' => 'Google Play',
+
+
 
 
 ];

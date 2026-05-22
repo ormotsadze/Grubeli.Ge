@@ -582,9 +582,9 @@ if ($hour >= 6 && $hour < 20) {
         </div>
         <div>
             <small class="text-white-50 d-block mb-1 text-start" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">
-                დღეს უქმე დღეა
+           <?php echo __('today_is_holiday'); ?>
             </small>
-            <h5 class="m-0 text-white fw-bold text-start" style="font-family: 'BPG NinoMtavruli'; font-size: 1.15rem;">
+            <h5 class="m-0 text-white fw-bold text-start" style="font-family: '<?php echo __('font_family'); ?>', sans-serif; font-size: 1.15rem;">
                 <?php echo htmlspecialchars($todayHoliday, ENT_QUOTES, 'UTF-8'); ?>
             </h5>
         </div>

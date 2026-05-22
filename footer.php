@@ -62,14 +62,7 @@ if ($current_page == 'index.php' || $current_page == 'historical-weather.php') :
                 <span style="font-family: '<?php echo __('font_family'); ?>';"><?php echo __('drawermenu_home'); ?></span>
             </a>
 
-           <a href="onthisday.php" class="drawer-link hist-link">
-                <div class="link-icon">
-              
-                  <i class="fa-solid fa-calendar-day"></i>
-                </div>
-                <span style="font-family: '<?php echo __('font_family'); ?>';"><?php echo __('drawermenu_onthisday'); ?></span>
-            </a>
-            
+             
             <a href="global-time.php" class="drawer-link">
                 <div class="link-icon">
                 <i class="fa-regular fa-clock"></i>
