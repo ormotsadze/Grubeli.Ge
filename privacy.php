@@ -19,7 +19,7 @@ include 'header.php';
     <div class="row position-relative z-index-1">
       <div class="col-lg-8">
         <div class="mb-4">
-          <i class="fas fa-fingerprint me-3 text-info float-icon" style="font-size:clamp(2rem,5vw,3rem);"></i>
+          <i class="fas fa-shield-halved me-3 text-info float-icon" style="font-size:clamp(2rem,5vw,3rem);"></i>
           <h1 class="display-5 fw-bolder text-gradient-premium m-0">პრივატულობა და დაცვა</h1>
         </div>
         <p class="lead text-white-80 fw-light">
@@ -29,7 +29,7 @@ include 'header.php';
       <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
         <div class="status-pill d-inline-flex align-items-center">
           <i class="far fa-clock me-2 text-primary"></i>
-          <span class="fw-bold">განახლდა: 5 აპრილი, 2026</span>
+          <span class="fw-bold">განახლდა: 22 მაისი, 2026</span>
         </div>
       </div>
     </div>
@@ -55,7 +55,7 @@ include 'header.php';
           <i class="fas fa-bell text-warning"></i>
           <div>
             <h6 class="text-white mb-1">შეტყობინებები (Android)</h6>
-            <p class="small text-white-50 mb-0">Android-ზე ვითხოვთ push notifications-ის უფლებას ამინდის მკვეთრი ცვლილებებისა და სხვა სასარგებლო გაფრთხილებებისთვის.</p>
+            <p class="small text-white-50 mb-0">Android-ზე ვითხოვთ push notifications-ის უფლებას ამინდის მკვეთრი ცვლილებებისა და სხვა სასარგებლო გაგზავნებისთვის.</p>
           </div>
         </div>
         <div class="data-item mt-2">
@@ -84,10 +84,24 @@ include 'header.php';
         </div>
         <div class="service-box mb-3 p-3 border-purple-soft">
           <div class="d-flex justify-content-between align-items-center mb-1">
-            <h6 class="color-purple m-0"><i class="fas fa-robot me-2"></i>Groq API (Llama 3.3)</h6>
+            <h6 class="color-purple m-0"><i class="fas fa-robot me-2"></i>GPT 5</h6>
             <span class="badge color-purple" style="background:rgba(138,43,226,0.2);">AI</span>
           </div>
-          <p class="small text-white-50 m-0">AI ასისტენტს გადაეცემა: ქალაქი, ტემპ., ამინდის სახეობა და მომხმარებლის კითხვა (მაქს. 300 სიმბოლო). სახელი, იმეილი ან სხვა პირადი მონაცემი <strong class="text-white">არ გაიგზავნება</strong>.</p>
+          <p class="small text-white-50 m-0">AI ასისტენტს გადაეცემა: ქალაქი, ტემპ., ამინდის სახეობა და მომხმარებლის კითხვა (მაქს. 300 სიმბოლო). პირადი მონაცემები <strong class="text-white">არ გაიგზავნება</strong>.</p>
+        </div>
+        <div class="service-box mb-3 p-3 border-blue-soft">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <h6 class="text-primary m-0"><i class="fab fa-wikipedia-w me-2"></i>Wikipedia API</h6>
+            <span class="badge bg-primary bg-opacity-25 text-primary">ისტორია</span>
+          </div>
+          <p class="small text-white-50 m-0">გამოიყენება „ამ დღეს ისტორიაში“ ბლოკისთვის საინტერესო ფაქტების წასაკითხად. არ გადაეცემა არანაირი მომხმარებლის მონაცემი.</p>
+        </div>
+        <div class="service-box mb-3 p-3 border-teal-soft">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <h6 class="color-teal m-0"><i class="fas fa-language me-2"></i>Google Translate API</h6>
+            <span class="badge color-teal" style="background:rgba(32,201,151,0.2);">თარგმანი</span>
+          </div>
+          <p class="small text-white-50 m-0">ისტორიული ფაქტების ქართულად საჩვენებლად ტექსტი ითარგმნება რეალურ დროში. მომხმარებლის პირადი იდენტიფიკატორები დაცულია.</p>
         </div>
         <div class="service-box mb-3 p-3 border-amber-soft">
           <div class="d-flex justify-content-between align-items-center mb-1">
@@ -101,7 +115,7 @@ include 'header.php';
             <h6 class="color-emerald m-0"><i class="fas fa-map-pin me-2"></i>OSM Nominatim</h6>
             <span class="badge color-emerald" style="background:rgba(32,201,151,0.2);">გეო</span>
           </div>
-          <p class="small text-white-50 m-0">კოორდინატები გადაეცემა ქალაქის სახელის ქართულად დასადგენად. OpenStreetMap-ის პოლიტიკის შესაბამისად.</p>
+          <p class="small text-white-50 m-0">კოორდინატები გადაეცემა ქალაქის სახელის დასადგენად, OpenStreetMap-ის პოლიტიკის შესაბამისად.</p>
         </div>
       </div>
     </div>
@@ -115,23 +129,23 @@ include 'header.php';
         <ul class="premium-list">
           <li>
             <i class="fas fa-check-circle color-emerald"></i>
-            <span>ლოკაციის მონაცემები მუშავდება რეალურ დროში და <strong>არ ინახება</strong> სერვერზე მუდმივად — მხოლოდ browser cookie-ში.</span>
+            <span>ლოკაციის მონაცემები მუშავდება რეალურ დროში და <strong>არ ინახება</strong> სერვერზე მუდმივად — მხოლოდ ბრაუზერის Cookie-ში.</span>
           </li>
           <li>
             <i class="fas fa-lock color-emerald"></i>
-            <span>გამოიყენება <strong>SSL/HTTPS</strong> დაშიფვრა ყველა მონაცემის გადაცემისთვის.</span>
+            <span>გამოიყენება <strong>SSL/HTTPS</strong> დაშიფვრა ყველა მონაცემის უსაფრთხო გადაცემისთვის.</span>
           </li>
           <li>
             <i class="fas fa-filter color-emerald"></i>
-            <span>AI-ს მოთხოვნები შეზღუდულია — <strong>მაქს. 300 სიმბოლო</strong> და 5-წამიანი flood protection.</span>
+            <span>AI-ს მოთხოვნები შეზღუდულია — <strong>მაქს. 300 სიმბოლო</strong> და ჩართულია flood protection დაცვა.</span>
           </li>
           <li>
             <i class="fas fa-map-location-dot color-emerald"></i>
-            <span>სისტემა <strong>მხოლოდ საქართველოს კოორდინატებს</strong> ამუშავებს — სხვა ქვეყნის ლოკაცია უარყოფილია.</span>
+            <span>სისტემა <strong>მხოლოდ საქართველოს კოორდინატებს</strong> ამუშავებს — სხვა ქვეყნის ლოკაცია ავტომატურად უარყოფილია.</span>
           </li>
           <li>
             <i class="fas fa-cookie-bite color-emerald"></i>
-            <span>Cookie-ები გამოიყენება ლოკაციის შესანახად, ვადა <strong>30 დღე</strong>. სხვა tracking cookie არ გამოიყენება.</span>
+            <span>Cookie-ები და სესიები გამოიყენება მხოლოდ ლოკაციისა და შერჩეული ენის (ka/en) დასამახსოვრებლად <strong>30 დღის</strong> ვადით. სარეკლამო ან სხვა თრექინგ ქუქიები არ გამოიყენება.</span>
           </li>
         </ul>
       </div>
@@ -150,7 +164,7 @@ include 'header.php';
           </div>
           <div>
             <h6 class="text-white mb-1">ლოკაციის გათიშვა</h6>
-            <p class="small text-white-50 mb-0">ბრაუზერის პარამეტრებში გეოლოკაციის უფლება გააუქმეთ ნებისმიერ დროს.</p>
+            <p class="small text-white-50 mb-0">ბრაუზერის ან სმარტფონის პარამეტრებში გეოლოკაციის უფლება გააუქმეთ ნებისმიერ დროს.</p>
           </div>
         </div>
         <div class="right-item mt-2">
@@ -159,7 +173,7 @@ include 'header.php';
           </div>
           <div>
             <h6 class="text-white mb-1">ნოტიფიკაციების გაუქმება</h6>
-            <p class="small text-white-50 mb-0">Android-ის პარამეტრებში შეტყობინებები გამორთეთ ნებისმიერ დროს.</p>
+            <p class="small text-white-50 mb-0">Android-ის სისტემური პარამეტრებიდან გამორთეთ შეტყობინებები ნებისმიერ დროს.</p>
           </div>
         </div>
         <div class="right-item mt-2">
@@ -167,8 +181,8 @@ include 'header.php';
             <i class="fas fa-trash-alt"></i>
           </div>
           <div>
-            <h6 class="text-white mb-1">Cookie-ების წაშლა</h6>
-            <p class="small text-white-50 mb-0">ბრაუზერის პარამეტრებში site data-ს გასუფთავებით ლოკაციის მონაცემები სრულად წაიშლება.</p>
+            <h6 class="text-white mb-1">ქუქი-ფაილების და ენის წაშლა</h6>
+            <p class="small text-white-50 mb-0">ბრაუზერის პარამეტრებში site data-ს (ქეშის/ქუქიების) გასუფთავებით ლოკაციისა და ენის მონაცემები სრულად წაიშლება.</p>
           </div>
         </div>
       </div>
@@ -184,8 +198,11 @@ include 'header.php';
 .service-box{background:rgba(0,0,0,0.22);border-radius:14px;}
 .border-cyan-soft{border-left:3px solid rgba(13,202,240,0.5);}
 .border-purple-soft{border-left:3px solid rgba(138,43,226,0.5);}
+.border-blue-soft{border-left:3px solid rgba(13, 110, 253, 0.5);}
+.border-teal-soft{border-left:3px solid rgba(32, 201, 151, 0.5);}
 .border-amber-soft{border-left:3px solid rgba(245,183,39,0.5);}
 .border-emerald-soft{border-left:3px solid rgba(32,201,151,0.5);}
+.color-teal{color: #20c997;}
 .premium-list{list-style:none;padding:0;margin:0;}
 .premium-list li{display:flex;align-items:flex-start;padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.05);color:rgba(255,255,255,0.75);}
 .premium-list li i{font-size:0.9rem;margin-right:12px;margin-top:3px;flex-shrink:0;}

@@ -87,8 +87,8 @@ if ($response) {
     }
 
     // Load ALL births and deaths (up to 30), no events panel
-    $births = process_wiki_data_with_media($res_data['births'] ?? [], 50, false);
-    $deaths = process_wiki_data_with_media($res_data['deaths'] ?? [], 50, false);
+    $births = process_wiki_data_with_media($res_data['births'] ?? [], 10, false);
+    $deaths = process_wiki_data_with_media($res_data['deaths'] ?? [], 10, false);
 }
 
 // === STATISTICS ===
@@ -98,11 +98,7 @@ foreach (array_merge($births, $deaths) as $item) {
         $all_years[] = intval($item['year']);
     }
 }
-$stats = [
-    'total' => count($births) + count($deaths),
-    'oldest' => !empty($all_years) ? min($all_years) : '—',
-    'newest' => !empty($all_years) ? max($all_years) : '—'
-];
+
 
 // === YEAR SUFFIX LABEL ===
 $yr_suffix = $ai_lang === 'en' ? 'yr' : 'წ';
@@ -251,39 +247,6 @@ select option {
     margin-top: 4px;
 }
 
-/* --- Stats Bar (only Born & Departed) --- */
-.otd-stats {
-    display: flex;
-    gap: 0;
-    border-radius: 18px;
-    overflow: hidden;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.04);
-    margin-bottom: 1.5rem;
-}
-.otd-stat-item {
-    flex: 1;
-    text-align: center;
-    padding: 0.7rem 0.4rem;
-    border-right: 1px solid rgba(255,255,255,0.03);
-    transition: background 0.3s;
-}
-.otd-stat-item:last-child { border-right: none; }
-.otd-stat-item:hover { background: rgba(255,255,255,0.03); }
-.otd-stat-num {
-    font-size: 1.2rem;
-    font-weight: 800;
-    color: #fff;
-    font-family: 'Poppins', sans-serif;
-    line-height: 1.2;
-}
-.otd-stat-label {
-    font-size: 0.6rem;
-    color: rgba(255,255,255,0.4);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 2px;
-}
 
 /* --- Nav tabs premium (only 2 tabs: births, deaths) --- */
 .otd-tabs {
@@ -611,21 +574,8 @@ select option {
         </div>
     <?php else: ?>
 
-        <!-- ===== STATS BAR ===== -->
-        <div class="otd-stats reveal-up">
-            <div class="otd-stat-item">
-                <div class="otd-stat-num"><?php echo $stats['total']; ?></div>
-                <div class="otd-stat-label"><?php echo $ai_lang === 'en' ? 'Total' : 'სულ'; ?></div>
-            </div>
-            <div class="otd-stat-item">
-                <div class="otd-stat-num"><?php echo count($births); ?></div>
-                <div class="otd-stat-label"><?php echo $ai_lang === 'en' ? 'Born' : 'დაიბადნენ'; ?></div>
-            </div>
-            <div class="otd-stat-item">
-                <div class="otd-stat-num" style="color:#bb8fce;"><?php echo count($deaths); ?></div>
-                <div class="otd-stat-label" style="color:rgba(187,143,206,0.5);"><?php echo $ai_lang === 'en' ? 'Departed' : 'გარდაიცვალნენ'; ?></div>
-            </div>
-        </div>
+  
+       
 
         <!-- ===== DATE PICKER ===== -->
         <div class="otd-picker-wrap reveal-up">
@@ -671,13 +621,13 @@ select option {
                             <img src="<?php echo htmlspecialchars($b['image'], ENT_QUOTES, 'UTF-8'); ?>" class="otd-item-img" alt="" loading="lazy" />
                         <?php endif; ?>
                         <div class="otd-item-text">
-                            <p class="otd-item-name">
-                                <i class="fa-solid fa-star text-success" style="font-size:0.6rem; opacity:0.5; margin-right:4px;"></i>
-                                <?php echo htmlspecialchars($b['name'], ENT_QUOTES, 'UTF-8'); ?>
-                            </p>
-                            <?php if (!empty($b['desc'])): ?>
-                                <p class="otd-item-desc"><?php echo htmlspecialchars($b['desc'], ENT_QUOTES, 'UTF-8'); ?></p>
-                            <?php endif; ?>
+                        <p class="otd-item-name">
+    <i class="fa-solid fa-star text-success" style="font-size:0.6rem; opacity:0.5; margin-right:4px;"></i>
+    <?php echo htmlspecialchars(otd_translate_text($b['name']), ENT_QUOTES, 'UTF-8'); ?>
+</p>
+<?php if (!empty($b['desc'])): ?>
+    <p class="otd-item-desc"><?php echo htmlspecialchars(otd_translate_text($b['desc']), ENT_QUOTES, 'UTF-8'); ?></p>
+<?php endif; ?>
                             <?php if ($b['link'] !== '#'): ?>
                                 <a href="<?php echo htmlspecialchars($b['link'], ENT_QUOTES, 'UTF-8'); ?>" target="_blank" class="otd-item-link">
                                     <i class="fa-solid fa-arrow-up-right-from-square"></i> <?php echo $ai_lang === 'en' ? 'Biography' : 'ბიოგრაფია'; ?>
@@ -701,13 +651,13 @@ select option {
                             <img src="<?php echo htmlspecialchars($d_item['image'], ENT_QUOTES, 'UTF-8'); ?>" class="otd-item-img" alt="" loading="lazy" />
                         <?php endif; ?>
                         <div class="otd-item-text">
-                            <p class="otd-item-name">
-                                <i class="fa-solid fa-feather" style="font-size:0.6rem; opacity:0.4; margin-right:4px; color:#bb8fce;"></i>
-                                <?php echo htmlspecialchars($d_item['name'], ENT_QUOTES, 'UTF-8'); ?>
-                            </p>
-                            <?php if (!empty($d_item['desc'])): ?>
-                                <p class="otd-item-desc"><?php echo htmlspecialchars($d_item['desc'], ENT_QUOTES, 'UTF-8'); ?></p>
-                            <?php endif; ?>
+                           <p class="otd-item-name">
+    <i class="fa-solid fa-feather" style="font-size:0.6rem; opacity:0.4; margin-right:4px; color:#bb8fce;"></i>
+    <?php echo htmlspecialchars(otd_translate_text($d_item['name']), ENT_QUOTES, 'UTF-8'); ?>
+</p>
+<?php if (!empty($d_item['desc'])): ?>
+    <p class="otd-item-desc"><?php echo htmlspecialchars(otd_translate_text($d_item['desc']), ENT_QUOTES, 'UTF-8'); ?></p>
+<?php endif; ?>
                             <?php if ($d_item['link'] !== '#'): ?>
                                 <a href="<?php echo htmlspecialchars($d_item['link'], ENT_QUOTES, 'UTF-8'); ?>" target="_blank" class="otd-item-link">
                                     <i class="fa-solid fa-arrow-up-right-from-square"></i> <?php echo $ai_lang === 'en' ? 'Legacy' : 'მემკვიდრეობა'; ?>

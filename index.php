@@ -485,7 +485,7 @@ if ($hour >= 6 && $hour < 20) {
             border-radius: 40px; 
             min-height: 380px;
             background-attachment: scroll;">
-  
+
   <!-- მხოლოდ ერთი დაბნელების ფენა, ამბიენტური გლოუების გარეშე -->
   <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 1; border-radius: 40px;"></div>
 

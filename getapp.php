@@ -17,7 +17,7 @@ include 'header.php';
     <div class="ambient-glow glow-1"></div>
     <div class="ambient-glow glow-2"></div>
     <div class="row position-relative z-index-1 align-items-center">
-      <div class="col-lg-8">
+      <div class="col-lg-12">
         <div class="mb-4">
           <i class="fa-brands fa-android me-3 text-success float-icon" style="font-size:clamp(2rem,5vw,3rem);"></i>
           <h1 class="display-5 fw-bolder text-gradient-premium m-0">Grubeli.Ge Pro </h1>
@@ -26,19 +26,7 @@ include 'header.php';
           <strong class="text-white">Android აპლიკაცია</strong> – ყველა ფუნქცია, რაც გჭირდებათ ამინდის შესახებ ინფორმირებული რომ იყოთ, პირდაპირ თქვენს ტელეფონზე. <strong class="text-white">Push შეტყობინებები</strong>, <strong class="text-white">რეალურ დროში გაფრთხილებები</strong> და <strong class="text-white">AI-ზე მომუშავე ჭკვიანი ასისტენტი</strong> — ყველაფერი ქართულ ენაზე.
         </p>
       </div>
-      <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
-        <div class="d-inline-flex flex-column align-items-lg-end gap-3 w-100">
-          <div class="status-pill d-inline-flex align-items-center">
-           
-            <span class="fw-bold">Grubeli.Ge   <span class="version-badge">PRO</span></span>
-          </div>
-          <div class="status-pill d-inline-flex align-items-center">
-         
-            <i class="fa-brands fa-android me-2"></i>
-            <span class="fw-bold">Android აპი</span>
-          </div>
-        </div>
-      </div>
+     
     </div>
   </div>
 

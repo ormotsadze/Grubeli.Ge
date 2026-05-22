@@ -1014,4 +1014,56 @@ function translate_place_name($placeName) {
     return ucwords(transliterate_georgian($placeName));
 }
 
+
+function otd_translate_text($text) {
+    if (empty($text) || get_current_lang() === 'en') {
+        return $text;
+    }
+
+    // 1. ვქმნით საქაღალდეს ნათარგმნი ტექსტების შესანახად
+    $cache_dir = __DIR__ . '/translations_cache/';
+    if (!is_dir($cache_dir)) {
+        @mkdir($cache_dir, 0755, true);
+    }
+
+    // 2. ტექსტისთვის ვქმნით უნიკალურ ID-ს
+    $hash = md5($text);
+    $cache_file = $cache_dir . $hash . '.txt';
+
+    // 3. 🚀 სისწრაფის მაგია: თუ უკვე ნათარგმნია, ვკითხულობთ პირდაპირ ფაილიდან!
+    if (file_exists($cache_file)) {
+        return file_get_contents($cache_file);
+    }
+
+    // 4. თუ არ არის შენახული, ვთხოვთ Google-ს
+    $url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ka&dt=t&q=" . urlencode($text);
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 3); // 3 წამზე მეტი არ დაელოდოს
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
+    
+    $response = curl_exec($ch);
+    curl_close($ch);
+    
+    if ($response) {
+        $result = json_decode($response, true);
+        if (isset($result[0])) {
+            $translated_text = "";
+            foreach ($result[0] as $line) {
+                $translated_text .= $line[0];
+            }
+            
+            // 5. ვინახავთ ნათარგმნ ტექსტს ფაილში მომავალი გამოყენებისთვის
+            @file_put_contents($cache_file, $translated_text);
+            
+            return $translated_text;
+        }
+    }
+    
+    return $text;
+}
+
+
 ?>
