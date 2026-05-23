@@ -2,6 +2,7 @@
 return [
     'app_title' => 'GRUBELI.GE',
     'app_title_sub' => 'Weather Made Easy',
+    'app_description' => 'Weather forecast for Georgia',
     'my_location' => 'My Location',
     'font_family' => 'poppins',
       'its_day' => 'It is day',
@@ -169,6 +170,15 @@ return [
    'contact_official_apps_desc' => 'Grubeli.ge\'s official app is currently available only on Android. Download now <b style="color: white">Grubeli.Ge</b>  <span class="version-badge">PRO</span> to get real-time weather updates and AI recommendations directly on your phone.',
  'contact_official_apps_download' => 'Download Now',
  'contact_official_apps_google_play' => 'Google Play',
+
+
+
+    // --- SLEEP.PHP (კონფიდენციალურობის პოლიტიკა) ---
+    'sleep_title' => 'Sleep Sounds',
+    'sleep_desc' => 'Listen to calming sounds before sleep and fall asleep gently. Sleep sounds, nature sounds, and soothing advice for better sleep.',
+    'sleep_og_title' => 'Sleep Sounds | Grubeli.ge',
+    'sleep_tw_title' => 'Sleep Sounds - Better Sleep',
+    'sleep_tw_desc' => 'Listen to calming sounds before sleep and fall asleep gently. Sleep sounds, nature sounds, and soothing advice for better sleep.',
 
 
 

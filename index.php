@@ -4,23 +4,23 @@ date_default_timezone_set('Asia/Tbilisi');
 header('Pragma: no-cache');
 header('Expires: 0');
 
-// 1. სესია და აუცილებელი ფუნქციები (უნდა იყოს ყველაფერზე ადრე!)
+// 1. Session and required files
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 require_once __DIR__ . '/functions.php';
 
-// 2. $ai_lang — ვიღებთ functions.php-ის get_current_lang()-დან, რომელიც სწორად კითხულობს cookie > session > 'ka'
+// 2. Language
 $ai_lang = get_current_lang();
 
-// 3. __t helper — თუ 'ka' ან 'en'
+// 3. __t helper
 function __t($ka, $en) {
     $lang = get_current_lang();
     return ($lang === 'en') ? $en : $ka;
 }
 
-// 2. კოორდინატების განსაზღვრა (ერთიანი helper)
+// 4. Coordinates
 [$lat, $lon] = resolve_coordinates($_GET['lat'] ?? null, $_GET['lon'] ?? null);
 
-// 3. მონაცემების წამოღება (პარალელურად weather + air)
+// 5. Fetch weather + air in parallel
 $weatherData = fetch_weather_and_air($lat, $lon);
 if (!$weatherData['weather']) {
     echo ($ai_lang === 'en') ? "Failed to load weather data." : "ამინდის მონაცემების ჩატვირთვა ვერ მოხერხდა.";
@@ -28,25 +28,22 @@ if (!$weatherData['weather']) {
 }
 $weather = $weatherData['weather'];
 $air_quality = $weatherData['air_quality'];
-$current_hour = (int)date('H'); 
-$vis_meters = $weather['hourly']['visibility'][$current_hour] ?? ($weather['hourly']['visibility'][0] ?? 0);
-$current = $weather['current'] ?? null; // ჯერ ვქმნით $current-ს
 
-// ახლა უკვე შეგვიძლია გამოვიყენოთ, ოღონდ დაზღვევის მიზნით შევამოწმოთ if-ით
-$weather_alert = null;
-if ($weather) {
-    // ფუნქცია თავად იპოვის შიგნით $current-საც და $hourly-საც
-    $weather_alert = get_weather_alert($weather);
-}
+// 6. Current hour index
+$current_hour = (int)date('H');
+
+// 7. Visibility
+$vis_meters = $weather['hourly']['visibility'][$current_hour] ?? ($weather['hourly']['visibility'][0] ?? 0);
 if ($vis_meters > 0) {
     $vis_km = round($vis_meters / 1000, 1) . ($ai_lang === 'en' ? " km" : " კმ");
 } else {
     $vis_km = $ai_lang === 'en' ? "10+ km" : "10+ კმ";
 }
-// 4. IP-სგან დამოუკიდებელი ქალაქის სახელი (cached Nominatim)
+
+// 8. Location name
 $placeName = get_location_name($lat, $lon);
 
-// 5. სესიის და SEO-სთვის საჭირო მონაცემები
+// 9. Session data for caching
 $city_name = $placeName;
 $_SESSION['city_name'] = $city_name;
 $_SESSION['weather_cache'] = $weather;
@@ -54,41 +51,44 @@ $_SESSION['is_day'] = $weather['current_weather']['is_day'] ?? 1;
 $_SESSION['lat'] = $lat;
 $_SESSION['lon'] = $lon;
 
+// 10. SEO page variables
 $pageTitle   = __('index_title');
 $pageDesc    = __('index_desc');
 $pageOgTitle = __('index_og_title');
 $pageTwTitle = __('index_tw_title');
 $pageTwDesc  = __('index_tw_desc');
-// 6. UI-სთვის საჭირო მონაცემები (header.php-ში გამოყენებამდე)
+
+// 11. Current weather variables (from Open-Meteo current_weather)
 $tz = $weather['timezone'] ?? 'UTC';
 $now = new DateTime('now', new DateTimeZone($tz));
-$current = $weather['current_weather'] ?? null;
-$current_temp = $current['temperature'] ?? '--';
-$current_desc = $current['description_geo'] ?? '';
-$is_day = ($current['is_day'] ?? 1) == 1;
-$current_icon = isset($current['icon']) ? icon_url($current['icon'], $is_day) : 'icons/sun.svg';
-$currentDesc = $pageDesc; // SEO description fallback
-// --- ისტორიული ამინდის ლოგიკა ---
-// --- ისტორიული ამინდის ლოგიკა (მხოლოდ ციფრი) ---
+$current_weather = $weather['current_weather'] ?? null;
+$current_temp = $current_weather['temperature'] ?? '--';
+$current_desc = $current_weather['description_geo'] ?? '';
+$is_day = ($current_weather['is_day'] ?? 1) == 1;
+$current_icon = isset($current_weather['icon']) ? icon_url($current_weather['icon'], $is_day) : 'icons/sun.svg';
+
+// 12. Historical "1 year ago" data (non-blocking, always shows link)
 $hist_data = get_last_year_temp($lat, $lon);
 $one_year_ago = date('Y-m-d', strtotime('-1 year'));
 $hist_temp = $hist_data['temp'] ?? null;
 $hist_display_text = "";
-
 if ($hist_temp !== null) {
-    // ვამრგვალებთ მთელ ციფრამდე უფრო სუფთა ვიზუალისთვის
     $formatted_hist_temp = round($hist_temp);
-   $hist_display_text = __('index_lastyear') . " " . $formatted_hist_temp . "°C";
+    $hist_display_text = __('index_lastyear') . " " . $formatted_hist_temp . "°C";
+} else {
+    // Even without API data, show "Last year" text so the link is always visible
+    $hist_display_text = __('index_lastyear') . " —";
 }
-// Auto prompt flag for AI suggestions
-$autoPrompt = true; // Set based on config or default
 
-// 7. Header და დანარჩენი ფაილები
+// 13. Auto prompt flag
+$autoPrompt = true;
+
+// 14. Include header (after all variables are ready)
 include 'header.php';
 require_once __DIR__ . '/ai/ai_helper.php'; 
 require_once __DIR__ . '/ai/ai-suggest.php';
 
-// Bypass weather cache when ?nocache is present (temporary, for testing)
+// 15. Bypass cache when ?nocache is present (testing)
 if (isset($_GET['nocache'])) {
     $cacheDir = __DIR__ . DIRECTORY_SEPARATOR . 'cache';
     if (is_dir($cacheDir)) {
@@ -97,18 +97,16 @@ if (isset($_GET['nocache'])) {
     }
 }
 
-// საათობრივი პროგნოზი
+// 16. Hourly forecast
 $hourly = $weather['hourly'] ?? null;
 $hourly_items = [];
 if ($hourly && isset($hourly['time'])) {
     $nowTs = $now->getTimestamp();
-    // Target = start of next full hour: (floor(currentTs / 3600) + 1) * 3600
     $targetTs = (intdiv($nowTs, 3600) + 1) * 3600;
 
     $collected = 0;
     foreach ($hourly['time'] as $i => $t) {
         if ($collected >= 12) break;
-        // Use DateTime with proper timezone for comparison (strtotime interprets as UTC)
         $h_ts = (new DateTime($t, new DateTimeZone($tz)))->getTimestamp();
         if ($h_ts < $targetTs) continue;
         $h_time = new DateTime($t, new DateTimeZone($tz));
@@ -121,13 +119,12 @@ if ($hourly && isset($hourly['time'])) {
         ];
         $collected++;
     }
-    // Debug HTML comment — can be removed after verification
+    
     echo "\n<!-- [HOURLY_DEBUG] nowTs={$nowTs} targetTs={$targetTs} collected={$collected} -->\n";
     
-    // UV, AQI, feels-like-სთვის ინდექსის პოვნა
+    // Find current index for UV/AQI/feels-like
     $currentIndex = null;
     $firstIndex = null;
-    $nowTs = $now->getTimestamp();
     $closest = null; $closestDiff = PHP_INT_MAX;
     foreach ($hourly['time'] as $i => $t) {
         if ($firstIndex === null) $firstIndex = $i;
@@ -138,7 +135,7 @@ if ($hourly && isset($hourly['time'])) {
     if ($firstIndex === null) $firstIndex = 0;
 }
 
-// დღიური პროგნოზი
+// 17. Daily forecast
 $daily = $weather['daily'] ?? null;
 $daily_items = [];
 if ($daily && isset($daily['time'])) {
@@ -157,16 +154,14 @@ if ($daily && isset($daily['time'])) {
     }
 }
 
-// --- UV ინდექსის გამოთვლა ---
+// 18. UV Index
 $uv_value = null;
 if (isset($hourly['uv_index'][$currentIndex])) {
     $uv_value = round($hourly['uv_index'][$currentIndex], 1);
 }
-
 $uv_label = ($uv_value !== null) ? $uv_value : '--';
 $uv_class = 'uv-low';
 $uv_text = '---';
-
 if ($uv_value !== null) {
     if ($ai_lang === 'en') {
         if ($uv_value < 3) { $uv_class = 'uv-low'; $uv_text = 'Low'; }
@@ -182,7 +177,8 @@ if ($uv_value !== null) {
         else { $uv_class = 'uv-extreme'; $uv_text = 'ექსტრემალური'; }
     }
 }
-// AQI
+
+// 19. AQI
 $aq_label = '--'; $aq_class = '';
 if ($air_quality && isset($air_quality['hourly']['time']) && isset($currentIndex)) {
     $aq_v = intval($air_quality['hourly']['us_aqi'][$currentIndex] ?? 0);
@@ -199,35 +195,40 @@ if ($air_quality && isset($air_quality['hourly']['time']) && isset($currentIndex
     }
 }
 
+// 20. Sunrise/Sunset
 $sunrise_label = '--:--';
 $sunset_label = '--:--';
 $day_length = '--:--';
-
 if (isset($weather['daily']['sunrise'][0]) && isset($weather['daily']['sunset'][0])) {
     $sr = new DateTime($weather['daily']['sunrise'][0], new DateTimeZone($tz));
     $ss = new DateTime($weather['daily']['sunset'][0], new DateTimeZone($tz));
-    
     $sunrise_label = $sr->format('H:i');
     $sunset_label = $ss->format('H:i');
-    
-    // დღის ხანგრძლივობის გამოთვლა
     $diff = $sr->diff($ss);
     $day_length = $diff->format(($ai_lang === 'en' ? '%h hr %i min' : '%h სთ %i წთ'));
 }
 
-// --- მთვარის ფაზის გამოთვლა (API-ს გარეშე) ---
-$moon_known_new = mktime(18, 14, 0, 1, 6, 2000); // 6 იან 2000 18:14 UTC
-$moon_synodic = 29.53058867 * 86400; // სინოდური თვე წამებში
+// 21. Weather alert
+$weather_alert = null;
+if ($weather) {
+    $weather_alert = get_weather_alert($weather);
+}
+
+/* Add app_description to lang files if missing */
+if (!isset($lang['app_description'])) {
+    $lang['app_description'] = ($ai_lang === 'en') ? 'Weather forecast for Georgia' : 'ამინდის პროგნოზი საქართველოში';
+}
+
+// 22. Moon phase
+$moon_known_new = mktime(18, 14, 0, 1, 6, 2000);
+$moon_synodic = 29.53058867 * 86400;
 $moon_age_sec = (time() - $moon_known_new) % $moon_synodic;
 if ($moon_age_sec < 0) $moon_age_sec += $moon_synodic;
-$moon_phase = $moon_age_sec / $moon_synodic; // 0..1
+$moon_phase = $moon_age_sec / $moon_synodic;
 
-// Moon phase names by language
 $moon_names_ka = ['ახალი მთვარე', 'ნახევარმთვარე', 'პირველი მეოთხედი', 'მზარდი მთვარე', 'სავსე მთვარე', 'კლებადი მთვარე', 'ბოლო მეოთხედი', 'მცირე ნახევარმთვარე'];
 $moon_names_en = ['New Moon', 'Waxing Crescent', 'First Quarter', 'Waxing Gibbous', 'Full Moon', 'Waning Gibbous', 'Last Quarter', 'Waning Crescent'];
 
-// 0     0.125   0.25    0.375   0.5     0.625   0.75    0.875   1
-// AM    NMC     PM      MZ      SM      DK      BM      MNP     AM
 if ($moon_phase < 0.0625 || $moon_phase >= 0.9375) {
     $moon_phase_idx = 0;
     $moon_name = ($ai_lang === 'en') ? $moon_names_en[0] : $moon_names_ka[0];
@@ -269,11 +270,6 @@ if ($moon_phase < 0.0625 || $moon_phase >= 0.9375) {
     $moon_icon = 'fa-solid fa-moon';
     $moon_color = '#d4a853';
 }
-
-
-
-
-
 ?>
 
 <div id="app-banner" class="app-banner">
@@ -293,6 +289,7 @@ if ($moon_phase < 0.0625 || $moon_phase >= 0.9375) {
     </div>
   </div>
 </div>
+
 <div class="container justify-content-center mt-2">
     <?php 
 $fireData = checkFireRisk(defined('NASA_MAP_KEY') ? NASA_MAP_KEY : '');
@@ -362,9 +359,7 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
                 <i class="fa-solid <?php echo $weather_alert['icon']; ?> <?php echo $text_class; ?> me-2 pulse-animation" style="font-size: 1.3rem;"></i>
                 <div class="text-truncate">
                     <h6 class="m-0 fw-bold text-truncate" style="font-size: 0.9rem;">
-                        <?php 
-                            echo htmlspecialchars($weather_alert['title'] ?? '', ENT_QUOTES, 'UTF-8'); 
-                        ?>
+                        <?php echo htmlspecialchars($weather_alert['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
                     </h6>
                     <small class="text-white-50" style="font-size: 0.7rem;">
                         <?php 
@@ -393,7 +388,6 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
                     </small>
                 </div>
             </div>
-           
         </div>
     </div>
 </div>
@@ -449,8 +443,8 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
     <form id="searchForm" action="javascript:void(0);" autocomplete="off">
         <div class="search-wrapper">
             <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
-            <input type="search" 
-                   id="citySearch" 
+            <input type="text" 
+                   id="search-input" 
                    class="search-input" 
                    placeholder="<?php echo __('index_cityingeorgia'); ?>" 
                    autocomplete="off"
@@ -461,15 +455,13 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
                    aria-autocomplete="list">
         </div>
     </form>
-    <div id="suggestions" class="suggestions-list" role="listbox"></div>
+    <div id="suggestion-box" class="suggestions-list" role="listbox"></div>
 </div>
 
-
 <?php
-// 1. დროის განსაზღვრა (06:00-დან 20:00-მდე დღეა, სხვა დროს ღამე)
+// Determine day/night background
 date_default_timezone_set('Asia/Tbilisi');
 $hour = (int)date('H');
-
 if ($hour >= 6 && $hour < 20) {
     $card_bg = 'images/widget_bg_day_image_v2.png';
 } else {
@@ -486,7 +478,6 @@ if ($hour >= 6 && $hour < 20) {
             min-height: 380px;
             background-attachment: scroll;">
 
-  <!-- მხოლოდ ერთი დაბნელების ფენა, ამბიენტური გლოუების გარეშე -->
   <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 1; border-radius: 40px;"></div>
 
 <div class="card-body position-relative" style="z-index: 3; display: flex; flex-direction: column; justify-content: center; min-height: 320px;">
@@ -539,10 +530,8 @@ if ($hour >= 6 && $hour < 20) {
 
     <div class="weather-details-footer mt-3 pt-2" style="border-top: 1px solid rgba(255,255,255,0.15);">
      
-     
 <h3 class="weather-description mb-1" style="font-family: '<?php echo __('font_family'); ?>', sans-serif; font-size: 1.1rem; font-weight: 500; margin: 5px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
   <?php 
-    // ვიყენებთ მხოლოდ რეალურ, არსებულ ცვლადს და ვაზღვევთ ცარიელი სტრინგით
     echo htmlspecialchars(get_weather_description_by_text($current_desc ?? ''), ENT_QUOTES, 'UTF-8'); 
   ?>
 </h3>
@@ -555,7 +544,7 @@ if ($hour >= 6 && $hour < 20) {
               ? $hourly['apparent_temperature'][$currentIndex] 
               : (($hourly && isset($firstIndex) && isset($hourly['apparent_temperature'][$firstIndex])) 
                 ? $hourly['apparent_temperature'][$firstIndex] 
-                : ($current['temperature'] ?? '--'));
+                : ($current_weather['temperature'] ?? '--'));
             echo htmlspecialchars(is_numeric($feels) ? round($feels) : '--', ENT_QUOTES, 'UTF-8'); 
           ?>&deg;C
         </strong>
@@ -606,6 +595,26 @@ if ($hour >= 6 && $hour < 20) {
     border-color: rgba(255, 255, 255, 0.1) !important;
 }
 </style>
+
+
+<?php
+$current_hour = (int)date('H');
+if ($current_hour >= 23 || $current_hour < 5): ?>
+    <div class="sleep-container mb-4">
+        <a href="sleep.php" class="sleep-card">
+            <div class="moon-glow"></div>
+            <div class="content">
+                <i class="fa-solid fa-moon moon-icon"></i>
+                <div class="ms-3">
+                    <h5 class="mb-0"><?php echo ($ai_lang === 'en' ? 'Sleep Sounds' : 'ძილისპირული'); ?></h5>
+                    <small class="text-white-50">
+                        <?php echo ($ai_lang === 'en' ? 'Nature sounds for your deep rest' : 'ბუნების ხმები შენი მშვიდი ძილისთვის'); ?>
+                    </small>
+                </div>
+            </div>
+        </a>
+    </div>
+<?php endif; ?>
 
 
 <div class="container-fluid px-0 mt-3 mb-4">
@@ -713,9 +722,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-
-
-
 <style>
     .premium-card {
        background: rgba(255, 255, 255, 0.02);
@@ -757,7 +763,6 @@ document.addEventListener("DOMContentLoaded", function () {
 <div class="container mt-4 mb-4">
   <div class="feature-tiles-grid">
 
-
 <div class="feature-tile tile-sunrise">
       <div class="tile-glow"></div>
       <div class="tile-content">
@@ -768,10 +773,9 @@ document.addEventListener("DOMContentLoaded", function () {
           <span class="tile-label"><?php echo __('wind'); ?></span>
           <span class="tile-value">
  <?php
-            $wind = $current['windspeed'] ?? (($hourly && isset($currentIndex) && isset($hourly['windspeed_10m'][$currentIndex])) ? $hourly['windspeed_10m'][$currentIndex] : (($hourly && isset($firstIndex) && isset($hourly['windspeed_10m'][$firstIndex])) ? $hourly['windspeed_10m'][$firstIndex] : '--'));
+            $wind = $current_weather['windspeed'] ?? (($hourly && isset($currentIndex) && isset($hourly['windspeed_10m'][$currentIndex])) ? $hourly['windspeed_10m'][$currentIndex] : (($hourly && isset($firstIndex) && isset($hourly['windspeed_10m'][$firstIndex])) ? $hourly['windspeed_10m'][$firstIndex] : '--'));
             echo htmlspecialchars($wind, ENT_QUOTES, 'UTF-8'); 
             ?> <small style="font-size: 10px;"><?php echo ($ai_lang === 'en' ? 'km/h' : 'კმ/სთ'); ?></small>
-
           </span>
         </div>
       </div>
@@ -794,7 +798,6 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
     </div>
 
-
  <div class="feature-tile tile-length">
       <div class="tile-glow"></div>
       <div class="tile-content">
@@ -804,7 +807,6 @@ document.addEventListener("DOMContentLoaded", function () {
         <div class="tile-body">
           <span class="tile-label"><?php echo __('visibility'); ?></span>
           <span class="tile-value">
-
        <?php echo $vis_km; ?>
           </span>
         </div>
@@ -820,7 +822,6 @@ document.addEventListener("DOMContentLoaded", function () {
         <div class="tile-body">
           <span class="tile-label"><?php echo __('precipitation'); ?></span>
           <span class="tile-value">
-
            <?php 
             $prec = ($hourly && isset($currentIndex) && isset($hourly['precipitation_probability'][$currentIndex])) ? $hourly['precipitation_probability'][$currentIndex] . '%' : (($hourly && isset($firstIndex) && isset($hourly['precipitation_probability'][$firstIndex])) ? $hourly['precipitation_probability'][$firstIndex] . '%' : '--');
             echo htmlspecialchars($prec, ENT_QUOTES, 'UTF-8'); 
@@ -910,7 +911,7 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
     </div>
 
-    <!-- TILE 6: Air Quality (AQI) — extracted from weather-details-grid above -->
+    <!-- TILE 6: Air Quality (AQI) -->
     <div class="feature-tile tile-aqi">
       <div class="tile-glow"></div>
       <a data-bs-toggle="modal" data-bs-target="#modalaqv" class="tile-info-btn" style="cursor: pointer;">
@@ -960,7 +961,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 }
 
-/* დანარჩენი სტილები უცვლელია */
 .feature-tile {
     position: relative;
     border-radius: 18px;
@@ -980,8 +980,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 .feature-tile-text {
     font-size: 0.8rem;
-    word-wrap: break-word;      /* ძველი ბრაუზერებისთვის */
-    overflow-wrap: break-word;  /* თანამედროვე სტანდარტი */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
     max-width: 100%;
     color: #fff;
     font-weight: 600;
@@ -1006,7 +1006,6 @@ document.addEventListener("DOMContentLoaded", function () {
     opacity: 0.6;
 }
 
-/* Per-tile accent colors */
 .tile-sunrise  { border-left: 3px solid #F5B727; }
 .tile-sunrise .tile-glow { background: #F5B727; }
 .tile-sunset   { border-left: 3px solid #4fc3f7; }
@@ -1020,7 +1019,6 @@ document.addEventListener("DOMContentLoaded", function () {
 .tile-aqi      { border-left: 3px solid #64b5f6; }
 .tile-aqi .tile-glow { background: #64b5f6; }
 
-/* Content layout */
 .tile-content {
     display: flex;
     align-items: center;
@@ -1072,7 +1070,6 @@ document.addEventListener("DOMContentLoaded", function () {
     text-overflow: ellipsis;
 }
 
-/* Info button positioned at top-right of tile */
 .tile-info-btn {
     position: absolute;
     top: 6px;
@@ -1094,7 +1091,6 @@ document.addEventListener("DOMContentLoaded", function () {
     font-size: 0.8rem !important;
 }
 
-/* მობილურის ზომები */
 @media (max-width: 767px) {
     .tile-content {
         padding: 12px 14px;
@@ -1133,8 +1129,6 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
   </div>
 </div>
-
-
 
 <div class="ai-accordion closed mb-3 shadow-sm">
     <button class="ai-accordion-header" onclick="toggleAIAccordion()">
@@ -1200,26 +1194,19 @@ function toggleAIAccordion() {
     const isOpen = body.classList.contains('open');
     
     if (isOpen) {
-        // დახურვა: ჯერ ვხურავთ body-ს, შემდეგ ვრთავთ gradient ფონს
         body.classList.remove('open');
         icon.classList.remove('rotated');
-
-        // როცა იხურება, ეკრანი დავაბრუნოთ აკორდეონის დასაწყისში
         accordion.scrollIntoView({ 
             behavior: 'smooth', 
-            block: 'center' // 'center' უკეთესია დახურვისას, რომ მომხმარებელმა დაინახოს სად "გაქრა" კონტენტი
+            block: 'center'
         });
-
         setTimeout(() => {
             accordion.classList.add('closed');
         }, 400);
     } else {
-        // გახსნა: ჯერ gradient ფონს ვხსნით, მერე ვხსნით body-ს
         accordion.classList.remove('closed');
         body.classList.add('open');
         icon.classList.add('rotated');
-
-        // გახსნისას ეკრანის ჩამოტანა
         setTimeout(() => {
             accordion.scrollIntoView({ 
                 behavior: 'smooth', 
@@ -1234,13 +1221,12 @@ function toggleAIAccordion() {
 .ai-accordion {
     position: relative;
     border-radius: 25px;
-    padding: 2px; /* სივრცე border-ის ეფექტისთვის */
+    padding: 2px;
     background: #0f111a;
     overflow: hidden;
     transition: all 0.3s ease;
 }
 
-/* ანიმირებული Border-ის ფენა - თავიდან დამალულია (opacity: 0) */
 .ai-accordion::before {
     content: "";
     position: absolute;
@@ -1249,16 +1235,14 @@ function toggleAIAccordion() {
     background: linear-gradient(90deg, #4285f4, #9b51e0, #e91e63, #f48024, #4285f4);
     background-size: 300% 100%;
     animation: aiAccordionGradient 8s linear infinite;
-    opacity: 0; /* დახურულზე არ ჩანს */
+    opacity: 0;
     transition: opacity 0.4s ease;
     z-index: 0;
 }
 
-/* როცა აკორდეონი ღიაა, border-ის ანიმაცია ჩნდება */
 .ai-accordion.is-open::before {
     opacity: 1;
 }
-
 
 .ai-accordion-header {
     width: 100%;
@@ -1276,7 +1260,6 @@ function toggleAIAccordion() {
     position: relative;
 }
 
-/* ჰედერის შავად დაფერვა, რომ გრადიენტი რბილი იყოს */
 .ai-accordion-header::after {
     content: "";
     position: absolute;
@@ -1299,7 +1282,6 @@ function toggleAIAccordion() {
 
 .ai-accordion-body.open {
     max-height: 1000px;
-    
 }
 
 .ai-accordion-content {
@@ -1307,11 +1289,9 @@ function toggleAIAccordion() {
     color: rgba(255, 255, 255, 0.9);
     position: relative;
     z-index: 1;
-    margin: 12px; /* დაშორება გარე კონტეინერისგან */
-    background: #0f111a; /* შიდა ფონი */
+    margin: 12px;
+    background: #0f111a;
     border-radius: 20px;
-    
-    /* ჩარჩოს შექმნა mask-ის გამოყენებით */
     border: 2px solid transparent;
     background-clip: padding-box;
 }
@@ -1319,24 +1299,18 @@ function toggleAIAccordion() {
 .ai-accordion-content::before {
     content: "";
     position: absolute;
-    inset: -2px; /* 2px-ით გადის გარეთ, რაც ქმნის ბორდერს */
+    inset: -2px;
     border-radius: 22px; 
-    padding: 2px; /* ბორდერის სისქე */
-    
-    /* გრადიენტი და ანიმაცია */
+    padding: 2px;
     background: linear-gradient(90deg, #4285f4, #9b51e0, #e91e63, #f48024, #4285f4);
     background-size: 300% 100%;
     animation: aiAccordionGradient 8s linear infinite;
-    
-    /* ეს ნაწილი ჭრის შუა გულს და ტოვებს მხოლოდ ჩარჩოს */
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
-    
     pointer-events: none;
     z-index: -1;
 }
-
 </style>
 <script>
 function closeAIResponse() {
@@ -1350,10 +1324,10 @@ function askQuickAI(question) {
     const textContainer = document.getElementById('ai-text-content');
     const responseContainer = document.getElementById('ai-response-container'); 
     
-   if (!textContainer) {
-    console.error("ID 'ai-text-content' <?php echo __('not_found'); ?>!");
-    return;
-}
+    if (!textContainer) {
+        console.error("ID 'ai-text-content' not found!");
+        return;
+    }
     if(responseContainer) {
         responseContainer.style.display = "block"; 
         responseContainer.scrollIntoView({ 
@@ -1363,12 +1337,11 @@ function askQuickAI(question) {
     }
 
     textContainer.style.opacity = "0.5";
-  textContainer.innerHTML = " ✨ <?php echo __('ai_thinking'); ?>";
+    textContainer.innerHTML = " ✨ <?php echo __('ai_thinking'); ?>";
 
     const params = new URLSearchParams();
     params.append('message', question);
     
-    // Pass current coordinates from URL or localStorage so AI responds for the right location
     const urlParams = new URLSearchParams(window.location.search);
     const lat = urlParams.get('lat') || localStorage.getItem('lat');
     const lon = urlParams.get('lon') || localStorage.getItem('lon');
@@ -1415,27 +1388,20 @@ function askQuickAI(question) {
     </div>
 </div>
 
-
 </div>
-
-
 
 <div class="container mt-3 mb-3">
 <div class="forecast-grid">
   <?php 
   if (!empty($daily_items)): 
-    // განვსაზღვროთ ენის მასივი გარედან ან ფუნქციით
     $days_short = (trim($ai_lang) === 'en') ? ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] : ['კვი','ორშ','სამ','ოთხ','ხუთ','პარ','შაბ'];
     
     foreach ($daily_items as $d): 
-      // დარწმუნდით, რომ get_weather_description_by_text ფუნქცია სწორად კითხულობს $ai_lang-ს
-      // (თუ ის არ არის გლობალური, შესაძლოა იქაც იკარგება ენა)
       $daily_desc = get_weather_description_by_text($d['desc'] ?? '');
   ?>
     <div class="forecast-card">
       <div class="forecast-date">
         <?php 
-          // ენის უსაფრთხო ჩატვირთვა
           $day_index = intval($d['date']->format('w'));
           echo htmlspecialchars($days_short[$day_index] . ' ' . $d['date']->format('d.m'), ENT_QUOTES, 'UTF-8'); 
         ?>
@@ -1461,105 +1427,87 @@ function askQuickAI(question) {
 
 </div>
 <script>
-    let cities = [];
-    const searchInput = document.getElementById('citySearch');
-    const suggestionBox = document.getElementById('suggestions');
+    const searchInput = document.getElementById('search-input');
+    const suggestionBox = document.getElementById('suggestion-box');
+    let debounceTimeout;
 
-    // 1. detect current site language — if 'en', show English names
-    const siteLang = (function() {
-        var p = new URLSearchParams(window.location.search);
-        return p.get('lang') || (function(n) {
-            var m = document.cookie.match(new RegExp('(?:^|; )' + n + '=([^;]*)'));
-            return m ? decodeURIComponent(m[1]) : 'ka';
-        })('lang_client') || 'ka';
-    })();
-
-    // 1.5. wrap in form if not already
-    const searchWrapper = searchInput.closest('.search-wrapper') || searchInput.parentElement;
-    if (searchWrapper.tagName !== 'FORM') {
-        const form = document.createElement('form');
-        form.id = 'searchForm';
-        form.onsubmit = (e) => {
-            e.preventDefault();
-            const firstMatch = suggestionBox.querySelector('.list-group-item');
-            if (firstMatch && !firstMatch.innerText.includes('<?php echo __('index_cityingeorgia_not_found'); ?>')) {
-                firstMatch.click();
-            }
-        };
-        searchWrapper.parentNode.insertBefore(form, searchWrapper);
-        form.appendChild(searchWrapper);
-    }
-
-    function latinToGeorgian(text) {
-        let str = text.toLowerCase();
-        const digraphs = { 'sh': 'შ', 'ch': 'ჩ', 'ts': 'ც', 'dz': 'ძ', 'gh': 'ღ', 'kh': 'ხ', 'th': 'თ', 'ph': 'ფ', 'zh': 'ჟ' };
-        const single = { 'a': 'ა', 'b': 'ბ', 'c': 'ც', 'd': 'დ', 'e': 'ე', 'f': 'ფ', 'g': 'გ', 'h': 'ჰ', 'i': 'ი', 'j': 'ჯ', 'k': 'კ', 'l': 'ლ', 'm': 'მ', 'n': 'ნ', 'o': 'ო', 'p': 'პ', 'q': 'ქ', 'r': 'რ', 's': 'ს', 't': 'თ', 'u': 'უ', 'v': 'ვ', 'w': 'ჭ', 'x': 'ხ', 'y': 'ყ', 'z': 'ზ' };
-        let result = ''; let i = 0;
-        while (i < str.length) {
-            let matched = false;
-            for (let dlen = 2; dlen >= 2; dlen--) {
-                if (i + dlen <= str.length) {
-                    const sub = str.substr(i, dlen);
-                    if (digraphs[sub]) { result += digraphs[sub]; i += dlen; matched = true; break; }
-                }
-            }
-            if (!matched) { const ch = str[i]; result += single[ch] || ch; i++; }
+    // 1. სერვერიდან პირდაპირ შემოგვაქვს ქალაქების სია, რომ PHP-მ JavaScript-ს მიაწოდოს
+    const citiesData = <?php 
+        if (file_exists(__DIR__ . '/cities.json')) {
+            echo file_get_contents(__DIR__ . '/cities.json');
+        } else {
+            echo '[]';
         }
-        return result;
+    ?>;
+
+    // ფუნქცია ქართული ლათინურში (ან პირიქით) შესადარებლად (Query-ს მოსარგებად)
+    function transliterateForSearch(str) {
+        const geo = "აბგდევზთიკლმნოპჟრსტუფქღყშცძწჭხჯჰ";
+        const lat = ["a","b","g","d","e","v","z","t","i","k","l","m","n","o","p","zh","r","s","t","u","f","q","gh","q","sh","ts","dz","ts","ch","ch","kh","j","h"];
+        let res = str.toLowerCase();
+        for (let i = 0; i < geo.length; i++) {
+            res = res.replaceAll(geo[i], lat[i]);
+        }
+        return res;
     }
 
-    fetch('cities.json?v=2')
-        .then(response => {
-            if (!response.ok) throw new Error('HTTP ' + response.status);
-            return response.json();
-        })
-        .then(data => { cities = data; })
-        .catch(error => console.error('Error loading cities:', error));
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(debounceTimeout);
+        const query = e.target.value.trim();
 
-    let searchTimer = null;
-    searchInput.addEventListener('input', function() {
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(() => {
-            const val = this.value.trim().toLowerCase();
+        // 🔍 მუშაობს 2 ან მეტი სიმბოლოს აკრეფისას
+        if (query.length < 2) {
             suggestionBox.innerHTML = '';
-            if (cities.length === 0 || val.length < 2) return;
+            return;
+        }
 
-            // Try matching against:
-            // 1. Georgian name (city.name)
-            // 2. Latin → Georgian transliteration of input (valGeo)
-            // 3. English name (city.name_en) — if site is in English mode
-            let valGeo = latinToGeorgian(val);
-            const matches = cities.filter(city => {
-                const nameKa = city.name.toLowerCase();
-                const nameEn = (city.name_en || '').toLowerCase();
-                // Match Georgian name, transliterated input, or English name
-                return nameKa.includes(val) || nameKa.includes(valGeo) || nameEn.includes(val);
-            }).slice(0, 5);
+        debounceTimeout = setTimeout(() => {
+            const cleanQuery = transliterateForSearch(query);
+            
+            // ფილტრაცია: ეძებს როგორც ქართულ, ისე ინგლისურ/ლათინურ დასახელებებში
+            const filtered = citiesData.filter(city => {
+                const nameGe = city.name.toLowerCase();
+                const nameEn = city.name_en.toLowerCase();
+                const transGe = transliterateForSearch(city.name);
+                
+                return nameGe.includes(query.toLowerCase()) || 
+                       nameEn.includes(query.toLowerCase()) || 
+                       transGe.includes(cleanQuery);
+            }).slice(0, 5); // მაქსიმუმ 5 შედეგი გამოიტანოს
 
-            if (matches.length > 0) {
-                matches.forEach(city => {
+            suggestionBox.innerHTML = '';
+
+            if (filtered.length > 0) {
+                filtered.forEach(city => {
                     const div = document.createElement('div');
-                    div.className = 'list-group-item';
+                    div.className = 'list-group-item list-group-item-action suggestion-item';
                     
-                    // In English mode: show English name + English region
-                    // In Georgian mode: show Georgian name + Georgian region
-                    const displayName = (siteLang === 'en' && city.name_en) ? city.name_en : city.name;
-                    const displayRegion = (siteLang === 'en' && city.region_en) ? city.region_en : (city.region || '');
+                    // 🌍 ენის კონტროლი: ინგლისურ ვერსიაზე მხოლოდ ინგლისური ტექსტი, ქართულზე ქართული
+                    const isEn = '<?php echo $ai_lang; ?>' === 'en';
+                    const displayName = isEn ? city.name_en : city.name;
+                    const displayRegion = isEn ? (city.region_en || '') : (city.region || '');
                     
-                    div.innerHTML = `<strong>${displayName}</strong> <small style="color: #aaa;">| ${displayRegion}</small>`;
-                    
+                    div.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span><i class="fa-solid fa-location-dot me-2 text-info"></i><strong>${displayName}</strong></span>
+                            <small class="text-muted" style="font-size:0.75rem;">${displayRegion}</small>
+                        </div>
+                    `;
+
                     const selectCity = () => {
-                        if (typeof window.startLoading === 'function') window.startLoading();
+                        searchInput.value = displayName;
+                        suggestionBox.innerHTML = '';
+                        
                         localStorage.setItem('lat', city.lat);
                         localStorage.setItem('lon', city.lon);
-                        
-                        fetch('save_location.php', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ lat: city.lat, lon: city.lon })
-                        }).finally(() => {
-                            window.location.href = `index.php?lat=${city.lat}&lon=${city.lon}`;
-                        });
+                        localStorage.setItem('place_name', displayName);
+
+                        // ინახავს კუკებშიც სინქრონიზაციისთვის
+                        document.cookie = `user_lat=${city.lat}; path=/; max-age=31536000; SameSite=Lax`;
+                        document.cookie = `user_lon=${city.lon}; path=/; max-age=31536000; SameSite=Lax`;
+
+                        // გადადის არჩეულ ქალაქზე
+                        window.location.href = `index.php?lat=${city.lat}&lon=${city.lon}`;
                     };
 
                     div.onclick = selectCity;
@@ -1568,14 +1516,14 @@ function askQuickAI(question) {
                 });
             } else {
                 const div = document.createElement('div');
-                div.className = 'list-group-item no-result';
-                div.innerText = '<?php echo __('index_cityingeorgia_not_found'); ?> ✌️';
+                div.className = 'list-group-item no-result text-center py-3';
+                div.innerText = '<?php echo $ai_lang === "en" ? "City not found ✌️" : "ქალაქი ვერ მოიძებნა ✌️"; ?>';
                 suggestionBox.appendChild(div);
             }
-        }, 250);
+        }, 150); // debounce დრო აჩქარებულია უკეთესი გამოხმაურებისთვის
     });
 
-    // clear suggestions when clicking outside
+    // Suggestion ბოქსის დახურვა ეკრანზე სხვა ადგილას დაჭერისას
     document.addEventListener('click', (e) => {
         if (!suggestionBox.contains(e.target) && e.target !== searchInput) {
             suggestionBox.innerHTML = '';
@@ -1586,33 +1534,7 @@ function askQuickAI(question) {
 <script>
     window.GRUBELI_AUTO_PROMPT = <?php echo $autoPrompt ? 'true' : 'false'; ?>;
 </script>
-<script>
-function getCookie(name) {
-    let matches = document.cookie.match(new RegExp(
-        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-    ));
-    return matches ? decodeURIComponent(matches[1]) : undefined;
-}
-
-if (!getCookie('user_lat')) {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-                document.cookie = `user_lat=${lat}; path=/; max-age=86400; SameSite=Lax`;
-                document.cookie = `user_lon=${lon}; path=/; max-age=86400; SameSite=Lax`;
-                window.location.reload();
-            },
-            (error) => {
-                console.log("მომხმარებელმა უარი თქვა ლოკაციაზე ან შეცდომაა:", error.message);
-            }
-        );
-    }
-}
-</script>
 <?php require_once __DIR__ . '/footer.php'; ?>
-
 
 <script>
 (function() {

@@ -1,51 +1,91 @@
-<Files .env>
-    Order allow,deny
-    Deny from all
-</Files>
+# ─── Grubeli.ge - Performance & Security ───
 
-<Files .htaccess>
-    Order allow,deny
-    Deny from all
-</Files>
+# Enable GZIP compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/xml application/rss+xml image/svg+xml
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+    BrowserMatch ^Mozilla/4\.0[678] no-gzip
+    BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+</IfModule>
 
-
+# Browser caching for static assets (1 year for versioned files)
 <IfModule mod_expires.c>
     ExpiresActive On
-    
-    # ფოტოები (1 წელი)
     ExpiresByType image/jpg "access plus 1 year"
     ExpiresByType image/jpeg "access plus 1 year"
     ExpiresByType image/gif "access plus 1 year"
     ExpiresByType image/png "access plus 1 year"
     ExpiresByType image/webp "access plus 1 year"
-    
-    # CSS და JS (1 თვე)
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-    
-    # ფონტები
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType application/pdf "access plus 1 month"
+    ExpiresByType font/ttf "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
     ExpiresByType font/woff2 "access plus 1 year"
-    
-    # JSON — NO CACHE (cities.json, cache-ის განახლებისთვის)
-    ExpiresByType application/json "access plus 0 seconds"
+    ExpiresDefault "access plus 1 month"
 </IfModule>
 
-# PHP — NO CACHE (dynamic content)
+# Security headers
 <IfModule mod_headers.c>
-    <FilesMatch "\.(php|json)$">
-        Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
-        Header set Pragma "no-cache"
-        Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
-    </FilesMatch>
+    # Protect against XSS attacks
+    Header set X-XSS-Protection "1; mode=block"
+    # Prevent MIME-type sniffing
+    Header set X-Content-Type-Options "nosniff"
+    # Prevent clickjacking
+    Header set X-Frame-Options "SAMEORIGIN"
+    # Referrer policy
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    # Permissions policy (limit what APIs can be used)
+    Header set Permissions-Policy "geolocation=(self), microphone=(), camera=(), payment=()"
 </IfModule>
 
+# Block access to sensitive files
+<FilesMatch "\.(env|json|lock|md|txt|log|sql)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Deny from all
+    </IfModule>
+</FilesMatch>
 
+# Block access to hidden files (starting with .)
+<FilesMatch "^\.">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Deny from all
+    </IfModule>
+</FilesMatch>
 
+# Protect the cache directory from direct access
+RewriteRule ^cache/ - [F,L]
 
+# Redirect HTTP to HTTPS (uncomment on production)
+# <IfModule mod_rewrite.c>
+#     RewriteEngine On
+#     RewriteCond %{HTTPS} off
+#     RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+# </IfModule>
+
+# Custom error pages
 ErrorDocument 404 /errors/404.php
 ErrorDocument 500 /errors/500.php
 
+# Prevent directory listing
+Options -Indexes
 
-ErrorDocument 403 /errors/404.php
-
-php_value output_buffering 4096
+# PHP values (if allowed by hosting)
+<IfModule mod_php.c>
+    php_value max_execution_time 30
+    php_value max_input_time 30
+    php_value memory_limit 128M
+    php_value upload_max_filesize 2M
+    php_flag session.cookie_httponly On
+    php_flag session.use_only_cookies On
+    php_value session.gc_maxlifetime 86400
+</IfModule>

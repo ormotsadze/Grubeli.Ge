@@ -49,7 +49,21 @@ if ($rs > $re) $rs = (clone $re)->modify('-29 days');
 $start_date = $rs->format('Y-m-d');
 $end_date = $re->format('Y-m-d');
 
-$data = fetch_historical($lat, $lon, $start_date, $end_date);
+// კეშის გასაღების გენერირება
+$cache_key = get_cache_key('historical_range', $lat, $lon, $start_date, $end_date);
+
+// კეშის შემოწმება (ინახება 24 საათი)
+$cached_data = cache_get($cache_key, 86400); 
+
+if ($cached_data !== null) {
+    $data = $cached_data;
+} else {
+    // თუ კეშში არ არის, მხოლოდ მაშინ მივდივართ API-ზე
+    $data = fetch_historical($lat, $lon, $start_date, $end_date);
+    if ($data !== null) {
+        cache_set($cache_key, $data);
+    }
+}
 
 // Reverse-geocode (cached) და გადათარგმნა, თუ მომხმარებელი ინგლისურ ვერსიაზეა
 $placeName = get_location_name($lat, $lon);

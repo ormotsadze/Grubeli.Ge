@@ -2,6 +2,7 @@
 return [
     'app_title' => 'GRUBELI.GE',
     'app_title_sub' => 'ამინდი მარტივად',
+    'app_description' => 'ამინდის პროგნოზი საქართველოში',
     'my_location' => 'ჩემი ლოკაცია',
     'font_family' => 'BPG NinoMtavruli',
     'its_day' => 'დღეა',
@@ -167,6 +168,17 @@ return [
       'contact_official_apps_desc' => 'დაინსტალირეთ ოფიციალური აპი <b style="color: white">Grubeli.Ge</b>  <span class="version-badge">PRO</span>  (ჯერ-ჯერობით მხოლოდ Android-თვის) და დამატებით მიიღეთ პრემიუმ ფუნქციები.',
       'contact_official_apps_download' => 'Download Now',
       'contact_official_apps_google_play' => 'Google Play',
+
+
+
+    // --- SLEEP.PHP (კონფიდენციალურობის პოლიტიკა) ---
+    'sleep_title' => 'ძილისპირული',
+    'sleep_desc' => 'მოუსმინეთ ძილის წინ და დაიძინეთ მშვიდად. ძილისპირული მუსიკა, ბუნების ხმები და თბილი რჩევები უკეთესი ძილისთვის.',
+    'sleep_og_title' => 'ძილისპირული | Grubeli.ge',
+    'sleep_tw_title' => 'ძილისპირული - მშვიდი ძილი',
+    'sleep_tw_desc' => 'მოუსმინეთ ძილის წინ და დაიძინეთ მშვიდად. ძილისპირული მუსიკა, ბუნების ხმები და თბილი რჩევები უკეთესი ძილისთვის.',
+    
+
 
 
 ];
