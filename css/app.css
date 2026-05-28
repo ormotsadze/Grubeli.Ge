@@ -2224,3 +2224,152 @@ background: #13141b;
     opacity: 0.5;
     pointer-events: none;
 }
+
+
+
+
+
+/* === LIQUID GLASS ANDROID DIALOG === */
+.android-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(7, 9, 14, 0.4); /* ძალიან მსუბუქი მუქი ფონი, რათა ბლური გამოჩნდეს */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+}
+
+.android-dialog-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.android-dialog {
+    /* თხევადი მინის ბაზა */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+    backdrop-filter: blur(30px) saturate(140%);
+    -webkit-backdrop-filter: blur(30px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 28px; /* Android M3 Native Shape */
+    padding: 28px 24px;
+    width: 90%;
+    max-width: 320px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 40px rgba(13, 202, 240, 0.05);
+    transform: scale(0.9) translateY(15px);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+    color: #e2e8f0;
+}
+
+/* ზედაპირის პრიალა ანარეკლი */
+.android-dialog::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 35%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+}
+
+.android-dialog-overlay.show .android-dialog {
+    transform: scale(1) translateY(0);
+}
+
+/* შიდა ნეონის ნათება */
+.android-dialog-glow {
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 100px;
+    background: radial-gradient(circle, rgba(13, 202, 240, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.android-dialog-icon {
+    font-size: 1.6rem;
+    color: #0dcaf0; /* საიტის აქცენტის ფერი */
+    text-align: center;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 0 10px rgba(13, 202, 240, 0.3));
+}
+
+.android-dialog-title {
+    font-size: 1.35rem;
+    font-weight: 600;
+    text-align: center;
+    margin: 0 0 6px 0;
+    color: #fff;
+    letter-spacing: 0.2px;
+}
+
+.android-dialog-text {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    text-align: center;
+    margin: 0 0 24px 0;
+}
+
+/* მინის ენების სია */
+.android-lang-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.android-lang-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 16px 20px;
+    color: #e2e8f0;
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    outline: none;
+}
+
+.android-lang-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(13, 202, 240, 0.3);
+    box-shadow: 0 0 15px rgba(13, 202, 240, 0.1);
+}
+
+.android-lang-item:active {
+    transform: scale(0.98);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.android-lang-name {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ანდროიდის რადიო ღილაკის მინის ინტერპრეტაცია */
+.android-lang-radio {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.android-lang-item:hover .android-lang-radio {
+    border-color: #0dcaf0;
+    box-shadow: 0 0 8px rgba(13, 202, 240, 0.5);
+}

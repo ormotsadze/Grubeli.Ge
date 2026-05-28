@@ -77,7 +77,7 @@ include 'header.php';
         </div>
         <div class="service-box mb-3 p-3 border-purple-soft">
           <div class="d-flex justify-content-between align-items-center mb-1">
-            <h6 class="color-purple m-0"><i class="fas fa-robot me-2"></i>Groq / Llama 3.3</h6>
+            <h6 class="color-purple m-0"><i class="fas fa-robot me-2"></i>GPT 5 / GPT 4-O</h6>
             <span class="badge color-purple" style="background:rgba(138,43,226,0.2);">AI ასისტენტი</span>
           </div>
           <p class="small text-white-50 m-0">ამინდის ჭკვიანი ინტერპრეტაცია და პრაქტიკული რეკომენდაციები ქართულ ენაზე.</p>

@@ -76,6 +76,12 @@ if ($current_page == 'index.php' || $current_page == 'historical-weather.php') :
                 </div>
                 <span style="font-family: '<?php echo __('font_family'); ?>';"><?php echo __('drawermenu_holidays'); ?></span>
             </a>
+             <a href="sleep.php" class="drawer-link">
+                <div class="link-icon">
+          <i class="fa-solid fa-moon"></i>
+                </div>
+                <span style="font-family: '<?php echo __('font_family'); ?>';"><?php echo __('drawermenu_sleeptime'); ?></span>
+            </a>
  <a href="getapp.php" id="appDownloadLink" class="drawer-link getapp">
     <div class="link-icon app-icon">
         <i class="fa-brands fa-google-play"></i>

@@ -401,7 +401,7 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
             <i class="fa-solid fa-house-chimney-crack text-danger pulse-animation" style="font-size: 2rem;"></i>
         </div>
         <div>
-            <h5 class="m-0 text-white fw-bold" style="font-family: 'BPG NinoMtavruli', sans-serif;">
+            <h5 class="m-0 text-white fw-bold" style="font-family: '<?php echo __('font_family'); ?>';, sans-serif;">
                 <?php 
                     echo ($ai_lang === 'en' ? 'Attention: Earthquake!' : 'ყურადღება: მიწისძვრა!'); 
                 ?>

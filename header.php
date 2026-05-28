@@ -55,7 +55,7 @@ $en_url = $base_url . $current_path . '?' . http_build_query($en_query);
     
     <!-- CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/app.css?ver=1.1.1" rel="stylesheet">
+    <link href="css/app.css?ver=1.1.2" rel="stylesheet">
     <link href="icons/fontawesome/css/all.min.css?v-1.1.0" rel="stylesheet" media="print" onload="this.media='all'">
     
     <!-- Google Fonts: only load the weight we need -->
@@ -138,5 +138,98 @@ $en_url = $base_url . $current_path . '?' . http_build_query($en_query);
     })();
     </script>
   </head>
+
+<div id="android-lang-modal" class="android-dialog-overlay">
+    <div class="android-dialog">
+        <div class="android-dialog-glow"></div>
+        <div class="android-dialog-icon">
+            <i class="fa-solid fa-language"></i>
+        </div>
+        <h3 class="android-dialog-title">გასაგრძელებლად აირჩიეთ ენა</h3>
+        <p class="android-dialog-text">Select your preferred language to continue</p>
+        
+        <div class="android-lang-list">
+            <button class="android-lang-item" onclick="selectLanguage('ka')">
+                <span class="android-lang-name">ქართული</span>
+                <span class="android-lang-radio"></span>
+            </button>
+            <button class="android-lang-item" onclick="selectLanguage('en')">
+                <span class="android-lang-name">English</span>
+                <span class="android-lang-radio"></span>
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // უნიკალური სახელი ქუქისთვის
+    var cookieCheckName = "grubeli_lang_first_set"; 
+    var isCookieSaved = getAndroidLangCookie(cookieCheckName);
+
+    console.log("=== GRUBELI LANG CHECK ===");
+    console.log("ქუქი არსებობს?:", isCookieSaved);
+
+    /* გასწორებული ლოგიკა: თუ მომხმარებელს ქუქი არ აქვს, 
+       ფანჯარა აუცილებლად გამოჩნდება! 
+       საიტის მიერ ავტომატურად მიწერილი &lang=en მას ვეღარ დაბლოკავს.
+    */
+    if (!isCookieSaved) {
+        setTimeout(function() {
+            var modal = document.getElementById("android-lang-modal");
+            if (modal) {
+                modal.classList.add("show");
+                console.log("თხევადი მინის ფანჯარა წარმატებით გამოჩნდა.");
+            }
+        }, 500);
+    } else {
+        console.log("ფანჯარა არ გამოიძახა, რადგან ენა უკვე შენახულია ქუქიში.");
+    }
+});
+
+function selectLanguage(langCode) {
+    var cookieCheckName = "grubeli_lang_first_set";
+
+    // 1. მყარად ვწერთ ქუქიებს 365 დღით
+    setAndroidLangCookie(cookieCheckName, "true", 365);
+    setAndroidLangCookie("lang", langCode, 365);
+    setAndroidLangCookie("language", langCode, 365); 
+
+    // 2. ვხურავთ ფანჯარას ანიმაციით
+    var modal = document.getElementById("android-lang-modal");
+    if (modal) modal.classList.remove("show");
+
+    // 3. ვიღებთ მიმდინარე URL-ს (კოორდინატებიანად) და ვუცვლით მხოლოდ lang პარამეტრს
+    var currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('lang', langCode);
+
+    // გადამისამართება იძულებით ახალ მისამართზე
+    setTimeout(function() {
+        window.location.href = currentUrl.toString();
+    }, 200);
+}
+
+// დამხმარე ფუნქციები ქუქიებთან მუშაობისთვის
+function setAndroidLangCookie(name, value, days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax";
+}
+
+function getAndroidLangCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+</script>
+
   <body class="d-flex flex-column min-vh-100 premium-bg">
   <div id="loading-bar" style="position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: linear-gradient(to right, #0dcaf0, #0d6efd); box-shadow: 0 0 10px rgba(13, 202, 240, 0.7); z-index: 9999; transition: width 0.3s ease;"></div>

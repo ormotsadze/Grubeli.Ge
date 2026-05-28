@@ -20,16 +20,17 @@ include 'header.php';
       <div class="col-lg-8">
         <div class="mb-4">
           <i class="fas fa-briefcase me-3 text-info float-icon" style="font-size:clamp(2rem,5vw,3rem);"></i>
-          <h1 class="display-5 fw-bolder text-gradient-premium m-0">ვაკანსია</h1>
+          <h1 class="display-5 fw-bolder text-gradient-premium m-0"><?php echo $pageTitle; ?></h1>
         </div>
         <p class="lead text-white-80 fw-light">
-          <strong class="text-white">Grubeli.ge</strong> არის მცირე, მაგრამ ამბიციური გუნდი. ჩვენ ვქმნით საქართველოს ყველაზე ჭკვიან ამინდის სერვისს — და ყოველთვის მოხარული ვიქნებით ნიჭიერი ადამიანების მიღებით.
+          <strong class="text-white">Grubeli.ge</strong> 
+          <?php echo __('jobs_hero_title'); ?>
         </p>
       </div>
       <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
         <div class="status-pill d-inline-flex align-items-center">
-          <i class="fas fa-circle-dot me-2" style="color:#6c757d;"></i>
-          <span class="fw-bold" style="color:rgba(255,255,255,0.6);">ვაკანსია: 0</span>
+       
+          <span class="fw-bold" style="color:rgba(255,255,255,0.6);"><?php echo $pageTitle; ?>: 0</span>
         </div>
       </div>
     </div>
@@ -40,9 +41,9 @@ include 'header.php';
     <div class="empty-icon mx-auto mb-4">
       <i class="fas fa-mug-hot"></i>
     </div>
-    <h3 class="text-white mb-3">ამჟამად ღია ვაკანსია არ არის</h3>
+    <h3 class="text-white mb-3"><?php echo __('jobs_no_vacancies_title'); ?></h3>
     <p class="text-white-60 mb-0" style="max-width:480px;margin:0 auto;">
-      ჩვენ ვმუშაობთ პლატფორმის განვითარებაზე. როდესაც გუნდი გაიზრდება, პირველ რიგში აქ განვათავსებთ ვაკანსიებს. გამოგვიწერეთ სოციალურ ქსელებში, რომ გამოტოვება არ მოხდეს.
+      <?php echo __('jobs_no_vacancies_desc'); ?>
     </p>
   </div>
 
@@ -52,24 +53,24 @@ include 'header.php';
     <div class="col-md-4">
       <div class="premium-glass p-4 h-100 card-accent-cyan interactive-card text-center">
         <div class="icon-hexagon hex-cyan mx-auto mb-3"><i class="fas fa-rocket"></i></div>
-        <h5 class="text-white mb-2">სწრაფი განვითარება</h5>
-        <p class="small text-white-50">პატარა გუნდში ყოველი ადამიანი მნიშვნელოვანია — შენი გადაწყვეტილებები პირდაპირ პროდუქტში ჩანს.</p>
+        <h5 class="text-white mb-2"><?php echo __('jobs_values_1_title'); ?></h5>
+        <p class="small text-white-50"><?php echo __('jobs_values_1_desc'); ?></p>
       </div>
     </div>
 
     <div class="col-md-4">
       <div class="premium-glass p-4 h-100 card-accent-purple interactive-card text-center">
         <div class="icon-hexagon hex-purple mx-auto mb-3"><i class="fas fa-globe"></i></div>
-        <h5 class="text-white mb-2">რეალური პროდუქტი</h5>
-        <p class="small text-white-50">Grubeli.ge რეალური მომხმარებლებისთვის მუშაობს — შენი სამუშაო ყოველდღე ათასობით ადამიანს ემსახურება.</p>
+        <h5 class="text-white mb-2"><?php echo __('jobs_values_2_title'); ?></h5>
+        <p class="small text-white-50"><?php echo __('jobs_values_2_desc'); ?></p>
       </div>
     </div>
 
     <div class="col-md-4">
       <div class="premium-glass p-4 h-100 card-accent-emerald interactive-card text-center">
         <div class="icon-hexagon hex-emerald mx-auto mb-3"><i class="fas fa-handshake"></i></div>
-        <h5 class="text-white mb-2">მეგობრული გარემო</h5>
-        <p class="small text-white-50">ჩვენთვის მნიშვნელოვანია კომფორტული სამუშაო პირობები, პატივისცემა და ერთმანეთის მხარდაჭერა.</p>
+        <h5 class="text-white mb-2"><?php echo __('jobs_values_3_title'); ?></h5>
+        <p class="small text-white-50"><?php echo __('jobs_values_3_desc'); ?></p>
       </div>
     </div>
 
@@ -80,13 +81,13 @@ include 'header.php';
     <div class="ambient-glow glow-2" style="opacity:0.07;"></div>
     <div class="row align-items-center position-relative z-index-1">
       <div class="col-lg-8 mb-3 mb-lg-0">
-        <h3 class="text-white mb-2">გამოგვიგზავნე CV</h3>
-        <p class="text-white-60 mb-0">თუ გგონია, რომ გამოადგები Grubeli.ge-ს, ნუ დაელოდები ვაკანსიას — გამოგვიგზავნე CV და მოკლე წერილი იმის შესახებ, რა გინდა გააკეთო.</p>
+        <h3 class="text-white mb-2"><?php echo __('jobs_spontaneous_title'); ?></h3>
+        <p class="text-white-60 mb-0"><?php echo __('jobs_spontaneous_desc'); ?></p>
       </div>
       <div class="col-lg-4 text-lg-end">
-        <a href="mailto:info@grubeli.ge?subject=სპონტანური განაცხადი" class="btn-apply d-inline-flex align-items-center gap-2">
+        <a href="mailto:info@grubeli.ge?subject=<?php echo __('jobs_apply_subject'); ?>" class="btn-apply d-inline-flex align-items-center gap-2">
           <i class="fas fa-paper-plane"></i>
-          <span>CV-ს გამოგზავნა</span>
+          <span><?php echo __('jobs_spontaneous_button'); ?></span>
         </a>
       </div>
     </div>

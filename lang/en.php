@@ -45,6 +45,7 @@ return [
  // --- 1. footer.PHP (drawer menu) ---
   'drawermenu_home' => 'Home Page',
   'drawermenu_worldtime' => 'World Time',
+    'drawermenu_sleeptime' => 'Sleep Time',
   'drawermenu_holidays' => 'Holidays',
   'drawermenu_getapp' => 'Get App',
   'drawermenu_getappversion' => 'Android Version',
@@ -181,6 +182,24 @@ return [
     'sleep_tw_desc' => 'Listen to calming sounds before sleep and fall asleep gently. Sleep sounds, nature sounds, and soothing advice for better sleep.',
 
 
+       // --- 1.JOBSPHP (menu) ---
+ 'jobs_title' => 'Jobs',
+  'jobs_desc' => 'Join our team at Grubeli.ge. Learn about current job opportunities and submit your CV to apply for positions.',
+  'jobs_og_title' => 'Careers & Jobs | Grubeli.ge',
+  'jobs_tw_title' => 'Join Grubeli\'s Team',
+  'jobs_tw_desc' => 'We are looking for talented individuals. Check out current job openings and submit your resume.',
+   'jobs_hero_title' => ' Grubeli.ge is a small but ambitious team. We are building the smartest weather service in Georgia — and we are always happy to welcome talented people.',
+  'jobs_no_vacancies_title' => 'No Open Positions Available',
+  'jobs_no_vacancies_desc' => 'We are working on platform development. When our team grows, we will post new job openings here. Follow us on social media to stay updated.',
+   'jobs_values_1_title' => 'Fast Growth',  
+    'jobs_values_1_desc' => 'In a small team, every person matters — your decisions have a direct impact on the product.',
+      'jobs_values_2_title' => 'Real Product',
+    'jobs_values_2_desc' => 'Grubeli.ge serves real users — your work impacts thousands of people daily.',
+    'jobs_values_3_title' => 'Friendly Environment',
+    'jobs_values_3_desc'  => 'We value comfortable working conditions, respect, and mutual support.', 
+      'jobs_spontaneous_title' => 'Submit Your CV',
+    'jobs_spontaneous_desc' => 'If you think you would be a good fit for Grubeli.ge, don\'t wait for job openings — submit your CV and a brief message about what you\'d like to do.',
+      'jobs_apply_subject' => 'CV Submission',
+          'jobs_spontaneous_button' => 'Submit CV',
 
-
-];
+  ];
