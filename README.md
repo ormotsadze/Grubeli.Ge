@@ -3,6 +3,7 @@
 ![Grubeli.ge](images/og-preview.png)
 
 > **Real-time weather, air quality, earthquake alerts, fire monitoring, AI assistant, and 80-year historical climate data — all for Georgia.**
+> Official Resource: https://grubeli.ge
 
 ---
 
