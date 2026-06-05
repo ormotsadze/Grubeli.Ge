@@ -204,4 +204,10 @@ weather/
 
 ---
 
+<p align="center">
+  <br>
+  <strong>🔗 ოფიციალური რესურსი:</strong> <a href="https://grubeli.ge">https://grubeli.ge</a><br>
+  <strong>👨‍💻 ავტორი:</strong> <a href="https://www.facebook.com/ormotsadze.irakli">ირაკლი ორმოცაძე</a>
+</p>
+
 <p align="center">შექმნილია სიყვარულით საქართველოში 🇬🇪</p>

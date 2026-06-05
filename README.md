@@ -203,4 +203,10 @@ This project is free software: you can redistribute it and/or modify it under th
 
 ---
 
+<p align="center">
+  <br>
+  <strong>🔗 Official Resource:</strong> <a href="https://grubeli.ge">https://grubeli.ge</a><br>
+  <strong>👨‍💻 Author:</strong> <a href="https://www.facebook.com/ormotsadze.irakli">Irakli Ormotsadze</a>
+</p>
+
 <p align="center">Made with ❤️ in Georgia 🇬🇪</p>
