@@ -54,7 +54,7 @@ import kotlin.math.roundToInt
 
 object WeatherUtils {
     const val PREFS_NAME = "WeatherPrefs"
-    const val BASE_URL = "https://mprof.ge/test/index.php"
+    const val BASE_URL = "https://grubeli.ge"
 
     fun cleanCityName(name: String): String {
         return name.trim()

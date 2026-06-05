@@ -44,7 +44,13 @@ include 'header.php';
           <div class="icon-hexagon hex-cyan me-3"><i class="fas fa-bullseye"></i></div>
           1. ჩვენი მისია
         </h3>
-        <p class="text-white-60 mb-4">ჩვენი მიზანია, მომხმარებელს მივაწოდოთ არა მხოლოდ ციფრები, არამედ <strong class="text-white">პრაქტიკული პასუხები</strong> ყოველდღიურ კითხვებზე — ჩავიცვა ქურთუქი? გამოვიდე სირბილზე? გაშრება სარეცხი?</p>
+        <p class="text-white-60 mb-4">ჩვენი მიზანია, მომხმარებელს მივაწოდოთ არა მხოლოდ ციფრები, არამედ <strong class="text-white">
+		პრაქტიკული პასუხები</strong> სიმშვიდის და უსაფრთხოების განცდა ყოველდღიურობაში.
+		ჩვენ გვჯერა, რომ ინფორმაცია მაშინ არის ძვირფასი, როდესაც ის დროული და გასაგებია. სწორედ ამიტომ, ჩვენი მისიაა 
+		შევქმნათ საიმედო ციფრული სივრცე, რომელიც რეალურ დროში დაამუშავებს გლობალურ მონაცემებს და აქცევს მათ მარტივ,
+		პრაქტიკულ გაფრთხილებებად. ჩვენ არ ვპროგნოზირებთ უბრალოდ ამინდს ან სტიქიას, ჩვენ გეხმარებით იყოთ ერთი ნაბიჯით წინ და 
+		 დაგეგმოთ თქვენი დღე სიურპრიზების გარეშე.
+		</p>
         <div class="data-item">
           <i class="fas fa-location-dot text-info"></i>
           <div>
@@ -52,11 +58,31 @@ include 'header.php';
             <p class="small text-white-50 mb-0">სპეციალურად შექმნილია საქართველოსთვის — ლოკაციის ვალიდაცია, ქართული ენა, ადგილობრივი კონტექსტი.</p>
           </div>
         </div>
+		 <div class="data-item mt-2">
+		 <i class="fa-brands fa-adversal text-info"></i>
+        
+          <div>
+            <h6 class="text-white mb-1">არავითარი რეკლამა !</h6>
+            <p class="small text-white-50 mb-0">
+			ჩვენს სისტემაში (ვებსაიტზე, აპში, სოც.ქსელების გვერდებზე) არ არის და არასოდეს იქნება (!) რეკლამა. გვჯერა, რომ მოწოდებული ინფორმაცია უნდა იყოს
+			სუფთა, გასაგები და ლამაზი.
+			</p>
+          </div>
+        </div>
         <div class="data-item mt-2">
           <i class="fas fa-brain text-info"></i>
           <div>
             <h6 class="text-white mb-1">AI-powered ანალიზი</h6>
-            <p class="small text-white-50 mb-0">სისტემა მეტეოროლოგიურ მონაცემებს გარდაქმნის მარტივ, ადამიანურ ენაზე პასუხებად Groq / Llama 3.3-ის დახმარებით.</p>
+            <p class="small text-white-50 mb-0">სისტემა მეტეოროლოგიურ მონაცემებს გარდაქმნის მარტივ, ადამიანურ ენაზე პასუხებად GPT 5 / GPT‑4o-ის დახმარებით.</p>
+          </div>
+        </div>
+		
+		 <div class="data-item mt-2">
+         
+		  <i class="fa-solid fa-bell text-info"></i>
+          <div>
+            <h6 class="text-white mb-1">სიზუსტე და სისწრაფე</h6>
+            <p class="small text-white-50 mb-0">მიიღოთ შეტყობინება მაშინვე, როცა ეს ყველაზე მეტად გჭირდებათ.Android აპში ჩვენ შეგატყობინებთ არა მხოლოდ საფრთხის, არამედ სასიამოვნო დღეებისა და უქმეების შესახებაც, რათა თქვენი ცხოვრება უფრო კომფორტული გახდეს.</p>
           </div>
         </div>
       </div>
@@ -68,6 +94,12 @@ include 'header.php';
           <div class="icon-hexagon hex-purple me-3"><i class="fas fa-microchip"></i></div>
           2. ტექნოლოგიური ბაზა
         </h3>
+	 <p class="text-white-60 mb-4">ჩვენი სერვისის WEB და მობილური ვერსია არის უფასო და რეკლამის გარეშე <strong class="text-white">
+		და ყოველთვის ასე იქნება ! </strong> თქვენ შეგიძლიათ მათი გამოყენება რამდენი ხანის გსურთ. ჩვენი Android აპლიკაცია კი ფასიანია და ღირს სიმბოლური ფასი. 
+		ეს აუცილებელია იმისათვის , რომ უბრალოდ ვიარსებოთ და ისევ მოგაწოდოთ თქვენ და სხვებს სერვისი, მათ შორის უფასოდაც. Android აპლიკაცია ხელმისაწვდომია ოფიციალურად Google Play-ზე 
+		(<a href="getapp.php" class="text-info">იხილეთ აპის გვერდი</a>) დიდი მადლობა გაგებისთვის.
+		</p>
+	
         <div class="service-box mb-3 p-3 border-cyan-soft">
           <div class="d-flex justify-content-between align-items-center mb-1">
             <h6 class="text-info m-0"><i class="fas fa-cloud-sun me-2"></i>Open-Meteo</h6>
@@ -80,7 +112,7 @@ include 'header.php';
             <h6 class="color-purple m-0"><i class="fas fa-robot me-2"></i>GPT 5 / GPT 4-O</h6>
             <span class="badge color-purple" style="background:rgba(138,43,226,0.2);">AI ასისტენტი</span>
           </div>
-          <p class="small text-white-50 m-0">ამინდის ჭკვიანი ინტერპრეტაცია და პრაქტიკული რეკომენდაციები ქართულ ენაზე.</p>
+          <p class="small text-white-50 m-0">ამინდის ჭკვიანი ინტერპრეტაცია და პრაქტიკული რეკომენდაციები ქართულ და ინგლისურ ენებზე.</p>
         </div>
         <div class="service-box mb-3 p-3 border-amber-soft">
           <div class="d-flex justify-content-between align-items-center mb-1">
@@ -91,10 +123,10 @@ include 'header.php';
         </div>
    <div class="service-box p-3 border-emerald-soft">
           <div class="d-flex justify-content-between align-items-center mb-1">
-            <h6 class="color-emerald m-0"><i class="fas fa-map-pin me-2"></i>OSM Nominatim + Nager.at</h6>
+            <h6 class="color-emerald m-0"><i class="fas fa-map-pin me-2"></i>Nager.at</h6>
             <span class="badge color-emerald" style="background:rgba(32,201,151,0.2);">გეო + უქმეები</span>
           </div>
-          <p class="small text-white-50 m-0">ქალაქის სახელი ქართულად და სახელმწიფო დღესასწაულები.</p>
+          <p class="small text-white-50 m-0">ერთი დღით ადრე, თქვენ მიიღებთ შეტყობინებას სახელმწიფო დღესასწაულების შესახებ.</p>
         </div>
         <div class="service-box mt-3 p-3 border-danger-soft">
           <div class="d-flex justify-content-between align-items-center mb-1">
@@ -106,7 +138,7 @@ include 'header.php';
       </div>
     </div>
 
-    <div class="col-lg-6 reveal-up delay-3">
+    <div class="col-lg-12 reveal-up delay-3">
       <div class="premium-glass p-5 h-100 card-accent-emerald interactive-card">
         <h3 class="mb-4 text-white d-flex align-items-center">
           <div class="icon-hexagon hex-emerald me-3"><i class="fas fa-star"></i></div>
@@ -134,24 +166,7 @@ include 'header.php';
       </div>
     </div>
 
-    <div class="col-lg-6 reveal-up delay-3">
-      <div class="premium-glass p-5 h-100 card-accent-orange interactive-card">
-        <h3 class="mb-4 text-white d-flex align-items-center">
-          <div class="icon-hexagon hex-orange me-3"><i class="fas fa-map-marked-alt"></i></div>
-          4. რატომ Grubeli.ge?
-        </h3>
-        <p class="text-white-80 mb-4">განსხვავებით სტანდარტული საერთაშორისო აპლიკაციებისგან, ჩვენ ყურადღებას ვამახვილებთ <strong>ლოკალურ კონტექსტზე</strong> — ქართული ენა, საქართველოს გეოგრაფია, ადგილობრივი საჭიროებები.</p>
-        <div class="row g-3">
-          <div class="col-6"><div class="use-pill text-center"><i class="fas fa-mountain text-warning d-block mb-2 fs-4"></i><span class="text-white-80 small">მთაში ლაშქრობა</span></div></div>
-          <div class="col-6"><div class="use-pill text-center"><i class="fas fa-city text-info d-block mb-2 fs-4"></i><span class="text-white-80 small">ქალაქში სეირნობა</span></div></div>
-          <div class="col-6"><div class="use-pill text-center"><i class="fas fa-bicycle text-success d-block mb-2 fs-4"></i><span class="text-white-80 small">ველოსიპედი</span></div></div>
-          <div class="col-6"><div class="use-pill text-center"><i class="fas fa-person-running color-emerald d-block mb-2 fs-4"></i><span class="text-white-80 small">სირბილი</span></div></div>
-          <div class="col-6"><div class="use-pill text-center"><i class="fas fa-umbrella-beach text-warning d-block mb-2 fs-4"></i><span class="text-white-80 small">სანაპირო / ბათუმი</span></div></div>
-          <div class="col-6"><div class="use-pill text-center"><i class="fas fa-car text-white-50 d-block mb-2 fs-4"></i><span class="text-white-80 small">მგზავრობა</span></div></div>
-        </div>
-      </div>
-    </div>
-
+   
   </div>
 </main>
 

@@ -282,7 +282,7 @@ if ($moon_phase < 0.0625 || $moon_phase >= 0.9375) {
       </div>
     </div>
     <div class="app-banner-right">
-      <a href="getapp.php" class="app-banner-btn" id="app-banner-download">
+      <a href="uploads/grubeli.ge.apk" class="app-banner-btn" id="app-banner-download">
         <i class="fa-brands fa-google-play me-1"></i> <?php echo __('index_getapp'); ?>
       </a>
       <button class="app-banner-close" id="app-banner-close" aria-label="<?php echo ($ai_lang === 'en' ? 'Close' : 'დახურვა'); ?>">&times;</button>
@@ -392,7 +392,21 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
     </div>
 </div>
 <?php endif; ?>
-<?php if ($eqAlert['active']): ?>
+<?php 
+// 1. ვიღებთ მიწისძვრის მონაცემებს და მიმდინარე ენას
+$eqAlert = checkEarthquakeRisk(); 
+$active_lang = get_current_lang(); // 'ka' ან 'en'
+
+// 2. ვამზადებთ ცვლადს ლოკაციისთვის
+$safe_place = '';
+
+if ($eqAlert && $eqAlert['active'] && !empty($eqAlert['place'])) { 
+    // აქ გადაეცემა სწორი ინგლისური სახელი API-დან და ითარგმნება საიტის მიმდინარე ენაზე
+    $safe_place = htmlspecialchars(translate_place_name($eqAlert['place']), ENT_QUOTES, 'UTF-8'); 
+}
+?>
+
+<?php if ($eqAlert && $eqAlert['active']): ?> 
 <div class="alert-earthquake premium-glass p-3 mb-4 mt-2 reveal-up" 
      style="border-left: 5px solid #ff4757; background: rgba(255, 71, 87, 0.15);">
     
@@ -401,26 +415,20 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
             <i class="fa-solid fa-house-chimney-crack text-danger pulse-animation" style="font-size: 2rem;"></i>
         </div>
         <div>
-            <h5 class="m-0 text-white fw-bold" style="font-family: '<?php echo __('font_family'); ?>';, sans-serif;">
+            <h5 class="m-0 text-white fw-bold" style="font-family: '<?php echo __('font_family'); ?>', sans-serif;">
                 <?php 
-                    echo ($ai_lang === 'en' ? 'Attention: Earthquake!' : 'ყურადღება: მიწისძვრა!'); 
+                    echo ($active_lang === 'en' ? 'Attention: Earthquake!' : 'ყურადღება: მიწისძვრა!'); 
                 ?>
             </h5>
             <p class="m-0 text-white-50" style="font-size: 0.9rem;">
                 <?php 
-                    $magnitude = htmlspecialchars((string)$eqAlert['mag'], ENT_QUOTES, 'UTF-8');
-                    $time_str = htmlspecialchars($eqAlert['time'] ?? '', ENT_QUOTES, 'UTF-8');
-                    
-                    $placeName = $georgianPlace;
-                    if ($ai_lang === 'en') {
-                        $placeName = translate_place_name($georgianPlace);
-                    }
-                    $placeName = htmlspecialchars($placeName, ENT_QUOTES, 'UTF-8');
+                    $magnitude = htmlspecialchars((string)$eqAlert['mag'], ENT_QUOTES, 'UTF-8'); 
+                    $time_str = htmlspecialchars($eqAlert['time'] ?? '', ENT_QUOTES, 'UTF-8'); 
 
-                    if ($ai_lang === 'en') {
-                        echo "Detected <strong>" . $magnitude . "</strong> magnitude tremors: " . $placeName . " (" . $time_str . ")";
+                    if ($active_lang === 'en') {
+                        echo "Detected <strong>" . $magnitude . "</strong> magnitude tremors: " . $safe_place . " (" . $time_str . ")";
                     } else {
-                        echo "დაფიქსირდა <strong>" . $magnitude . "</strong> მაგნიტუდის ბიძგები: " . $placeName . " (" . $time_str . ")";
+                        echo "დაფიქსირდა <strong>" . $magnitude . "</strong> მაგნიტუდის ბიძგები: " . $safe_place . " (" . $time_str . ")";
                     }
                 ?>
             </p>
@@ -462,7 +470,7 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
 // Determine day/night background
 date_default_timezone_set('Asia/Tbilisi');
 $hour = (int)date('H');
-if ($hour >= 6 && $hour < 20) {
+if ($hour >= 6 && $hour < 22) {
     $card_bg = 'images/widget_bg_day_image_v2.png';
 } else {
     $card_bg = 'images/widget_bg_night_image_v2.png';

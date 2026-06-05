@@ -1,0 +1,12 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/splash_logo_base">
+
+    <target
+        android:name="logo_group"
+        android:animation="@animator/cloud_animation" />
+
+    <target
+        android:name="pro_badge_group"
+        android:animation="@animator/cloud_animation" />
+
+</animated-vector>

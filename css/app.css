@@ -1623,7 +1623,7 @@ background: #13141b;
         inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
-/* ტექსტის გრადიენტი (თუ უკვე გაქვს, არ დააკოპირო) */
+
 .text-gradient-premium {
     background: linear-gradient(135deg, #ffffff 10%, #a5b4fc 90%);
     -webkit-background-clip: text;

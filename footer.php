@@ -82,7 +82,7 @@ if ($current_page == 'index.php' || $current_page == 'historical-weather.php') :
                 </div>
                 <span style="font-family: '<?php echo __('font_family'); ?>';"><?php echo __('drawermenu_sleeptime'); ?></span>
             </a>
- <a href="getapp.php" id="appDownloadLink" class="drawer-link getapp">
+ <a href="uploads/grubeli.ge.apk" id="appDownloadLink" class="drawer-link getapp">
     <div class="link-icon app-icon">
         <i class="fa-brands fa-google-play"></i>
     </div>

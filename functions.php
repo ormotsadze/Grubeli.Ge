@@ -694,63 +694,68 @@ foreach ($allHolidays as $h) {
 }
 
 // ─── EARTHQUAKES ────────────────────────────────────────────────────────
-
 function checkEarthquakeRisk() {
     $cacheFile = cache_dir() . '/earthquake_alert.json';
-
-    if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < CACHE_TTL_EARTHQUAKE)) {
-        return json_decode(file_get_contents($cacheFile), true) ?? ['active' => false];
+    
+    // თუ ქეში არსებობს და 30 წუთზე ახალია, ვიყენებთ ქეშს
+    if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < 1800)) {
+        return json_decode(file_get_contents($cacheFile), true);
     }
 
-    $url = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson"
-         . "&starttime=" . date('Y-m-d', strtotime('-1 day'))
-         . "&minmagnitude=2.5";
+    $alertData = [
+        'active' => false,
+        'mag'    => 0,
+        'place'  => '',
+        'time'   => ''
+    ];
 
-    $responses = multi_http_get(['eq' => $url], 10, false);
+    $today = date('Y-m-d');
+    
+    // სამუშაო რეჟიმისთვის ვაყენებთ 4.0 მაგნიტუდას
+    $minMagnitude = "4.0"; 
+    
+    $url = "https://earthquake.usgs.gov/fdsnws/event/1/query?" . http_build_query([
+        'format'       => 'geojson',
+        'starttime'    => $today,
+        'minmagnitude' => $minMagnitude,
+        'minlatitude'  => '40.0',
+        'maxlatitude'  => '44.5',
+        'minlongitude' => '39.0',
+        'maxlongitude' => '47.0'
+    ]);
 
-    $alertData = ['active' => false, 'mag' => 0, 'place' => '', 'time' => ''];
+    $options = [
+        "http" => [
+            "method" => "GET",
+            "header" => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)\r\n",
+            "timeout" => 15
+        ]
+    ];
+    $context = stream_context_create($options);
+    $response = @file_get_contents($url, false, $context);
 
-    if (isset($responses['eq'])) {
-        $data = json_decode($responses['eq'], true);
-        if (isset($data['features']) && is_array($data['features'])) {
-            foreach ($data['features'] as $event) {
-                $props  = $event['properties'];
-                $coords = $event['geometry']['coordinates'];
+    if ($response) {
+        $data = json_decode($response, true);
+        if (isset($data['features']) && !empty($data['features'])) {
+            // ავიღოთ ბოლო მომხდარი მიწისძვრა
+            $event = $data['features'][0]; 
+            $props = $event['properties'];
 
-                if ($coords[1] >= 40.0 && $coords[1] <= 44.0 &&
-                    $coords[0] >= 39.0 && $coords[0] <= 47.0) {
-                    if ($props['mag'] >= 4.0) {
-                        $alertData = [
-                            'active' => true,
-                            'mag'    => $props['mag'],
-                            'place'  => $props['place'] ?? '',
-                            'time'   => date('H:i', intval($props['time'] / 1000))
-                        ];
-                        break;
-                    }
-                }
-            }
+            $alertData = [
+                'active' => true,
+                'mag'    => $props['mag'],
+                'place'  => $props['place'] ?? '',
+                'time'   => date('H:i', intval($props['time'] / 1000))
+            ];
         }
-        file_put_contents($cacheFile, json_encode($alertData));
     }
 
+    // ვინახავთ პასუხს ქეშში
+    file_put_contents($cacheFile, json_encode($alertData));
     return $alertData;
 }
 
-$eqAlert = checkEarthquakeRisk();
-
-function translateLocation($place) {
-    $search  = ['/\bGeorgia\b/', '/\bof\b\s*/', '/\bEast\b/', '/\bWest\b/',
-                '/\bNorth\b/', '/\bSouth\b/', '/\bkm\b/'];
-    $replace = ['საქართველო', '', 'აღმოსავლეთ', 'დასავლეთ',
-                'ჩრდილოეთ', 'სამხრეთ', 'კმ'];
-    return trim(preg_replace($search, $replace, $place));
-}
-
-$georgianPlace = translateLocation($eqAlert['place']);
-
 // ─── FIRE RISK ──────────────────────────────────────────────────────────
-
 function checkFireRisk($map_key) {
     $cacheFile = cache_dir() . '/fire_alerts.json';
 
@@ -766,41 +771,36 @@ function checkFireRisk($map_key) {
     $url = "https://firms.modaps.eosdis.nasa.gov/api/area/csv/" . $map_key . "/VIIRS_SNPP_NRT/" . $west . "," . $south . "," . $east . "," . $north . "/1";
 
     $responses = multi_http_get(['fire' => $url], 15, false);
-
     $firePoints = [];
 
     if (isset($responses['fire']) && strlen($responses['fire']) > 50) {
         $lines = explode("\n", trim($responses['fire']));
-        $headers = str_getcsv(array_shift($lines));
+        $headers = str_getcsv(array_shift($lines), ',', '"', '\\');
 
         foreach ($lines as $line) {
-            $data = str_getcsv($line);
+            $data = str_getcsv($line, ',', '"', '\\');
             if (count($data) === count($headers)) {
                 $row = array_combine($headers, $data);
+                
                 $confidenceRaw = strtolower($row['confidence']);
                 $brightnessK = floatval($row['bright_ti4']);
 
-                if ($confidenceRaw === 'h' && $brightnessK > 325) {
-                    $tempC = round($brightnessK - 273.15);
-                    $confText = 'ღია ხანძარი';
+                if (($confidenceRaw === 'h' || $confidenceRaw === 'n') && $brightnessK > 300) {
+                    
                     $lat_fire = floatval($row['latitude']);
                     $lng_fire = floatval($row['longitude']);
 
-                    if ($lng_fire < 41.5) {
-                        $region = "დასავლეთ საქართველო";
-                    } elseif ($lng_fire > 44.5) {
-                        $region = "კახეთის რეგიონი";
-                    } elseif ($lat_fire < 41.8) {
-                        $region = "სამხრეთ საქართველო";
-                    } else {
-                        $region = "შიდა ქართლი / მცხეთა-მთიანეთი";
-                    }
+                    // რეგიონები ინგლისურად
+                    if ($lng_fire < 41.5) { $region = "Western Georgia"; }
+                    elseif ($lng_fire > 44.5) { $region = "Kakheti region"; }
+                    elseif ($lat_fire < 41.8) { $region = "Southern Georgia"; }
+                    else { $region = "Shida Kartli / Mtskheta-Mtianeti"; }
 
                     $firePoints[] = [
                         'lat'    => $lat_fire,
                         'lng'    => $lng_fire,
-                        'temp'   => $tempC,
-                        'conf'   => $confText,
+                        'temp'   => round($brightnessK - 273.15),
+                        'conf'   => ($confidenceRaw === 'h' ? 'High' : 'Nominal'),
                         'region' => $region,
                         'time'   => $row['acq_time']
                     ];
@@ -819,8 +819,17 @@ function checkFireRisk($map_key) {
     file_put_contents($cacheFile, json_encode($result));
     return $result;
 }
-
 // ─── WEATHER ALERTS ─────────────────────────────────────────────────────
+function get_weather_data() {
+    // შესწორებული URL: ზუსტი პარამეტრებით (weather_code და wind_speed_10m)
+    $url = "https://api.open-meteo.com/v1/forecast?latitude=41.7151&longitude=44.8271&current=weather_code,wind_speed_10m&hourly=weather_code,wind_speed_10m";
+    
+    $response = @file_get_contents($url);
+    if ($response) {
+        return json_decode($response, true);
+    }
+    return null;
+}
 
 function get_weather_alert($weather) {
     $current = $weather['current'] ?? null;
@@ -828,12 +837,12 @@ function get_weather_alert($weather) {
     
     if (!$current || !$hourly) return null;
 
-    // Open-Meteo uses 'weathercode' in current_weather and 'weathercode' in hourly
-    $current_code = $current['weathercode'] ?? $current['weather_code'] ?? 0;
-    $current_wind = $current['windspeed'] ?? $current['wind_speed_10m'] ?? 0;
+    // Open-Meteo current მონაცემების წაკითხვა
+    $current_code = $current['weather_code'] ?? 0;
+    $current_wind = $current['wind_speed_10m'] ?? 0;
 
     $is_storm_now = in_array($current_code, [95, 96, 99]);
-    $is_windy_now = $current_wind >= 50;
+    $is_windy_now = $current_wind >= 50; // ძლიერი ქარი (50 კმ/სთ და მეტი)
 
     if ($is_storm_now || $is_windy_now) {
         return [
@@ -845,17 +854,18 @@ function get_weather_alert($weather) {
         ];
     }
 
+    // მომდევნო 12 საათის შემოწმება
     for ($i = 1; $i <= 12; $i++) {
-        // Open-Meteo hourly data uses 'weathercode' (not 'weather_code') and 'windspeed_10m'
-        $h_code = $hourly['weathercode'][$i] ?? $hourly['weather_code'][$i] ?? 0;
-        $h_wind = $hourly['windspeed_10m'][$i] ?? $hourly['wind_speed_10m'][$i] ?? 0;
+        $h_code = $hourly['weather_code'][$i] ?? 0;
+        $h_wind = $hourly['wind_speed_10m'][$i] ?? 0;
 
         if (in_array($h_code, [95, 96, 99]) || $h_wind >= 50) {
+            $is_storm_future = in_array($h_code, [95, 96, 99]);
             return [
                 'type' => 'warning',
-                'title' => in_array($h_code, [95, 96, 99]) ? "მოსალოდნელია შტორმი" : "მოსალოდნელია ძლიერი ქარი",
+                'title' => $is_storm_future ? "მოსალოდნელია შტორმი" : "მოსალოდნელია ძლიერი ქარი",
                 'status' => "მომდევნო 12 სთ-ში",
-                'icon' => in_array($h_code, [95, 96, 99]) ? "fa-cloud-bolt" : "fa-wind",
+                'icon' => $is_storm_future ? "fa-cloud-bolt" : "fa-wind",
                 'wind' => round($h_wind)
             ];
         }
