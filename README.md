@@ -3,8 +3,6 @@
 ![Grubeli.ge](images/og-preview.png)
 
 > **Real-time weather, air quality, earthquake alerts, fire monitoring, AI assistant, and 80-year historical climate data — all for Georgia.**
-> Official Resource: https://grubeli.ge
-> Author: Irakli Ormotsadze https://www.facebook.com/ormotsadze.irakli
 
 ---
 
@@ -49,7 +47,7 @@
 | [USGS](https://earthquake.usgs.gov/) | Earthquake alerts | 900s |
 | [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/) | Fire alerts | 3600s |
 | [Nager.at](https://date.nager.at/) | Georgian holidays | ~365d |
-| [Groq](https://groq.com/) | AI assistant (Llama 3.3) | None |
+| [OpenAI](https://openai.com/) | AI assistant (GPT 5 / GPT‑4o) | None |
 
 ### Android
 - **Kotlin** — WebView wrapper with native splash screen
@@ -199,19 +197,18 @@ This project is free software: you can redistribute it and/or modify it under th
 - [OpenStreetMap](https://www.openstreetmap.org/) / Nominatim for geocoding
 - [USGS](https://earthquake.usgs.gov/) for earthquake data
 - [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/) for fire alerts
-- [Groq](https://groq.com/) for AI inference
+- [OpenAI](https://openai.com/) for AI inference
 - [BPG Fonts](https://fonts.ge/) for Georgian typefaces
 - [Bootstrap 5](https://getbootstrap.com/) for responsive framework
 
 ---
 
-<<<<<<< HEAD
 <p align="center">
   <br>
   <strong>🔗 Official Resource:</strong> <a href="https://grubeli.ge">https://grubeli.ge</a><br>
   <strong>👨‍💻 Author:</strong> <a href="https://www.facebook.com/ormotsadze.irakli">Irakli Ormotsadze</a>
 </p>
 
-=======
->>>>>>> 69294654474dc6192d714eebae44f020d5a02805
+
 <p align="center">Made with ❤️ in Georgia 🇬🇪</p>
+    

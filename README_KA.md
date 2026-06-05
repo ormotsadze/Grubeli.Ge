@@ -47,7 +47,7 @@
 | [USGS](https://earthquake.usgs.gov/) | მიწისძვრების გაფრთხილებები | 900წმ |
 | [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/) | ხანძრების გაფრთხილებები | 3600წმ |
 | [Nager.at](https://date.nager.at/) | ქართული დღესასწაულები | ~365დღ |
-| [Groq](https://groq.com/) | AI ასისტენტი (Llama 3.3) | არა |
+| [OpenAI](https://openai.com/) | AI ასისტენტი (GPT 5 / GPT‑4o) | არა |
 
 ### Android
 - **Kotlin** — WebView გარსი ნეიტივ splash ეკრანით
@@ -198,7 +198,7 @@ weather/
 - [OpenStreetMap](https://www.openstreetmap.org/) / Nominatim გეოკოდირებისთვის
 - [USGS](https://earthquake.usgs.gov/) მიწისძვრების მონაცემებისთვის
 - [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/) ხანძრების გაფრთხილებისთვის
-- [Groq](https://groq.com/) AI ინფერენციისთვის
+- [OpenAI](https://openai.com/) AI ინფერენციისთვის
 - [BPG Fonts](https://fonts.ge/) ქართული შრიფტებისთვის
 - [Bootstrap 5](https://getbootstrap.com/) რესპონსივ ფრეიმვორკისთვის
 
