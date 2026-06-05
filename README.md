@@ -3,6 +3,8 @@
 ![Grubeli.ge](images/og-preview.png)
 
 > **Real-time weather, air quality, earthquake alerts, fire monitoring, AI assistant, and 80-year historical climate data — all for Georgia.**
+> Official Resource: https://grubeli.ge
+> Author: Irakli Ormotsadze https://www.facebook.com/ormotsadze.irakli
 
 ---
 
@@ -203,10 +205,13 @@ This project is free software: you can redistribute it and/or modify it under th
 
 ---
 
+<<<<<<< HEAD
 <p align="center">
   <br>
   <strong>🔗 Official Resource:</strong> <a href="https://grubeli.ge">https://grubeli.ge</a><br>
   <strong>👨‍💻 Author:</strong> <a href="https://www.facebook.com/ormotsadze.irakli">Irakli Ormotsadze</a>
 </p>
 
+=======
+>>>>>>> 69294654474dc6192d714eebae44f020d5a02805
 <p align="center">Made with ❤️ in Georgia 🇬🇪</p>
