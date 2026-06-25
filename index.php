@@ -477,9 +477,9 @@ if ($eqAlert && $eqAlert['active'] && !empty($eqAlert['place'])) {
 date_default_timezone_set('Asia/Tbilisi');
 $hour = (int)date('H');
 if ($hour >= 6 && $hour < 22) {
-    $card_bg = 'images/widget_bg_day_image_v2.png';
+    $card_bg = 'images/widget_bg_day_image_v2.webp';
 } else {
-    $card_bg = 'images/widget_bg_night_image_v2.png';
+    $card_bg = 'images/widget_bg_night_image_v2.webp';
 }
 ?>
 
