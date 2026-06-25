@@ -70,3 +70,8 @@ audio/
 # Large design files (PSD, AI)
 *.psd
 *.ai
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
