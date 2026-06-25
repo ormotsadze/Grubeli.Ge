@@ -137,6 +137,37 @@ $en_url = $base_url . $current_path . '?' . http_build_query($en_query);
         }
     })();
     </script>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FMT2PKLD4J"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FMT2PKLD4J');
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // ვამოწმებთ, არის თუ არა მომხმარებელი ანდროიდის WebView აპლიკაციაში
+    if (window.Android) {
+        // ვუგზავნით გუგლს ივენთს, რომ ეს არის აპლიკაციის ტრაფიკი
+        gtag('event', 'app_user', {
+            'platform': 'Android_WebView',
+            'app_version': '1.0'
+        });
+        
+        // სურვილისამებრ, შეგვიძლია მომხმარებლის იდენტიფიკატორიც (User Property) დავადოთ
+        gtag('set', 'user_properties', {
+            'user_type': 'mobile_app'
+        });
+    } else {
+        // ჩვეულებრივი ვებ ბრაუზერის ივენთი
+        gtag('event', 'web_user', {
+            'platform': 'Web_Browser'
+        });
+    }
+});
+</script>
   </head>
 
 <div id="android-lang-modal" class="android-dialog-overlay">

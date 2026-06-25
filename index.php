@@ -347,28 +347,34 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
 </div>
 <?php endif; ?>
 <?php if ($weather_alert): 
-    $bg_color = ($weather_alert['type'] === 'danger') ? 'rgba(255, 68, 68, 0.12)' : 'rgba(255, 193, 7, 0.12)';
-    $border_color = ($weather_alert['type'] === 'danger') ? '#ff4444' : '#ffc107';
-    $text_class = ($weather_alert['type'] === 'danger') ? 'text-danger' : 'text-warning';
-    $btn_class = ($weather_alert['type'] === 'danger') ? 'btn-danger' : 'btn-warning';
+    // 1. ფერების და კლასების განსაზღვრა ტიპის მიხედვით
+    $is_danger = ($weather_alert['type'] === 'danger');
+    $bg_color = $is_danger ? 'rgba(255, 68, 68, 0.12)' : 'rgba(255, 193, 7, 0.12)';
+    $border_color = $is_danger ? '#ff4444' : '#ffc107';
+    $text_class = $is_danger ? 'text-danger' : 'text-warning';
+    
+    // ენის ცვლადის დაზღვევა (დარწმუნდი სახელი სწორია თუ არა: $active_lang)
+    $current_lang = $active_lang ?? 'ka'; 
 ?>
 <div class="alert-card shadow-sm mb-4" style="background: <?php echo $bg_color; ?>; border-left: 4px solid <?php echo $border_color; ?>; border-radius: 12px; backdrop-filter: blur(10px);">
     <div class="card-body p-2 px-3 text-white">
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center text-truncate">
                 <i class="fa-solid <?php echo $weather_alert['icon']; ?> <?php echo $text_class; ?> me-2 pulse-animation" style="font-size: 1.3rem;"></i>
+                
                 <div class="text-truncate">
                     <h6 class="m-0 fw-bold text-truncate" style="font-size: 0.9rem;">
                         <?php echo htmlspecialchars($weather_alert['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
                     </h6>
+                    
                     <small class="text-white-50" style="font-size: 0.7rem;">
                         <?php 
                             $alert_status = $weather_alert['status'] ?? '';
-                            if ($ai_lang === 'en') {
+                            if ($current_lang === 'en') {
+                                // 👈 ზუსტი მასივი functions.php-ს სტატუსების სათარგმნად:
                                 $status_translations = [
-                                    'აქტიური' => 'Active',
-                                    'მოსალოდნელი' => 'Expected',
-                                    'საშიში' => 'Dangerous'
+                                    'მიმდინარე საფრთხე' => 'Current Danger',
+                                    'მომდევნო 12 სთ-ში'  => 'Next 12 Hours'
                                 ];
                                 $alert_status = $status_translations[$alert_status] ?? $alert_status;
                             }
@@ -376,12 +382,12 @@ if (!empty($fireData['active']) && isset($fireData['points'][0])):
                         ?> | 
                         
                         <?php 
-                            echo ($ai_lang === 'en' ? 'Wind: ' : 'ქარი: '); 
+                            echo ($current_lang === 'en' ? 'Wind: ' : 'ქარი: '); 
                         ?> 
-                        <span class="text-white">
+                        <span class="text-white fw-semibold">
                             <?php 
                                 $wind_speed = htmlspecialchars($weather_alert['wind'] ?? '0', ENT_QUOTES, 'UTF-8');
-                                $wind_unit = ($ai_lang === 'en' ? ' km/h' : ' კმ/სთ');
+                                $wind_unit = ($current_lang === 'en' ? ' km/h' : ' კმ/სთ');
                                 echo $wind_speed . $wind_unit;
                             ?>
                         </span>
@@ -1559,6 +1565,37 @@ function askQuickAI(question) {
     }
 })();
 </script>
-   
+   <script>
+document.getElementById('shareBtn').addEventListener('click', async function(e) {
+    e.preventDefault();
+    
+    const shareData = {
+        title: 'Grubeli.ge',
+        text: '<?php echo ($active_lang === 'en' ? "Check out the weather forecast and alerts in Georgia on Grubeli.ge!" : "შეამოწმეთ ამინდის პროგნოზი და კლიმატური ალერტები საქართველოში Grubeli.ge-ზე!"); ?>',
+        url: 'https://grubeli.ge/'
+    };
+
+    // 1. ჯერ ვამოწმებთ, ხომ არ ვართ ანდროიდის WebView აპლიკაციაში
+    if (window.Android && typeof window.Android.shareApp === 'function') {
+        window.Android.shareApp(shareData.text, shareData.url);
+    } 
+    // 2. თუ აპში არ ვართ, მაშინ ჩვეულებრივი მობილური ბრაუზერებისთვის (Chrome, Safari და ა.შ.)
+    else if (navigator.share) {
+        try {
+            await navigator.share(shareData);
+        } catch (err) {
+            console.log('გაზიარება გაუქმდა:', err);
+        }
+    } 
+    // 3. კომპიუტერისთვის (Desktop ვერსიისთვის) - აკოპირებს ლინკს
+    else {
+        navigator.clipboard.writeText(shareData.url).then(() => {
+            alert('<?php echo ($active_lang === 'en' ? 'Link copied to clipboard!' : 'საიტის ბმული კოპირებულია!'); ?>');
+        }).catch(err => {
+            console.error('შეცდომა კოპირებისას: ', err);
+        });
+    }
+});
+</script>
   </body>
 </html>

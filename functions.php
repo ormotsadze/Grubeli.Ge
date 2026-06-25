@@ -1,4 +1,5 @@
 <?php
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -820,9 +821,11 @@ function checkFireRisk($map_key) {
     return $result;
 }
 // ─── WEATHER ALERTS ─────────────────────────────────────────────────────
-function get_weather_data() {
-    // შესწორებული URL: ზუსტი პარამეტრებით (weather_code და wind_speed_10m)
-    $url = "https://api.open-meteo.com/v1/forecast?latitude=41.7151&longitude=44.8271&current=weather_code,wind_speed_10m&hourly=weather_code,wind_speed_10m";
+// ვამატებთ $lat და $lon პარამეტრებს, სადაც თბილისი იქნება სტანდარტული (fallback)
+function get_weather_data($lat = '41.7151', $lon = '44.8271') {
+    
+    // დინამიური URL კოორდინატების მიხედვით
+    $url = "https://api.open-meteo.com/v1/forecast?latitude=" . urlencode($lat) . "&longitude=" . urlencode($lon) . "&current=weather_code,wind_speed_10m&hourly=weather_code,wind_speed_10m";
     
     $response = @file_get_contents($url);
     if ($response) {
@@ -837,12 +840,11 @@ function get_weather_alert($weather) {
     
     if (!$current || !$hourly) return null;
 
-    // Open-Meteo current მონაცემების წაკითხვა
     $current_code = $current['weather_code'] ?? 0;
     $current_wind = $current['wind_speed_10m'] ?? 0;
 
     $is_storm_now = in_array($current_code, [95, 96, 99]);
-    $is_windy_now = $current_wind >= 50; // ძლიერი ქარი (50 კმ/სთ და მეტი)
+    $is_windy_now = $current_wind >= 20; 
 
     if ($is_storm_now || $is_windy_now) {
         return [
@@ -854,12 +856,11 @@ function get_weather_alert($weather) {
         ];
     }
 
-    // მომდევნო 12 საათის შემოწმება
     for ($i = 1; $i <= 12; $i++) {
         $h_code = $hourly['weather_code'][$i] ?? 0;
         $h_wind = $hourly['wind_speed_10m'][$i] ?? 0;
 
-        if (in_array($h_code, [95, 96, 99]) || $h_wind >= 50) {
+        if (in_array($h_code, [95, 96, 99]) || $h_wind >= 20) {
             $is_storm_future = in_array($h_code, [95, 96, 99]);
             return [
                 'type' => 'warning',
@@ -873,7 +874,6 @@ function get_weather_alert($weather) {
 
     return null;
 }
-
 // ─── TRANSLITERATION & TRANSLATION ──────────────────────────────────────
 
 function transliterate_georgian($text) {

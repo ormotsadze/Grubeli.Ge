@@ -109,10 +109,15 @@ if ($current_page == 'index.php' || $current_page == 'historical-weather.php') :
         </a>
         
       
-      
          <a href="https://github.com/ormotsadze/Grubeli.Ge" target="_blank" class="social-btn git">
           <i class="fa-brands fa-github"></i>
         </a>
+<button type="button" id="shareBtn" class="social-btn share">
+    <i class="fa-solid fa-share-nodes"></i>
+</button>
+
+
+    
     </div>
 
 

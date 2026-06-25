@@ -20,7 +20,9 @@ class WeatherWidget : AppWidgetProvider() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        if (intent.action == AppWidgetManager.ACTION_APPWIDGET_UPDATE || intent.action == "UPDATE_WIDGET") {
+        // გარედან მოსული განახლების სიგნალის დამუშავება
+        if (intent.action == AppWidgetManager.ACTION_APPWIDGET_UPDATE || 
+            intent.action == "com.app.grubelige.UPDATE_WIDGET") {
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val componentName = ComponentName(context, WeatherWidget::class.java)
             val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
@@ -33,8 +35,9 @@ class WeatherWidget : AppWidgetProvider() {
 
     private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
         val views = RemoteViews(context.packageName, R.layout.weather_widget_layout)
-        val prefs = context.getSharedPreferences("WeatherPrefs", Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences(WeatherUtils.PREFS_NAME, Context.MODE_PRIVATE)
 
+        // აპლიკაციის გახსნა ვიჯეტზე დაჭერით
         val intent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
             context, 0, intent,
@@ -42,40 +45,39 @@ class WeatherWidget : AppWidgetProvider() {
         )
         views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)
 
-        // 1. ლოკაციის წამოღება (პრიორიტეტი ენიჭება widget_city_name-ს, რომელიც პირდაპირ API-დან მოდის)
-        val cityName = prefs.getString("widget_city_name", prefs.getString("last_viewed_city", "საქართველო")) ?: "საქართველო"
-
+        // მონაცემების წამოღება
+        val cityName = prefs.getString("widget_city_name", null) ?: 
+                      prefs.getString("last_viewed_city", "საქართველო") ?: "საქართველო"
+        
         val temp = prefs.getInt("widget_temp", 0)
-        val desc = prefs.getString("widget_desc", "დააჭირეთ ლოკაციას აპლიკაციაში") ?: "დააჭირეთ ლოკაციას აპლიკაციაში"
+        val desc = prefs.getString("widget_desc", "ამინდის ინფორმაცია...") ?: "ამინდის ინფორმაცია..."
         val code = prefs.getInt("widget_code", 0)
         val lastUpdate = prefs.getLong("widget_last_update", 0L)
-        val hasData = lastUpdate != 0L
-
-        // 2. დღე/ღამის ლოგიკა: პრიორიტეტი ენიჭება API-დან მოსულ სტატუსს (widget_is_day)
+        
+        // დღე/ღამის განსაზღვრა
         val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-        val isNightFallback = hour >= 20 || hour < 6
+        val isNightFallback = hour >= 20 || hour < 7
         val isDay = prefs.getBoolean("widget_is_day", !isNightFallback)
 
-        updateUI(views, cityName, temp, desc, code, isDay, hasData)
-        appWidgetManager.updateAppWidget(appWidgetId, views)
-    }
+        Log.d("WeatherWidget", "Updating Widget: $cityName, Temp: $temp, Day: $isDay, Code: $code")
 
-    private fun updateUI(views: RemoteViews, city: String, temp: Int, desc: String, code: Int, isDay: Boolean, hasData: Boolean) {
-        views.setTextViewText(R.id.widget_city, city)
-
-        if (hasData) {
+        // UI განახლება
+        views.setTextViewText(R.id.widget_city, cityName)
+        
+        if (lastUpdate != 0L) {
             views.setTextViewText(R.id.widget_temp, "$temp°")
             views.setTextViewText(R.id.widget_desc, desc)
         } else {
             views.setTextViewText(R.id.widget_temp, "--°")
-            views.setTextViewText(R.id.widget_desc, "დააჭირეთ ლოკაციას")
+            views.setTextViewText(R.id.widget_desc, "გახსენით აპლიკაცია")
         }
 
+        // ხატულას და ფონის დაყენება
         views.setImageViewResource(R.id.widget_icon, getWeatherIcon(code, isDay))
-
-        // ფონის შერჩევა დღე/ღამის მიხედვით
         val backgroundRes = if (isDay) R.drawable.widget_bg_day_image else R.drawable.widget_bg_night_image
         views.setImageViewResource(R.id.widget_background_image, backgroundRes)
+
+        appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
     private fun getWeatherIcon(code: Int, isDay: Boolean): Int {

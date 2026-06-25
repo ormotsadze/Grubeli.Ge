@@ -75,7 +75,7 @@ return [
  // --- 1. INDEX.PHP ---
     'index_title' => 'Weather Forecast in Georgia',
     'index_desc' => 'Real-time weather forecast in Batumi, Tbilisi and all Georgia. AI-smart tips, humidity, wind, and precipitation charts.',
-    'index_og_title' => 'Grubeli.ge | Weather Forecast Made Easy',
+    'index_og_title' => 'Grubeli.ge | More than just weather',
     'index_tw_title' => 'Grubeli.ge - Weather in Georgia',
     'index_tw_desc' => 'Find out the weather in your city and get personalized AI recommendations from Grubeli.ge.',
     'index_lastyear' => 'On this day last year',

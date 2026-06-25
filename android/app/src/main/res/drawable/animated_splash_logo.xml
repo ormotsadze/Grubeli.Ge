@@ -1,12 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
 <animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:drawable="@drawable/splash_logo_base">
 
+    <!-- ლოგოს (ღრუბლის) პულსაცია -->
     <target
         android:name="logo_group"
-        android:animation="@animator/cloud_animation" />
+        android:animation="@animator/pulsating_scale" />
 
+    <!-- ტექსტის გამოჩენა -->
+    <target
+        android:name="text_badge_group"
+        android:animation="@animator/text_appear" />
+
+    <!-- PRO ბეიჯის ეფექტი -->
     <target
         android:name="pro_badge_group"
-        android:animation="@animator/cloud_animation" />
+        android:animation="@animator/pro_badge_pop" />
 
 </animated-vector>
